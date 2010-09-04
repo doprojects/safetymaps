@@ -53,6 +53,7 @@
         
             <div id="create">
                 <form method="GET">
+                    <input type="hidden" name="step" value="1"></input>
                     <p>
                         <label for="name">What's your name?</label><br>
                         <input type="text" name="name"></input>
@@ -81,9 +82,71 @@
                         <input type="text" name="title"></input>
                     </p>                    
                     <p>
-                        <input type="submit"></input>
+                        <button type="submit">Next</button>
                     </p>
                 </form>
+                
+                <form method="GET">
+                    <input type="hidden" name="step" value="2"></input>                
+                    <p>
+                        <label for="name">If you like, you can include a personal note for</label><br>
+                        <input type="text" name="name"></input><br>
+                        <textarea type="text" name="note"></textarea>
+                    </p>                    
+                    <p>
+                        <button>Go back</button><button type="submit">Next</button>
+                    </p>
+                </form>
+
+                <form method="GET">
+                    <input type="hidden" name="step" value="3"></input>                
+                    <p>
+                        <label for="name">Please choose your meeting place on the map</label><br>
+                        <input type="hidden" name="bbox" value="s,w,n,e"></input><br>
+                    </p>                    
+                    <div id="bboxmap">
+                        [map here]
+                        <!-- TODO: init map -->
+                    </div>
+                    <p>
+                        <button>Go back</button><button type="submit">Select</button>
+                    </p>                    
+                </form>
+                
+                <!-- TODO preview the selected region before going on to step 4 -->
+                
+                <form method="GET">
+                    <input type="hidden" name="step" value="4"></input>                
+                    <p>
+                        <label for="name">Preview</label><br>
+                    </p>                    
+                    <div id="preview">
+                        [preview goes here]                    
+                    </div>
+                    <p>
+                        <button>Go back</button><button type="submit">Next</button>
+                    </p>
+                </form>                
+
+                <form method="GET">
+                    <input type="hidden" name="step" value="5"></input>
+                    <p>
+                        <label>Map ready!</label>
+                    </p>
+                    <p>
+                        <button type="submit">Send</button>
+                    </p>
+                    <p>
+                        <button>Print</button>
+                    </p>
+                    <p>
+                        <button>Answer a few more questions</button>
+                    </p>
+                    <p>
+                        <button>Make another</button>
+                    </p>
+                </form>                
+                
             </div>
         
         </div>

@@ -23,7 +23,7 @@ body {
 }
 
 #header h1 {
-    /* TODO: maybe Benton? */
+    /* TODO: maybe Akkurat? VAG Rounded? */
     font-size: 22pt;
     font-weight: normal;
     color: #000;
@@ -92,7 +92,7 @@ body {
     line-height: 2.9;
     color: #CCCCCC;
     text-decoration: none;
-    border-left: 1px dashed rgba(252,191,191,0.5);
+    border-left: 1px dashed #666666;
 }
 #header #nav li:first-child a {
     border-left: 0;
@@ -190,4 +190,58 @@ div#points li a:hover, div#points li a.hover {
 }
 .marker.hover {
     background-image: url(cross_big.png);
+}
+
+
+/* create form */
+
+#create, #progress {
+    margin: 40px;
+}
+
+#create {
+    background: #CCCCCC;
+    padding: 10px;
+}
+
+#create label {
+    color: #444444;
+}
+
+#create input[type=text], #create textarea {
+    border: 0;
+    background: #FFFFFF;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#create button {
+    background: #444444;
+    color: #FFFFFF;
+    border: 0;
+    padding: 5px;
+    margin: 0 10px 0 0;
+    font-weight: bold;
+}
+#create button[type=submit] {
+    background: #00DF43;
+}
+
+#progress span {
+    font-weight: bold;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    color: #FFF;
+    background: #CCCCCC;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 40px;
+    font-size: 20px;
+}
+#progress span.on {
+    background: #00DF43;
 }
