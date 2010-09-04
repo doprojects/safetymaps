@@ -9,7 +9,7 @@ g2.smooth();
 float w = width;
 float h = height;
 
-g2.stroke(#FF0013);
+g2.stroke(#00DF43);
 g2.strokeWeight(4);
 g2.strokeJoin(MITER);
 g2.strokeCap(SQUARE);
