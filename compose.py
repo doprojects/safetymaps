@@ -9,6 +9,12 @@ from ModestMaps.Geo import Location
 from ModestMaps.Providers import TemplatedMercatorProvider
 from cairo import PDFSurface, ImageSurface, Context
 
+mmppt = 0.352777778
+inppt = 0.013888889
+
+ptpin = 1./inppt
+ptpmm = 1./mmppt
+
 parser = OptionParser()
 
 parser.add_option('-m', '--meeting-point', dest='point',
@@ -26,20 +32,36 @@ if __name__ == '__main__':
     lat1, lon1, lat2, lon2 = options.bbox
     mmap = mapByExtentZoom(prov, Location(lat1, lon1), Location(lat2, lon2), 16)
     
+    print mmap.dimensions
+    
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
-    mmap.draw(True).save(filename)
+    mmap.draw().save(filename)
     
-    surf = PDFSurface('out.pdf', 612, 792)
+    surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
     
     img = ImageSurface.create_from_png(filename)
     
     ctx = Context(surf)
     
+    ctx.scale(ptpmm, ptpmm)
+
     ctx.translate(10, 10)
+
+    ctx.save()
+    ctx.scale(mmppt, mmppt)
     ctx.set_source_surface(img, 0, 0)
     ctx.paint()
+    ctx.restore()
+
+    ctx.translate(10, 10)
+
+    ctx.save()
+    ctx.scale(mmppt, mmppt)
+    ctx.set_source_surface(img, 0, 0)
+    ctx.paint()
+    ctx.restore()
     
     surf.finish()
     unlink(filename)
