@@ -6,7 +6,7 @@ from tempfile import mkstemp
 from optparse import OptionParser
 from ModestMaps import mapByExtentZoom
 from ModestMaps.Geo import Location
-from ModestMaps.OpenStreetMap import Provider
+from ModestMaps.Providers import TemplatedMercatorProvider
 from cairo import PDFSurface, ImageSurface, Context
 
 parser = OptionParser()
@@ -22,9 +22,9 @@ parser.add_option('-b', '--bbox', dest='bbox',
 if __name__ == '__main__':
     options, args = parser.parse_args()
     
-    osm = Provider()
+    prov = TemplatedMercatorProvider('http://localhost/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
     lat1, lon1, lat2, lon2 = options.bbox
-    mmap = mapByExtentZoom(osm, Location(lat1, lon1), Location(lat2, lon2), 16)
+    mmap = mapByExtentZoom(prov, Location(lat1, lon1), Location(lat2, lon2), 16)
     
     handle, filename = mkstemp(suffix='.png')
     close(handle)
@@ -37,7 +37,8 @@ if __name__ == '__main__':
     
     ctx = Context(surf)
     
-    ctx.set_source_surface(img, 10, 10)
+    ctx.translate(10, 10)
+    ctx.set_source_surface(img, 0, 0)
     ctx.paint()
     
     surf.finish()
