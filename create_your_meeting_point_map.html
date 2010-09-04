@@ -42,6 +42,50 @@
             </div>
         </div>
         <div id="main">
+        
+            <div id="progress">
+                <span class="on">1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
+            </div>
+        
+            <div id="create">
+                <form method="GET">
+                    <p>
+                        <label for="name">What's your name?</label><br>
+                        <input type="text" name="name"></input>
+                    </p>
+                    <p>
+                        <label for="forname1">Who's this map for?</label><br>
+                        <input type="text" name="forname1"></input><input type="text" name="foremail1"></input><br>
+                        <input type="text" name="forname2"></input><input type="text" name="foremail2"></input>
+                        <!-- TODO: any number of for emails... ajaxy... how to encode? -->
+                    </p>
+                    <p>
+                        <label for="emergency">What kind of emergency is this map for?</label><br>
+                        <select name="emergency">
+                            <option>Blackout</option>
+                            <option>Drought</option>
+                            <option>Earthquake</option>
+                            <option>Fire</option>
+                            <option>Flood</option>
+                            <option>Public transportation failure</option>
+                            <option>War</option>
+                            <option>Other (please specify)</option><!-- TODO, how to specify? -->
+                        </select>
+                    </p>
+                    <p>
+                        <label for="title">What would you like to call this meeting place?<br>(You can call it anything you want)</label><br>
+                        <input type="text" name="title"></input>
+                    </p>                    
+                    <p>
+                        <input type="submit"></input>
+                    </p>
+                </form>
+            </div>
+        
         </div>
         <div id="footer">
             <p>&copy; 2010 Do Projects. Credits, Privacy Policy, etc.</p>
