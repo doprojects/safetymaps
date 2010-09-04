@@ -1,0 +1,255 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: #000;
+}
+
+body {
+    font: 11pt/1.0 Helvetica, Arial, sans-serif;            
+    min-width: 960px;
+}
+
+/* header! */
+
+#header {
+    position: relative;
+    background: #00DF43;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 20px 0 0 0;
+}
+
+#header h1 {
+    /* TODO: maybe Akkurat? VAG Rounded? */
+    font-size: 22pt;
+    font-weight: normal;
+    color: #000;
+    margin: 0 0 10px 150px;
+    padding: 0;
+}
+
+#header img {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+#header h2 {
+    font-size: 14pt;
+    font-weight: normal;
+    line-height: 1.2;
+    margin: 0 0 20px 150px;
+    padding: 0;
+}
+
+#header #about {
+    font-size: 10pt;
+    width: 300px;
+    position: absolute;
+    left: 640px;
+    top: 0px;
+    margin: 10px 0 0 0;
+    padding: 0;
+}
+#header #about p {
+    line-height: 1.1;            
+    margin: 10px 0 0 0;
+    padding: 0;
+}
+#header #about p a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+#header #about p a:hover {
+    text-decoration: underline;
+}
+
+#header #nav {
+    background: #333333;
+    /* I'm ashamed of myself, but this takes the edge off the html crispiness a bit */
+    border-top: 1px solid #00AF23;
+    border-bottom: 1px solid #888888;
+}
+
+#header #nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#header #nav li {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+#header #nav li a {
+    display: inline-block;
+    padding: 0 20px; 
+    line-height: 2.9;
+    color: #CCCCCC;
+    text-decoration: none;
+    border-left: 1px dashed #666666;
+}
+#header #nav li:first-child a {
+    border-left: 0;
+}            
+#header #nav li a:hover, header nav li a:active {
+    text-decoration: underline;
+    color: #00DF43;
+}
+#header #nav li a.current {
+    color: #00DF43; 
+}
+
+/* section! */
+
+#main {
+    position: relative;
+    border-bottom: 1px solid #666;    
+}
+
+#main h1 {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: #fff;
+    font-size: 12pt;
+    font-weight: bold;
+    color: #00DF43;
+    padding: 8px;
+    margin: 0;
+}
+
+div#map {
+    position: relative;
+    width: 700px;
+    height: 600px;
+}
+
+div#points {
+    position: absolute;
+    top: 0;
+    left: 700px;
+    width: 260px;
+}
+
+div#points ul  {
+    list-style-type: none;
+    margin: 30px 20px;
+    padding: 0;
+}
+
+div#points li {
+    margin: 15px 0;
+    padding: 0;
+}
+
+div#points li a {
+    text-decoration: none;
+    color: #888888;
+    padding: 5px;
+}
+
+div#points li a:hover, div#points li a.hover {
+    background: #CCCCCC;
+    color: #333333;
+}
+
+/* footer! */
+
+#footer {
+    background: #A6A6A6;
+    margin: 0;
+    padding: 20px;
+    color: #FFFFFF;
+    border-top: 1px solid #EEEEEE;
+}
+
+#footer p {
+    margin: 0;
+    padding: 0;
+}
+
+/* microformats! */
+
+.geo {
+    display: none;
+}
+
+/* markers! */
+
+.marker {
+    background-image: url(cross_sm.png);
+    background-repeat: no-repeat;
+    background-position:center;
+}
+.marker.hover {
+    background-image: url(cross_big.png);
+}
+
+
+/* create form */
+
+#create, #progress {
+    margin: 40px;
+}
+
+#create {
+    background: #CCCCCC;
+    padding: 10px;
+}
+
+#create label {
+    color: #444444;
+}
+
+#create input[type=text], #create textarea {
+    border: 0;
+    background: #FFFFFF;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#create button {
+    background: #444444;
+    color: #FFFFFF;
+    border: 0;
+    padding: 5px;
+    margin: 0 10px 0 0;
+    font-weight: bold;
+}
+#create button[type=submit] {
+    background: #00DF43;
+}
+
+#progress span {
+    font-weight: bold;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    color: #FFF;
+    background: #CCCCCC;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 40px;
+    font-size: 20px;
+}
+#progress span.on {
+    background: #00DF43;
+}
+
+#bboxmap, #previewmap {
+    display: block;
+    position: relative;
+    width: 430px;
+    height: 305px;
+    background: #DDDDDD;
+}

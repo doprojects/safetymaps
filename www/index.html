@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Safety Maps: A Do Project</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="modestmaps.js"></script>
+        <script type="text/javascript" src="cloudmade.js"></script>
+        <script type="text/javascript" src="markerclip.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // make a map!
+                var mm = com.modestmaps;
+                //var template = 'http://{S}tile.openstreetmap.org/{Z}/{X}/{Y}.png';
+                //var domains = [ '', 'a.', 'b.', 'c.' ];
+                //var osm = new mm.TemplatedMapProvider(template, domains);
+                var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+                var map = new mm.Map('map', cm);
+                map.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+                
+                // for demo porpoises, add some random locations to the points:
+                var extent = map.getExtent();
+                var minLat = extent[1].lat;
+                var maxLat = extent[0].lat;
+                var minLon = extent[0].lon;
+                var maxLon = extent[1].lon;
+                var latRange = maxLat - minLat;
+                var lonRange = maxLon - minLon;
+                $('.geo .latitude').each(function() {
+                    $(this).text(minLat + latRange*Math.random());
+                });
+                $('.geo .longitude').each(function() {
+                    $(this).text(minLon + lonRange*Math.random());
+                });
+
+                var markerClip = new MarkerClip(map);
+                $('.geo').each(function() {
+                    var $geo = $(this);
+                    var lat = $geo.find('.latitude').text();
+                    var lon = $geo.find('.longitude').text();
+                    var marker = markerClip.createDefaultMarker(63,63);
+                    marker.className = 'marker';
+                    var $geolink = $geo.parent().find('a');
+                    $(marker).mouseover(function() {
+                        $(this).addClass('hover');
+                        $geolink.addClass('hover');
+                    });
+                    $(marker).mouseout(function() {
+                        $(this).removeClass('hover');
+                        $geolink.removeClass('hover');
+                    });
+                    $geolink.mouseover(function() {
+                        $(marker).trigger('mouseover');
+                    });
+                    $geolink.mouseout(function() {
+                        $(marker).trigger('mouseout');
+                    });
+                    var location = new mm.Location(lat, lon);
+                    var offset = new mm.Point(-63/2,-63/2);
+                    marker.title = $geolink.text();
+                    markerClip.addMarker(marker, location, offset);
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="header">
+            <h1>Safety Maps</h1>
+            <h2>
+                Where will you meet your loved ones in<br>
+                the event of a natural disaster or other<br>
+                emergency?
+            </h2>
+            <img src="logo.png" alt="Safety Maps Logo">
+            <div id="about">
+                <p>
+                    What happens when disaster strikes?<br>
+                    You're separated from those you care about.<br>
+                    Your phone doesn't work anymore...<br>
+                    Where do you think it's a safe place to gather?<br>
+                    Use Safety Maps to choose and share safe<br>
+                    meeting points with your familiy and friends.
+                </p>
+                <p>
+                    <a href="#create-your-map">Click here to start a scenario.</a>
+                </p>
+            </div>
+            <div id="nav">
+                <ul>
+                    <li><a href="index.html" class="current">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="create_your_meeting_point_map.html">Create your meeting point map</a></li>
+                    <li><a href="#meeting-points">See meeting points other people have chosen</a></li>
+                    <li><a href="#scenarios">View disaster scenarios</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="main">
+            <h1>Most recent meeting points others have chosen in the <span id="current city">New York City</span> area (<span id="point-count">15</span>)</h1>
+            <div id="map">
+            </div>
+            <div id="points">
+                <ul>
+                    <li><a href="#">Simpson map</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Fred's map</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Pizzuto Family meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Wong map</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Michelle's safe place</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Nurri's meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Sasha's meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">ICP staff meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">BB's meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Anonymous meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Tom's</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Matt meets here</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Aleksi's meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Muu's map</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                    <li><a href="#">Let's meet here's meeting point</a>
+                        <span class="geo">
+                            <span class="latitude"></span>
+                            <span class="longitude"></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="footer">
+            <p>&copy; 2010 Do Projects. Credits, Privacy Policy, etc.</p>
+        </div>
+    </body>
+</html>
