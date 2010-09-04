@@ -17,20 +17,29 @@
                 //var domains = [ '', 'a.', 'b.', 'c.' ];
                 //var osm = new mm.TemplatedMapProvider(template, domains);
                 var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
-                var map = new mm.Map('bboxmap', cm);
-                map.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
-                var bbox = new BoundingBox(map);
+
+                var previewmap = new mm.Map('previewmap', cm);
+                previewmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+
+                var bboxmap = new mm.Map('bboxmap', cm);
+                bboxmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+                var bbox = new BoundingBox(bboxmap);
                 bbox.onchange = function(nwse /* Array */) {
                     $('input[name=bbox]').attr('value', nwse.map(function(n){return n.toFixed(6)}).join(','));
+                    if (nwse[0]-nwse[2] > 0.001 && nwse[3]-nwse[1] > 0.001) {
+                        var nw = new mm.Location(nwse[0],nwse[1]);
+                        var se = new mm.Location(nwse[2],nwse[3]);
+                        previewmap.setExtent([nw,se]);
+                    }
                 };
                 function onMapChange() {
                     bbox.updateInfo();
                 }
-                map.addCallback('panned', onMapChange);
-                map.addCallback('resized', onMapChange);
-                map.addCallback('zoomed', onMapChange);
-                map.addCallback('extentset', onMapChange);
-                map.addCallback('centered', onMapChange);                
+                bboxmap.addCallback('panned', onMapChange);
+                bboxmap.addCallback('resized', onMapChange);
+                bboxmap.addCallback('zoomed', onMapChange);
+                bboxmap.addCallback('extentset', onMapChange);
+                bboxmap.addCallback('centered', onMapChange);                
             });
         </script>        
     </head>
@@ -145,7 +154,7 @@
                     <p>
                         <label for="name">Preview</label><br>
                     </p>                    
-                    <div id="preview">
+                    <div id="previewmap">
                         [preview goes here]                    
                     </div>
                     <p>

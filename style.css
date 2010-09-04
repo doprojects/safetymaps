@@ -246,7 +246,7 @@ div#points li a:hover, div#points li a.hover {
     background: #00DF43;
 }
 
-#bboxmap {
+#bboxmap, #previewmap {
     display: block;
     position: relative;
     width: 640px;
