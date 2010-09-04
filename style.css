@@ -245,3 +245,11 @@ div#points li a:hover, div#points li a.hover {
 #progress span.on {
     background: #00DF43;
 }
+
+#bboxmap {
+    display: block;
+    position: relative;
+    width: 640px;
+    height: 480px;
+    background: #DDDDDD;
+}

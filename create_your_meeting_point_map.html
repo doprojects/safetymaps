@@ -8,6 +8,31 @@
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
         <script type="text/javascript" src="markerclip.js"></script>
+        <script type="text/javascript" src="bbox.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // make a map!
+                var mm = com.modestmaps;
+                //var template = 'http://{S}tile.openstreetmap.org/{Z}/{X}/{Y}.png';
+                //var domains = [ '', 'a.', 'b.', 'c.' ];
+                //var osm = new mm.TemplatedMapProvider(template, domains);
+                var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+                var map = new mm.Map('bboxmap', cm);
+                map.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+                var bbox = new BoundingBox(map);
+                bbox.onchange = function(nwse /* Array */) {
+                    $('input[name=bbox]').attr('value', nwse.map(function(n){return n.toFixed(6)}).join(','));
+                };
+                function onMapChange() {
+                    bbox.updateInfo();
+                }
+                map.addCallback('panned', onMapChange);
+                map.addCallback('resized', onMapChange);
+                map.addCallback('zoomed', onMapChange);
+                map.addCallback('extentset', onMapChange);
+                map.addCallback('centered', onMapChange);                
+            });
+        </script>        
     </head>
     <body>
         <div id="header">
