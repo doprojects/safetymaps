@@ -32,6 +32,29 @@ def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
     
     return mapByCenterZoom(prov, center, zoom, dimensions)
 
+def place_image(context, img, width, height):
+    """ Add an image to a given context, at a given size in millimeters.
+    
+        Assume that the scale matrix of the context is already in mm.
+    """
+    # push
+    context.save()
+    
+    # switch to point scale for the sake of the image dimensions
+    context.scale(mmppt, mmppt)
+
+    # determine the scale needed to make the image the requested size
+    xscale = width * ptpmm / img.get_width()
+    yscale = height * ptpmm / img.get_height()
+    context.scale(xscale, yscale)
+
+    # paint the image
+    context.set_source_surface(img, 0, 0)
+    context.paint()
+
+    # pop
+    context.restore()
+
 parser = OptionParser()
 
 parser.add_option('-m', '--meeting-point', dest='point',
@@ -47,14 +70,14 @@ if __name__ == '__main__':
     
     prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
     lat1, lon1, lat2, lon2 = options.bbox
-    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 16, 1)
+    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 16, 86./61.)
     
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
     mmap.draw().save(filename)
     
-    surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
+    surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
     
     img = ImageSurface.create_from_png(filename)
     
@@ -62,15 +85,11 @@ if __name__ == '__main__':
     
     ctx.scale(ptpmm, ptpmm)
 
-    ctx.translate(10, 10)
-
-    ctx.save()
-    ctx.scale(mmppt, mmppt)
-    scale = 195.9 * ptpmm / img.get_width()
-    ctx.scale(scale, scale)
-    ctx.set_source_surface(img, 0, 0)
-    ctx.paint()
-    ctx.restore()
+    ctx.translate(19 + 86, 26.5)
+    
+    for i in range(4):
+        place_image(ctx, img, 86, 61)
+        ctx.translate(0, 61)
     
     surf.finish()
     unlink(filename)
