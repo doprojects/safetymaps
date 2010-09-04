@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
     ctx.translate(19 + 86, 26.5)
     
-    for i in range(2):
+    for i in range(4):
         place_image(ctx, img, 86, 61)
         
         # push
@@ -159,6 +159,10 @@ if __name__ == '__main__':
         ctx.restore()
         
         ctx.translate(0, 61)
-
+    
+    ctx.select_font_face('Helvetica')
+    ctx.set_font_size(5)
+    ctx.show_text('Hello World')
+    
     surf.finish()
     unlink(filename)
