@@ -55,6 +55,57 @@ def place_image(context, img, width, height):
     # pop
     context.restore()
 
+def place_marker(context):
+    """
+    """
+    # push
+    context.save()
+
+    # switch to point scale for the sake of the drawing dimensions
+    context.scale(mmppt, mmppt)
+
+    # adjust for marker center
+    context.translate(-14.1735, -14.1735)
+    
+    # draw the marker
+    context.move_to(23.622, 9.449)
+    context.rel_line_to(-1.94, 1.94)
+    context.rel_line_to(2.784, 2.784)
+    context.rel_line_to(-2.784, 2.785)
+    context.rel_line_to(1.94, 1.94)
+    context.rel_line_to(4.725, -4.725)
+    context.line_to(23.622, 9.449)
+
+    context.move_to(9.448, 4.725)
+    context.rel_line_to(1.94, 1.94)
+    context.rel_line_to(2.784, -2.784)
+    context.rel_line_to(2.784, 2.784)
+    context.rel_line_to(1.94, -1.94)
+    context.line_to(14.173, 0)
+    context.line_to(9.448, 4.725)
+
+    context.move_to(14.173, 24.466)
+    context.rel_line_to(-2.784, -2.785)
+    context.rel_line_to(-1.939, 1.94)
+    context.rel_line_to(4.724, 4.725)
+    context.rel_line_to(4.725, -4.725)
+    context.rel_line_to(-1.94, -1.94)
+    context.line_to(14.173, 24.466)
+
+    context.move_to(6.664, 11.389)
+    context.rel_line_to(-1.939, -1.94)
+    context.line_to(0, 14.173)
+    context.rel_line_to(4.725, 4.725)
+    context.rel_line_to(1.939, -1.94)
+    context.rel_line_to(-2.783, -2.785)
+    context.line_to(6.664, 11.389)
+
+    context.set_source_rgb(0, 0, 0)
+    context.fill()
+
+    # pop
+    context.restore()
+
 parser = OptionParser()
 
 parser.add_option('-m', '--meeting-point', dest='point',
@@ -72,6 +123,10 @@ if __name__ == '__main__':
     lat1, lon1, lat2, lon2 = options.bbox
     mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 16, 86./61.)
     
+    mark = Location(*options.point)
+    
+    print mark, mmap.locationPoint(mark)
+    
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
@@ -87,9 +142,23 @@ if __name__ == '__main__':
 
     ctx.translate(19 + 86, 26.5)
     
-    for i in range(4):
+    for i in range(2):
         place_image(ctx, img, 86, 61)
+        
+        # push
+        ctx.save()
+
+        # marker center point expressed in millimeters
+        xpos = 86 * mmap.locationPoint(mark).x / float(img.get_width())
+        ypos = 61 * mmap.locationPoint(mark).y / float(img.get_height())
+        ctx.translate(xpos, ypos)
+
+        place_marker(ctx)
+
+        # pop
+        ctx.restore()
+        
         ctx.translate(0, 61)
-    
+
     surf.finish()
     unlink(filename)
