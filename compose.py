@@ -108,6 +108,14 @@ def place_marker(context):
 
 parser = OptionParser()
 
+parser.set_defaults(format='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+
+formats = 'a4 letter'.split()
+
+parser.add_option('-f', '--format', dest='format',
+                  help='Choice of formats: %s.' % ', '.join(formats),
+                  choices=formats)
+
 parser.add_option('-m', '--meeting-point', dest='point',
                   help='Latitude and longitude of meeting point.',
                   type='float', nargs=2)
@@ -132,7 +140,11 @@ if __name__ == '__main__':
     
     mmap.draw().save(filename)
     
-    surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
+    if options.format == 'a4':
+        surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
+    
+    elif options.format == 'letter':
+        surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
     
     img = ImageSurface.create_from_png(filename)
     
@@ -140,7 +152,11 @@ if __name__ == '__main__':
     
     ctx.scale(ptpmm, ptpmm)
 
-    ctx.translate(19 + 86, 26.5)
+    if options.format == 'a4':
+        ctx.translate(19 + 86, 26.5)
+    
+    elif options.format == 'letter':
+        ctx.translate(22 + 86, 17.5)
     
     for i in range(4):
         place_image(ctx, img, 86, 61)
