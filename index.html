@@ -2,187 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Emergency Maps: A Do Project</title>
-        <style type="text/css">
-            
-            html, body {
-                margin: 0;
-                padding: 0;
-                border: 0;
-                background: #fff;
-                color: #000;
-            }
-            
-            body {
-                font: 11pt/1.0 Helvetica, Arial, sans-serif;            
-                min-width: 960px;
-            }
-            
-            /* header! */
-            
-            #header {
-                position: relative;
-                background: #FF0013;
-                color: #FFFFFF;
-                margin: 0;
-                padding: 20px 0 0 0;
-            }
-            
-            #header h1 {
-                /* TODO: maybe Benton? */
-                font-size: 22pt;
-                font-weight: normal;
-                color: #000;
-                margin: 0 0 10px 20px;
-                padding: 0;
-            }
-
-            #header h2 {
-                font-size: 14pt;
-                font-weight: normal;
-                line-height: 1.2;
-                margin: 0 0 20px 20px;
-                padding: 0;
-            }
-
-            #header #about {
-                font-size: 10pt;
-                width: 300px;
-                position: absolute;
-                left: 640px;
-                top: 0px;
-                margin: 10px 0 0 0;
-                padding: 0;
-            }
-            #header #about p {
-                line-height: 1.1;            
-                margin: 10px 0 0 0;
-                padding: 0;
-            }
-            #header #about p a {
-                color: #FFFFFF;
-                text-decoration: none;
-            }
-            #header #about p a:hover {
-                text-decoration: underline;
-            }
-            
-            #header #nav {
-                background: #333333;
-            }
-
-            #header #nav ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            #header #nav li {
-                display: inline;
-                margin: 0;
-                padding: 0;
-            }
-            
-            #header #nav li a {
-                display: inline-block;
-                padding: 0 20px; 
-                line-height: 3.0;
-                color: #FCBFBF;
-                text-decoration: none;
-                border-left: 1px dashed rgba(252,191,191,0.5);
-            }
-            #header #nav li:first-child a {
-                border-left: 0;
-            }            
-            #header #nav li a:hover, header nav li a:active {
-                text-decoration: underline;
-            }
-            
-            /* section! */
-
-            #main {
-                position: relative;
-            }
-
-            #main h1 {
-                position: absolute;
-                top: 20px;
-                left: 20px;
-                z-index: 1000;
-                background: #fff;
-                font-size: 12pt;
-                font-weight: bold;
-                color: #FF0013;
-                padding: 8px;
-                margin: 0;
-            }
-
-            div#map {
-                position: relative;
-                width: 700px;
-                height: 600px;
-            }
-            
-            div#points {
-                position: absolute;
-                top: 0;
-                left: 700px;
-                width: 260px;
-            }
-
-            div#points ul  {
-                list-style-type: none;
-                margin: 30px 20px;
-                padding: 0;
-            }
-
-            div#points li {
-                margin: 15px 0;
-                padding: 0;
-            }
-
-            div#points li a {
-                text-decoration: none;
-                color: #888888;
-                padding: 5px;
-            }
-
-            div#points li a:hover, div#points li a.hover {
-                background: #FCBFBF;
-                color: #333333;
-            }
-            
-            /* footer! */
-            
-            #footer {
-                background: #333333;
-                margin: 0;
-                padding: 20px;
-                color: #FFFFFF;
-            }
-            
-            #footer p {
-                margin: 0;
-                padding: 0;
-            }
-            
-            /* microformats! */
-            
-            .geo {
-                display: none;
-            }
-            
-            /* markers! */
-            
-            .marker {
-                background-image: url(cross_sm.png);
-                background-repeat: no-repeat;
-                background-position:center;
-            }
-            .marker.hover {
-                background-image: url(cross_big.png);
-            }
-        </style>
+        <title>Safety Maps: A Do Project</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
@@ -245,19 +66,20 @@
     </head>
     <body>
         <div id="header">
-            <h1>Emergency Maps</h1>
+            <h1>Safety Maps</h1>
             <h2>
                 Where will you meet your loved ones in<br>
                 the event of a natural disaster or other<br>
                 emergency?
             </h2>
+            <img src="logo.png" alt="Safety Maps Logo">
             <div id="about">
                 <p>
                     What happens when disaster strikes?<br>
                     You're separated from those you care about.<br>
                     Your phone doesn't work anymore...<br>
                     Where do you think it's a safe place to gather?<br>
-                    Use Emergency Maps to choose and share safe<br>
+                    Use Safety Maps to choose and share safe<br>
                     meeting points with your familiy and friends.
                 </p>
                 <p>
@@ -266,7 +88,7 @@
             </div>
             <div id="nav">
                 <ul>
-                    <li><a href="#home">Home</a></li>
+                    <li><a href="#home" class="current">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#create-your-map">Create your meeting point map</a></li>
                     <li><a href="#meeting-points">See meeting points other people have chosen</a></li>
