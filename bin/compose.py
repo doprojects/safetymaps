@@ -17,7 +17,9 @@ ptpin = 1./inppt
 ptpmm = 1./mmppt
 
 def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
-    """
+    """ Get a map by extent and zoom, and adjust it to the desired aspect ratio.
+    
+        Adjustments always increase the size. Return a ModestMaps.Map instance.
     """
     mmap = mapByExtentZoom(prov, locA, locB, zoom)
     center = mmap.pointLocation(Point(mmap.dimensions.x/2, mmap.dimensions.y/2))
@@ -56,7 +58,7 @@ def place_image(context, img, width, height):
     context.restore()
 
 def place_marker(context):
-    """
+    """ Draw a provisional-looking marker.
     """
     # push
     context.save()
@@ -108,6 +110,8 @@ def place_marker(context):
 
 def draw_rounded_box(ctx, width, height):
     """ Draw a rounded box with corner radius of 2.
+    
+        Don't modify the matrix stack.
     """
     radius = 2
     bezier = radius / 2
@@ -127,8 +131,8 @@ def draw_rounded_box(ctx, width, height):
     ctx.set_source_rgb(.8, .8, .8)
     ctx.stroke()
 
-def get_map_image(bbox):
-    """
+def get_map_image(bbox, aspect):
+    """ Get a cairo ImageSurface for a given bounding box.
     """
     prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
     lat1, lon1, lat2, lon2 = bbox
@@ -136,7 +140,7 @@ def get_map_image(bbox):
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
-    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 15, 84./39.)
+    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 15, aspect)
     mmap.draw().save(filename)
     img = ImageSurface.create_from_png(filename)
     
@@ -161,7 +165,9 @@ def continue_text_box(ctx, left, width, leading, text):
         ctx.show_text(word + ' ')
 
 def draw_card_left(ctx):
-    """
+    """ Draw out the left-hand side of a card.
+    
+        Modify and restore the matrix stack.
     """
     ctx.save()
 
@@ -190,7 +196,9 @@ def draw_card_left(ctx):
     ctx.restore()
 
 def draw_card_right(ctx, img):
-    """
+    """ Draw out the right-hand side of a card.
+    
+        Modify and restore the matrix stack.
     """
     ctx.save()
     
@@ -277,7 +285,7 @@ if __name__ == '__main__':
     elif options.format == 'letter':
         ctx.translate(22, 17.5)
 
-    img = get_map_image(options.bbox)
+    img = get_map_image(options.bbox, 84./39.)
     
     draw_card_left(ctx)
 
