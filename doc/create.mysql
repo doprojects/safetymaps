@@ -34,7 +34,8 @@ CREATE TABLE maps (
     bbox_east   DOUBLE,
     bbox_west   DOUBLE,
     
-    created DATETIME,
+    created     DATETIME,
+    privacy     ENUM('public', 'unlisted') DEFAULT 'public',
     
     INDEX user (user_id)
 

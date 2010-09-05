@@ -34,6 +34,13 @@
         <input type="text" name="place[short-note]">
     </p>
     <p>
+        Privacy
+        <select name="map[privacy]">
+            <option label="Public" value="public">Public</option>
+            <option label="Unlisted" value="unlisted">Unlisted</option>
+        </select>
+    </p>
+    <p>
         Bounds
         <input type="text" name="map[bounds][0]">
         <input type="text" name="map[bounds][1]">
@@ -42,11 +49,18 @@
     </p>
     <p>
         Paper
-        <input type="text" name="map[paper]">
+        <select name="map[paper]">
+            <option label="Letter" value="letter">Letter</option>
+            <option label="A4" value="a4">A4</option>
+        </select>
     </p>
     <p>
         Format
-        <input type="text" name="map[format]">
+        <select name="map[format]">
+            <option label="Four cards" value="4up">Four cards</option>
+            <option label="Two cards, fridge poster" value="2up-fridge">Two cards, fridge poster</option>
+            <option label="Single-page poster" value="poster">Single-page poster</option>
+        </select>
     </p>
     <p>
         1st Recipient name <input type="text" name="recipients[0][name]">
@@ -81,6 +95,7 @@
     },
     map:
     {
+        privacy: ___,
         bounds: [ ___, ___, ___, ___ ],
         paper: ___,
         format: ___
