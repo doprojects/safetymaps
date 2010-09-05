@@ -298,9 +298,11 @@ if __name__ == '__main__':
 
     img = get_map_image(options.bbox, 84, 39)
     
-    draw_card_left(ctx)
+    for i in range(4):
+        draw_card_left(ctx)
+        ctx.translate(86, 0)
 
-    ctx.translate(86, 0)
-    draw_card_right(ctx, img)
+        draw_card_right(ctx, img)
+        ctx.translate(-86, 61)
     
     surf.finish()
