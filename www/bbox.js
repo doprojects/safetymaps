@@ -40,9 +40,12 @@ function BoundingBox(map) {
     box.id = map.parent.id+'-boundingBox-box';
     box.style.margin = '0';
     box.style.padding = '0';
-    box.style.outlineWidth = '2px';
-    box.style.outlineColor = '#00DF43';
+    box.style.outlineWidth = '1000px';
+    box.style.outlineColor = 'rgba(0,0,0,0.2)';
     box.style.outlineStyle = 'solid';
+    box.style.borderWidth = '2px';
+    box.style.borderColor = '#00DF43';
+    box.style.borderStyle = 'solid';
     box.style.position = 'absolute';
     box.style.display = 'block';
     box.style.left = (map.dimensions.x/4)+'px';
@@ -100,6 +103,9 @@ function BoundingBox(map) {
             else if (p.x > b.x+b.w-t && p.x < b.x+b.w+t) {
                 map.parent.style.cursor = 'e-resize';
             }
+            else if (p.x > b.x+t && p.x < b.x+b.w-t) {
+                map.parent.style.cursor = 'move';
+            }
             else {
                 map.parent.style.cursor = 'auto';
             }
@@ -113,7 +119,7 @@ function BoundingBox(map) {
     var mouseDownPoint = null;
     
     this.mouseDown = function(e) {        
-        if (map.parent.style.cursor.indexOf('resize') >= 0) {
+        if (map.parent.style.cursor.indexOf('resize') >= 0 || map.parent.style.cursor == 'move') {
             mouseDownPoint = theBox.getMousePoint(e);
             mm.addEvent(window, 'mousemove', theBox.mouseDrag);
             mm.removeEvent(boxDiv, 'mousemove', theBox.mouseMove);
@@ -129,54 +135,81 @@ function BoundingBox(map) {
             y: parseInt(box.style.top.slice(0,-2)),
             w: parseInt(box.style.width.slice(0,-2)),
             h: parseInt(box.style.height.slice(0,-2))
-        };        
-        if (map.parent.style.cursor == 'w-resize' && p.x < b.x+b.w-10) {
+        };
+        if (map.parent.style.cursor == 'move') {
+            var newX = b.x + p.x - mouseDownPoint.x,
+                newY = b.y + p.y - mouseDownPoint.y;
+            var dx = 0, dy = 0;
+            if (newX < 2) {
+                dx = 2 - newX;
+                newX = 2;
+            }
+            else if (newX > boxDiv.offsetWidth-b.w-6) {
+                dx = (boxDiv.offsetWidth-b.w-6) - newX;
+                newX = boxDiv.offsetWidth-b.w-6;
+            }
+            if (newY < 2) {
+                dy = 2 - newY;
+                newY = 2;
+            }
+            else if (newY > boxDiv.offsetHeight-b.h-6) {
+                dy = (boxDiv.offsetHeight-b.h-6) - newY;
+                newY = boxDiv.offsetHeight-b.h-6;
+            }
+            if (dx || dy) {
+                map.panBy(dx,dy)
+            }
+            box.style.left = newX + 'px'
+            box.style.top = newY + 'px';
+            mouseDownPoint = p;
+        }
+        else if (map.parent.style.cursor == 'w-resize' && p.x > 2 && p.x < b.x+b.w-10) {
             box.style.width = b.w + (b.x-p.x) + 'px';
             box.style.left = p.x + 'px';
         }
-        else if (map.parent.style.cursor == 'e-resize' && p.x > b.x+10) {
+        else if (map.parent.style.cursor == 'e-resize' && p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
             box.style.width = (p.x-b.x) + 'px';
         }
-        else if (map.parent.style.cursor == 'n-resize' && p.y < b.y+b.h-10) {
+        else if (map.parent.style.cursor == 'n-resize' && p.y > 2 && p.y < b.y+b.h-10) {
             box.style.height = b.h + (b.y-p.y) + 'px';
             box.style.top = p.y + 'px';
         }
-        else if (map.parent.style.cursor == 's-resize' && p.y > b.y+10) {
+        else if (map.parent.style.cursor == 's-resize' && p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
             box.style.height = (p.y-b.y) + 'px';
         }        
         else if (map.parent.style.cursor == 'nw-resize') {
-            if (p.y < b.y+b.h-10) {
+            if (p.y > 2 && p.y < b.y+b.h-10) {
                 box.style.height = b.h + (b.y-p.y) + 'px';
                 box.style.top = p.y + 'px';
             }
-            if (p.x < b.x+b.w-10) {
+            if (p.x > 2 && p.x < b.x+b.w-10) {
                 box.style.width = b.w + (b.x-p.x) + 'px';
                 box.style.left = p.x + 'px';
             }
         }
         else if (map.parent.style.cursor == 'ne-resize') {
-            if (p.y < b.y+b.h-10) {
+            if (p.y > 2 && p.y < b.y+b.h-10) {
                 box.style.height = b.h + (b.y-p.y) + 'px';
                 box.style.top = p.y + 'px';
             }
-            if (p.x > b.x+10) {
+            if (p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
                 box.style.width = (p.x-b.x) + 'px';
             }
         }
         else if (map.parent.style.cursor == 'sw-resize') {
-            if (p.y > b.y+10) {
+            if (p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
                 box.style.height = (p.y-b.y) + 'px';
             }
-            if (p.x < b.x+b.w-10) {
+            if (p.x > 2 && p.x < b.x+b.w-10) {
                 box.style.width = b.w + (b.x-p.x) + 'px';
                 box.style.left = p.x + 'px';
             }
         }
         else if (map.parent.style.cursor == 'se-resize') {
-            if (p.y > b.y+10) {
+            if (p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
                 box.style.height = (p.y-b.y) + 'px';
             }
-            if (p.x > b.x+10) {
+            if (p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
                 box.style.width = (p.x-b.x) + 'px';
             }
         }        
