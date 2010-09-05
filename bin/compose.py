@@ -186,10 +186,10 @@ def draw_card_left(ctx):
     ctx.move_to(4, 7.5)
     ctx.set_font_size(11 * mmppt)
     
-    phrases = [((.2, .2, .2), 'Safety Map for '),
-               ((0, 0.75, .25), 'Fred '),
-               ((.2, .2, .2), 'made on '),
-               ((0, 0.75, .25), '15 Aug 2010')]
+    phrases = [((.2, .2, .2),  'Safety Map for '),
+               ((0, .75, .25), 'Fred '),
+               ((.2, .2, .2),  'made on '),
+               ((0, .75, .25), '15 Aug 2010')]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -222,10 +222,10 @@ def draw_card_right(ctx, img):
     ctx.move_to(4, 7.5)
     ctx.set_font_size(11 * mmppt)
     
-    phrases = [((.2, .2, .2), 'Safety Map for '),
-               ((0, 0.75, .25), 'Fred '),
-               ((.2, .2, .2), 'made on '),
-               ((0, 0.75, .25), '15 Aug 2010')]
+    phrases = [((.2, .2, .2),  'Safety Map for '),
+               ((0, .75, .25), 'Fred '),
+               ((.2, .2, .2),  'made on '),
+               ((0, .75, .25), '15 Aug 2010')]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -235,11 +235,11 @@ def draw_card_right(ctx, img):
     ctx.move_to(4, 9 + 9.6 * mmppt)
     ctx.set_font_size(8 * mmppt)
     
-    phrases = [((.2, .2, .2), "In case of"),
-               ((0, 0.75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2), "let’s meet at"),
-               ((0, 0.75, .25), "Madison Square park."),
-               ((.2, .2, .2), "I’ve marked the spot on this map:")]
+    phrases = [((.2, .2, .2),  "In case of"),
+               ((0, .75, .25), "fire or explosion near our apartment,"),
+               ((.2, .2, .2),  "let’s meet at"),
+               ((0, .75, .25), "Madison Square park."),
+               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
