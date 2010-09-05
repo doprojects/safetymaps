@@ -18,7 +18,7 @@
                 //var osm = new mm.TemplatedMapProvider(template, domains);
                 var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
 
-                var previewmap = new mm.Map('previewmap', cm);
+                var previewmap = new mm.Map('previewmap', cm, null, []);
                 previewmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
 
                 var bboxmap = new mm.Map('bboxmap', cm);
