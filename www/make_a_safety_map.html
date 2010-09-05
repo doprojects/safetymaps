@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Safety Maps: Make a Safety Map</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="modestmaps.js"></script>
+        <script type="text/javascript" src="cloudmade.js"></script>
+        <script type="text/javascript" src="markerclip.js"></script>
+        <script type="text/javascript" src="bbox.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+            
+                if (location.search && location.search.length > 1) {
+                    var stepIndex = location.search.indexOf('step');
+                    var stepStart = stepIndex + "step=".length;
+                    var stepEnd = location.search.indexOf('=',stepStart);
+                    if (stepEnd > stepStart) {
+                        var step = parseInt(location.search.slice(stepStart,stepEnd));
+                        step++;
+                        $('#main').attr('class', 'step'+step);                    
+                    }
+                    else {
+                        $('#main').attr('class', 'step1');                    
+                    }
+                }
+                else {
+                    $('#main').attr('class', 'step1');                    
+                }
+            
+                // make a map!
+                var mm = com.modestmaps;
+                //var template = 'http://{S}tile.openstreetmap.org/{Z}/{X}/{Y}.png';
+                //var domains = [ '', 'a.', 'b.', 'c.' ];
+                //var osm = new mm.TemplatedMapProvider(template, domains);
+                var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+
+                var previewmap = new mm.Map('previewmap', cm, null, []);
+                previewmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+
+                var bboxmap = new mm.Map('bboxmap', cm);
+                bboxmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
+                var bbox = new BoundingBox(bboxmap);
+                bbox.onchange = function(nwse /* Array */) {
+                    $('input[name=bbox]').attr('value', nwse.map(function(n){return n.toFixed(6)}).join(','));
+                    if (nwse[0]-nwse[2] > 0.001 && nwse[3]-nwse[1] > 0.001) {
+                        var nw = new mm.Location(nwse[0],nwse[1]);
+                        var se = new mm.Location(nwse[2],nwse[3]);
+                        previewmap.setExtent([nw,se]);
+                    }
+                };
+                function onMapChange() {
+                    bbox.updateInfo();
+                }
+                bboxmap.addCallback('panned', onMapChange);
+                bboxmap.addCallback('resized', onMapChange);
+                bboxmap.addCallback('zoomed', onMapChange);
+                bboxmap.addCallback('extentset', onMapChange);
+                bboxmap.addCallback('centered', onMapChange);                
+            });
+        </script>        
+    </head>
+    <body>
+        <div id="header">
+            <h1>Safety Maps</h1>
+            <h2>
+                Where will you meet your loved ones in<br>
+                the event of a natural disaster or other<br>
+                emergency?
+            </h2>
+            <img src="logo.png" alt="Safety Maps Logo">
+            <div id="questions">
+                <p>
+                    What happens when disaster strikes?<br>
+                    You're separated from those you care about.<br>
+                    Your phone doesn't work anymore...<br>
+                    Where do you think it's a safe place to gather?<br>
+                    Use Safety Maps to choose and share safe<br>
+                    meeting points with your familiy and friends.
+                </p>
+                <p>
+                    <a href="#create-your-map">Click here to start a scenario.</a>
+                </p>
+            </div>
+            <div id="nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="make_a_safety_map.html" class="current">Make a Safety Map</a></li>
+                    <li><a href="#meeting-points">See meeting points other people have chosen</a></li>
+                    <li><a href="#links">Links</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="main">
+        
+            <div id="progress">
+                <span class="step1">1</span>
+                <span class="step2">2</span>
+                <span class="step3">3</span>
+                <span class="step4">4</span>
+            </div>
+        
+            <div id="create">
+                
+                <div class="step1">
+                    <p>By answering these few simple questions, you can make a custom map of a 	place you think it will be safe* for your friends, family or loved ones to meet in 	the event of an emergency.</p>
+    
+                    <p>You can print this map out in a variety of formats, share it via email, or both. 	Either way, you'll be able to include a personal message to recipients.</p>
+    
+                    <p>Are you ready to get started?</p>
+                
+                    <form method="GET">
+                        <input type="hidden" name="step" value="1"></input>
+                        <p>
+                            <label for="user_nickname">What's your name or nickname?</label><br>
+                            <input type="text" name="user_nickname"></input>
+                        </p>
+                        <p>
+                            <label for="recipient1_name">Who's this map for?</label><br>
+                            Enter the names and email addresses of people you'd like to share this Safety Map with.<br>
+                            <input type="text" name="recipient1_name"></input><input type="text" name="recipient1_email"></input><br>
+                            <input type="text" name="recipient2_name"></input><input type="text" name="recipient2_email"></input>
+                            <!-- TODO: any number of for emails... ajaxy... how to encode? -->
+                        </p>
+                        <p>
+                            <label for="emergency_specified">What kind of emergency is this map for?</label><br>
+                            <select name="emergency_specified">
+                                <option>Blackout</option>
+                                <option>Drought</option>
+                                <option>Earthquake</option>
+                                <option>Fire</option>
+                                <option>Flood</option>
+                                <option>Public transportation failure</option>
+                                <option>War</option>
+                                <option>Other (please specify)</option><!-- TODO, how to specify? -->
+                            </select>
+                        </p>
+                        <p>
+                            <label for="map_name">What would you like to call this meeting place?<br>(You can call it anything you like.)</label><br>
+                            <input type="text" name="map_name"></input>
+                        </p>                    
+                        <p>
+                            <button type="submit">Next</button>
+                        </p>
+                    </form>
+                </div>
+
+                <div class="step2">                    
+                    <form method="GET">
+                        <input type="hidden" name="step" value="2"></input>                
+                        <p>
+                            <label for="personal_note">If you like, you can include a personal note for [recipient1_name]. (Please note that everyone you send this map to will get the same note.)</label><br>
+                            <textarea type="text" name="personal_note"></textarea>
+                        </p>   
+                        <p>
+                            <label for="personal_note_privacy">Personal note privacy:</label><br>
+                            <input type="radio" name="personal_note_privacy" value="private"> Make this note public?<br>
+                            <input type="radio" name="personal_note_privacy" value="Butter" checked> This note is private. 
+                        </p>
+                        <p>
+                            "Public" definition: This note will be displayed alongside the place you selected on the <a href="#meeting-points">collective map</a>. Anybody who visits the site will be able to read it.
+                        </p>
+                        <p>
+                            "Private" definition: This note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.
+                        </p>
+                        <p>
+                            <button>Go back</button><button type="submit">Next</button>
+                        </p>
+                    </form>
+                </div>
+    
+                <div class="step3">
+                    <form method="GET">
+                        <input type="hidden" name="step" value="3"></input>                
+                        <p>
+                            <label for="name">Please choose your meeting place on the map</label><br>
+                            <input type="hidden" name="bbox" value="s,w,n,e"></input><br>
+                        </p>
+                        <p>Drag inside the box to move it. Drag outside the box to move the map. Drag the box corners to change its size. Use your mouse wheel to zoom in or out. <!-- TODO: better copy? -->
+                        <div id="bboxmap">
+                            [map here]
+                            <!-- TODO: init map -->
+                        </div>
+                        <p>Preview</p>
+                        <div id="previewmap">
+                            [preview goes here]                    
+                        </div>
+                        <p>
+                            <button>Go back</button><button type="submit">Select</button>
+                        </p>                    
+                    </form>
+                </div>
+                    
+                <div class="step4">
+                    <form method="GET">
+                        <input type="hidden" name="step" value="4"></input>
+                        <p>
+                            Now that you've chosen a safe place to meet, you're ready to make and print a wallet-sized card to share with your friends and loved ones.
+                        </p>
+                        <p>
+                            <button type="submit">Send</button>
+                        </p>
+                        <p>
+                            <button>Print</button>
+                        </p>
+                        <p>
+                            <button>Answer a few more questions</button>
+                        </p>
+                        <p>
+                            <button>Make another</button>
+                        </p>
+                    </form>                
+                </div>
+
+            </div>
+        
+        </div>
+        <div id="footer">
+            <p>&copy; 2010 Do Projects. Credits, Privacy Policy, etc.</p>
+        </div>
+    </body>
+</html>
