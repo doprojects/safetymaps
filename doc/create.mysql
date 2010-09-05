@@ -1,0 +1,61 @@
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+
+    id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    
+    name    TINYTEXT,
+    email   TINYTEXT
+
+) ENGINE=InnoDB, CHARACTER SET utf8;
+
+
+
+DROP TABLE IF EXISTS maps;
+
+CREATE TABLE maps (
+
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT UNSIGNED NOT NULL,
+    
+    place_name  TINYTEXT,
+    place_lat   DOUBLE,
+    place_lon   DOUBLE,
+    
+    emergency   TINYTEXT,
+    note_full   TEXT,
+    note_short  TEXT,
+
+    paper       ENUM('a4', 'letter') DEFAULT 'letter',
+    format      ENUM('4up', '2up-fridge', 'poster') DEFAULT '2up-fridge',
+    
+    bbox_north  DOUBLE,
+    bbox_south  DOUBLE,
+    bbox_east   DOUBLE,
+    bbox_west   DOUBLE,
+    
+    created DATETIME,
+    
+    INDEX user (user_id)
+
+) ENGINE=InnoDB, CHARACTER SET utf8;
+
+
+
+DROP TABLE IF EXISTS recipients;
+
+CREATE TABLE recipients (
+
+    id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    map_id  INT UNSIGNED NOT NULL,
+
+    name    TINYTEXT,
+    email   TINYTEXT,
+    
+    sent    DATETIME,
+    
+    INDEX user (user_id),
+    INDEX map (map_id)
+
+) ENGINE=InnoDB, CHARACTER SET utf8;
