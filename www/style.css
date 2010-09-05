@@ -16,7 +16,7 @@ body {
 
 #header {
     position: relative;
-    background: #00DF43;
+    background: #00CC00;
     color: #FFFFFF;
     margin: 0;
     padding: 20px 0 0 0;
@@ -45,7 +45,7 @@ body {
     padding: 0;
 }
 
-#header #about {
+#header #questions {
     font-size: 10pt;
     width: 300px;
     position: absolute;
@@ -54,16 +54,16 @@ body {
     margin: 10px 0 0 0;
     padding: 0;
 }
-#header #about p {
+#header #questions p {
     line-height: 1.1;            
     margin: 10px 0 0 0;
     padding: 0;
 }
-#header #about p a {
+#header #questions p a {
     color: #FFFFFF;
     text-decoration: none;
 }
-#header #about p a:hover {
+#header #questions p a:hover {
     text-decoration: underline;
 }
 
@@ -99,10 +99,10 @@ body {
 }            
 #header #nav li a:hover, header nav li a:active {
     text-decoration: underline;
-    color: #00DF43;
+    color: #00CC00;
 }
 #header #nav li a.current {
-    color: #00DF43; 
+    color: #00CC00; 
 }
 
 /* section! */
@@ -120,7 +120,7 @@ body {
     background: #fff;
     font-size: 12pt;
     font-weight: bold;
-    color: #00DF43;
+    color: #00CC00;
     padding: 8px;
     margin: 0;
 }
@@ -197,11 +197,16 @@ div#points li a:hover, div#points li a.hover {
 
 #create, #progress {
     margin: 40px;
+    width: 600px;
 }
 
 #create {
     background: #CCCCCC;
     padding: 10px;
+}
+
+#create a {
+    color: #000000;
 }
 
 #create label {
@@ -224,7 +229,7 @@ div#points li a:hover, div#points li a.hover {
     font-weight: bold;
 }
 #create button[type=submit] {
-    background: #00DF43;
+    background: #00CC00;
 }
 
 #progress span {
@@ -242,8 +247,13 @@ div#points li a:hover, div#points li a.hover {
     line-height: 40px;
     font-size: 20px;
 }
-#progress span.on {
-    background: #00DF43;
+#main.step1 span.step1,
+#main.step2 span.step2,
+#main.step3 span.step3,
+#main.step4 span.step4,
+#main.step5 span.step5 {
+    display: inline-block;
+    background: #00CC00;
 }
 
 #bboxmap, #previewmap {
@@ -252,4 +262,27 @@ div#points li a:hover, div#points li a.hover {
     width: 430px;
     height: 305px;
     background: #DDDDDD;
+}
+
+#main div.step1,
+#main div.step2,
+#main div.step3,
+#main div.step4,
+#main div.step5 {
+    display: none;
+}
+
+#main.step1 div.step1,
+#main.step2 div.step2,
+#main.step3 div.step3,
+#main.step4 div.step4,
+#main.step5 div.step5 {
+    display: block;
+}
+
+
+/* about page */
+
+#about {
+    margin: 40px;
 }
