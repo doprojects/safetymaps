@@ -38,63 +38,193 @@ function BoundingBox(map) {
 
     var box = document.createElement('div');
     box.id = map.parent.id+'-boundingBox-box';
-    box.width = map.dimensions.x;
-    box.height = map.dimensions.y;
     box.style.margin = '0';
     box.style.padding = '0';
-    box.style.outlineWidth = '2px';
-    box.style.outlineColor = '#00DF43';
+    box.style.outlineWidth = '1000px';
+    box.style.outlineColor = 'rgba(0,0,0,0.2)';
     box.style.outlineStyle = 'solid';
+    box.style.borderWidth = '2px';
+    box.style.borderColor = '#00DF43';
+    box.style.borderStyle = 'solid';
     box.style.position = 'absolute';
-    box.style.display = 'none';
-    box.style.top = '0px';
-    box.style.left = '0px';    
-    box.style.width = '0px';
-    box.style.height = '0px';    
+    box.style.display = 'block';
+    box.style.left = (map.dimensions.x/4)+'px';
+    box.style.top = (map.dimensions.y/4)+'px';
+    box.style.width = (map.dimensions.x/2)+'px';
+    box.style.height = (map.dimensions.y/2)+'px';
     boxDiv.appendChild(box);    
 
     // TODO: respond to resize
 
+    this.mouseMove = function(e) {
+        var p = theBox.getMousePoint(e);
+        
+        var b = {
+            x: parseInt(box.style.left.slice(0,-2)),
+            y: parseInt(box.style.top.slice(0,-2)),
+            w: parseInt(box.style.width.slice(0,-2)),
+            h: parseInt(box.style.height.slice(0,-2))
+        };
+        
+        var t = 10; // tolerance
+        
+        if (p.y > b.y-t && p.y < b.y+t) {
+            if (p.x > b.x-t && p.x < b.x+t) {
+                map.parent.style.cursor = 'nw-resize';
+            }
+            else if (p.x > b.x+b.w-t && p.x < b.x+b.w+t) {
+                map.parent.style.cursor = 'ne-resize';
+            }
+            else if (p.x > b.x+t && p.x < b.x+b.w-t) {
+                map.parent.style.cursor = 'n-resize';
+            }
+            else {
+                map.parent.style.cursor = 'auto';
+            }            
+        }
+        else if (p.y > b.y+b.h-t && p.y < b.y+b.h+t) {
+            if (p.x > b.x-t && p.x < b.x+t) {
+                map.parent.style.cursor = 'sw-resize';
+            }
+            else if (p.x > b.x+b.w-t && p.x < b.x+b.w+t) {
+                map.parent.style.cursor = 'se-resize';
+            }
+            else if (p.x > b.x+t && p.x < b.x+b.w-t) {
+                map.parent.style.cursor = 's-resize';
+            }
+            else {
+                map.parent.style.cursor = 'auto';
+            }
+        }
+        else if (p.y > b.y+t && p.y < b.y+b.h-t) {
+            if (p.x > b.x-t && p.x < b.x+t) {
+                map.parent.style.cursor = 'w-resize';
+            }
+            else if (p.x > b.x+b.w-t && p.x < b.x+b.w+t) {
+                map.parent.style.cursor = 'e-resize';
+            }
+            else if (p.x > b.x+t && p.x < b.x+b.w-t) {
+                map.parent.style.cursor = 'move';
+            }
+            else {
+                map.parent.style.cursor = 'auto';
+            }
+        }
+        else {
+            map.parent.style.cursor = 'auto';
+        }
+    };
+
+
     var mouseDownPoint = null;
     
-    this.mouseDown = function(e) {
-        if (e.shiftKey) {
+    this.mouseDown = function(e) {        
+        if (map.parent.style.cursor.indexOf('resize') >= 0 || map.parent.style.cursor == 'move') {
             mouseDownPoint = theBox.getMousePoint(e);
-            
-            box.style.width = '0px';
-            box.style.height = '0px';
-            box.style.left = mouseDownPoint.x + 'px';
-            box.style.top = mouseDownPoint.y + 'px';
-    
-            mm.addEvent(map.parent, 'mousemove', theBox.mouseMove);
-            mm.addEvent(map.parent, 'mouseup', theBox.mouseUp);
-            
-            map.parent.style.cursor = 'crosshair';
-            
+            mm.addEvent(window, 'mousemove', theBox.mouseDrag);
+            mm.removeEvent(boxDiv, 'mousemove', theBox.mouseMove);
+            mm.addEvent(window, 'mouseup', theBox.mouseUp);
             return mm.cancelEvent(e);
         }
     };
 
-    this.mouseMove = function(e) {
-        var point = theBox.getMousePoint(e);
-        box.style.display = 'block';
-        if (point.x < mouseDownPoint.x) {
-            box.style.left = point.x + 'px';
+    this.mouseDrag = function(e) {
+        var p = theBox.getMousePoint(e);
+        var b = {
+            x: parseInt(box.style.left.slice(0,-2)),
+            y: parseInt(box.style.top.slice(0,-2)),
+            w: parseInt(box.style.width.slice(0,-2)),
+            h: parseInt(box.style.height.slice(0,-2))
+        };
+        if (map.parent.style.cursor == 'move') {
+            var newX = b.x + p.x - mouseDownPoint.x,
+                newY = b.y + p.y - mouseDownPoint.y;
+            var dx = 0, dy = 0;
+            if (newX < 2) {
+                dx = 2 - newX;
+                newX = 2;
+            }
+            else if (newX > boxDiv.offsetWidth-b.w-6) {
+                dx = (boxDiv.offsetWidth-b.w-6) - newX;
+                newX = boxDiv.offsetWidth-b.w-6;
+            }
+            if (newY < 2) {
+                dy = 2 - newY;
+                newY = 2;
+            }
+            else if (newY > boxDiv.offsetHeight-b.h-6) {
+                dy = (boxDiv.offsetHeight-b.h-6) - newY;
+                newY = boxDiv.offsetHeight-b.h-6;
+            }
+            if (dx || dy) {
+                map.panBy(dx,dy)
+            }
+            box.style.left = newX + 'px'
+            box.style.top = newY + 'px';
+            mouseDownPoint = p;
         }
-        else {
-            box.style.left = mouseDownPoint.x + 'px';
+        else if (map.parent.style.cursor == 'w-resize' && p.x > 2 && p.x < b.x+b.w-10) {
+            box.style.width = b.w + (b.x-p.x) + 'px';
+            box.style.left = p.x + 'px';
         }
-        box.style.width = Math.abs(point.x - mouseDownPoint.x) + 'px';
-        if (point.y < mouseDownPoint.y) {
-            box.style.top = point.y + 'px';
+        else if (map.parent.style.cursor == 'e-resize' && p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
+            box.style.width = (p.x-b.x) + 'px';
         }
-        else {
-            box.style.top = mouseDownPoint.y + 'px';
+        else if (map.parent.style.cursor == 'n-resize' && p.y > 2 && p.y < b.y+b.h-10) {
+            box.style.height = b.h + (b.y-p.y) + 'px';
+            box.style.top = p.y + 'px';
         }
-        box.style.height = Math.abs(point.y - mouseDownPoint.y) + 'px';
+        else if (map.parent.style.cursor == 's-resize' && p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
+            box.style.height = (p.y-b.y) + 'px';
+        }        
+        else if (map.parent.style.cursor == 'nw-resize') {
+            if (p.y > 2 && p.y < b.y+b.h-10) {
+                box.style.height = b.h + (b.y-p.y) + 'px';
+                box.style.top = p.y + 'px';
+            }
+            if (p.x > 2 && p.x < b.x+b.w-10) {
+                box.style.width = b.w + (b.x-p.x) + 'px';
+                box.style.left = p.x + 'px';
+            }
+        }
+        else if (map.parent.style.cursor == 'ne-resize') {
+            if (p.y > 2 && p.y < b.y+b.h-10) {
+                box.style.height = b.h + (b.y-p.y) + 'px';
+                box.style.top = p.y + 'px';
+            }
+            if (p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
+                box.style.width = (p.x-b.x) + 'px';
+            }
+        }
+        else if (map.parent.style.cursor == 'sw-resize') {
+            if (p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
+                box.style.height = (p.y-b.y) + 'px';
+            }
+            if (p.x > 2 && p.x < b.x+b.w-10) {
+                box.style.width = b.w + (b.x-p.x) + 'px';
+                box.style.left = p.x + 'px';
+            }
+        }
+        else if (map.parent.style.cursor == 'se-resize') {
+            if (p.y < boxDiv.offsetHeight-2 && p.y > b.y+10) {
+                box.style.height = (p.y-b.y) + 'px';
+            }
+            if (p.x < boxDiv.offsetWidth-2 && p.x > b.x+10) {
+                box.style.width = (p.x-b.x) + 'px';
+            }
+        }        
         theBox.updateInfo();
         return mm.cancelEvent(e);
     };    
+
+    this.mouseUp = function(e) {
+        theBox.updateInfo();
+        mm.removeEvent(window, 'mousemove', theBox.mouseDrag);
+        mm.addEvent(boxDiv, 'mousemove', theBox.mouseMove);
+        mm.removeEvent(window, 'mouseup', theBox.mouseUp);
+        map.parent.style.cursor = 'auto';
+        return mm.cancelEvent(e);
+    };
 
     this.updateInfo = function() {
         if (!this.onchange) return;
@@ -108,19 +238,8 @@ function BoundingBox(map) {
             this.onchange([ northWest.lat, northWest.lon, southEast.lat, southEast.lon ]);
         }
     };
-
-    this.mouseUp = function(e) {
     
-        theBox.updateInfo();
-
-        mm.removeEvent(map.parent, 'mousemove', theBox.mouseMove);
-        mm.removeEvent(map.parent, 'mouseup', theBox.mouseUp);        
-
-        map.parent.style.cursor = 'auto';
-        
-        return mm.cancelEvent(e);
-    };
-    
+    mm.addEvent(boxDiv, 'mousemove', this.mouseMove);
     mm.addEvent(boxDiv, 'mousedown', this.mouseDown);
 }
 
