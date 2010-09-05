@@ -1,4 +1,4 @@
-""" Generate a PDF of a meeting point map.
+﻿""" Generate a PDF of a meeting point map.
 """
 
 from os import close, unlink
@@ -107,7 +107,7 @@ def place_marker(context):
     context.restore()
 
 def draw_rounded_box(ctx, width, height):
-    """
+    """ Draw a rounded box with corner radius of 2.
     """
     radius = 2
     bezier = radius / 2
@@ -144,13 +144,46 @@ def get_map_image(bbox):
     
     return img
 
+def continue_text_box(ctx, left, width, leading, text):
+    """ Fill up a text box with words.
+    
+        This function can be called repeatedly with parts of a paragraph.
+    """
+    words = text.split()
+    
+    for word in words:
+        x, y = ctx.get_current_point()
+        x += ctx.text_extents(word)[4]
+        
+        if x > width:
+            ctx.move_to(left, y + leading)
+
+        ctx.show_text(word + ' ')
+
 def draw_card_left(ctx):
     """
     """
     ctx.save()
+
+    # big title text
+    ctx.move_to(4, 7.5)
+    ctx.set_font_size(11 * mmppt)
     
-    # ...
+    phrases = [((.2, .2, .2), 'Safety Map for '),
+               ((0, 0.75, .25), 'Fred '),
+               ((.2, .2, .2), 'made on '),
+               ((0, 0.75, .25), '15 Aug 2010')]
     
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        ctx.show_text(phrase)
+
+    # text on the bottom
+    ctx.move_to(4, 58.75)
+    ctx.set_source_rgb(.6, .6, .6)
+    ctx.set_font_size(4 * mmppt)
+    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+
     ctx.translate(1, 1)
     draw_rounded_box(ctx, 84, 59)
 
@@ -166,6 +199,34 @@ def draw_card_right(ctx, img):
     place_image(ctx, img, 84, 39)
     ctx.restore()
 
+    # big title text
+    ctx.move_to(4, 7.5)
+    ctx.set_font_size(11 * mmppt)
+    
+    phrases = [((.2, .2, .2), 'Safety Map for '),
+               ((0, 0.75, .25), 'Fred '),
+               ((.2, .2, .2), 'made on '),
+               ((0, 0.75, .25), '15 Aug 2010')]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        ctx.show_text(phrase)
+    
+    # explanation
+    ctx.move_to(4, 9 + 9.6 * mmppt)
+    ctx.set_font_size(8 * mmppt)
+    
+    phrases = [((.2, .2, .2), "In case of"),
+               ((0, 0.75, .25), "fire or explosion near our apartment,"),
+               ((.2, .2, .2), "let’s meet at"),
+               ((0, 0.75, .25), "Madison Square park."),
+               ((.2, .2, .2), "I’ve marked the spot on this map:")]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        continue_text_box(ctx, 4, 78, 9.6 * mmppt, phrase)
+
+    # text on the bottom
     ctx.move_to(4, 58.75)
     ctx.set_source_rgb(.6, .6, .6)
     ctx.set_font_size(4 * mmppt)
