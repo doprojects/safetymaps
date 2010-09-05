@@ -19,7 +19,7 @@ ptpmm = 1./mmppt
 def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
     """
     """
-    mmap = mapByExtentZoom(prov, Location(lat1, lon1), Location(lat2, lon2), zoom)
+    mmap = mapByExtentZoom(prov, locA, locB, zoom)
     center = mmap.pointLocation(Point(mmap.dimensions.x/2, mmap.dimensions.y/2))
     
     if aspect < float(mmap.dimensions.x) / float(mmap.dimensions.y):
@@ -112,6 +112,7 @@ def draw_rounded_box(ctx, width, height):
     radius = 2
     bezier = radius / 2
     
+    ctx.move_to(0, 0)
     ctx.rel_move_to(radius, 0)
     ctx.rel_line_to(width - 4, 0)
     ctx.rel_curve_to(bezier, 0, radius, bezier, radius, radius)
@@ -125,6 +126,55 @@ def draw_rounded_box(ctx, width, height):
     ctx.set_line_width(2 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
     ctx.stroke()
+
+def get_map_image(bbox):
+    """
+    """
+    prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
+    lat1, lon1, lat2, lon2 = bbox
+    
+    handle, filename = mkstemp(suffix='.png')
+    close(handle)
+    
+    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 15, 84./39.)
+    mmap.draw().save(filename)
+    img = ImageSurface.create_from_png(filename)
+    
+    unlink(filename)
+    
+    return img
+
+def draw_card_left(ctx):
+    """
+    """
+    ctx.save()
+    
+    # ...
+    
+    ctx.translate(1, 1)
+    draw_rounded_box(ctx, 84, 59)
+
+    ctx.restore()
+
+def draw_card_right(ctx, img):
+    """
+    """
+    ctx.save()
+    
+    ctx.save()
+    ctx.translate(1, 18)
+    place_image(ctx, img, 84, 39)
+    ctx.restore()
+
+    ctx.move_to(4, 58.75)
+    ctx.set_source_rgb(.6, .6, .6)
+    ctx.set_font_size(4 * mmppt)
+    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+
+    ctx.translate(1, 1)
+    draw_rounded_box(ctx, 84, 59)
+
+    ctx.restore()
 
 parser = OptionParser()
 
@@ -147,19 +197,7 @@ parser.add_option('-b', '--bbox', dest='bbox',
 if __name__ == '__main__':
     options, args = parser.parse_args()
     
-    prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
-    lat1, lon1, lat2, lon2 = options.bbox
-    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 16, 86./61.)
-    
     mark = Location(*options.point)
-    
-    print mark, mmap.locationPoint(mark)
-    
-    handle, filename = mkstemp(suffix='.png')
-    close(handle)
-    
-    #mmap.draw().save(filename)
-    #img = ImageSurface.create_from_png(filename)
     
     if options.format == 'a4':
         surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
@@ -168,39 +206,21 @@ if __name__ == '__main__':
         surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
     
     ctx = Context(surf)
+    ctx.select_font_face('Helvetica')
     
     ctx.scale(ptpmm, ptpmm)
 
     if options.format == 'a4':
-        ctx.translate(19 + 86, 26.5)
+        ctx.translate(19, 26.5)
     
     elif options.format == 'letter':
-        ctx.translate(22 + 86, 17.5)
+        ctx.translate(22, 17.5)
 
-    ctx.move_to(1, 1)
-    draw_rounded_box(ctx, 84, 59)
+    img = get_map_image(options.bbox)
     
-    #for i in range(4):
-    #    place_image(ctx, img, 86, 61)
-    #    
-    #    # push
-    #    ctx.save()
-    #
-    #    # marker center point expressed in millimeters
-    #    xpos = 86 * mmap.locationPoint(mark).x / float(img.get_width())
-    #    ypos = 61 * mmap.locationPoint(mark).y / float(img.get_height())
-    #    ctx.translate(xpos, ypos)
-    #
-    #    place_marker(ctx)
-    #
-    #    # pop
-    #    ctx.restore()
-    #    
-    #    ctx.translate(0, 61)
-    #
-    #ctx.select_font_face('Helvetica')
-    #ctx.set_font_size(5)
-    #ctx.show_text('Hello World')
+    draw_card_left(ctx)
+
+    ctx.translate(86, 0)
+    draw_card_right(ctx, img)
     
     surf.finish()
-    unlink(filename)
