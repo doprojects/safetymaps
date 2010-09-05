@@ -106,6 +106,26 @@ def place_marker(context):
     # pop
     context.restore()
 
+def draw_rounded_box(ctx, width, height):
+    """
+    """
+    radius = 2
+    bezier = radius / 2
+    
+    ctx.rel_move_to(radius, 0)
+    ctx.rel_line_to(width - 4, 0)
+    ctx.rel_curve_to(bezier, 0, radius, bezier, radius, radius)
+    ctx.rel_line_to(0, height - 4)
+    ctx.rel_curve_to(0, bezier, -bezier, radius, -radius, radius)
+    ctx.rel_line_to(4 - width, 0)
+    ctx.rel_curve_to(-bezier, 0, -radius, -bezier, -radius, -radius)
+    ctx.rel_line_to(0, 4 - height)
+    ctx.rel_curve_to(0, -bezier, bezier, -radius, radius, -radius)
+    
+    ctx.set_line_width(2 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.stroke()
+
 parser = OptionParser()
 
 parser.set_defaults(format='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
@@ -138,15 +158,14 @@ if __name__ == '__main__':
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
-    mmap.draw().save(filename)
+    #mmap.draw().save(filename)
+    #img = ImageSurface.create_from_png(filename)
     
     if options.format == 'a4':
         surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
     
     elif options.format == 'letter':
         surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
-    
-    img = ImageSurface.create_from_png(filename)
     
     ctx = Context(surf)
     
@@ -157,28 +176,31 @@ if __name__ == '__main__':
     
     elif options.format == 'letter':
         ctx.translate(22 + 86, 17.5)
+
+    ctx.move_to(1, 1)
+    draw_rounded_box(ctx, 84, 59)
     
-    for i in range(4):
-        place_image(ctx, img, 86, 61)
-        
-        # push
-        ctx.save()
-
-        # marker center point expressed in millimeters
-        xpos = 86 * mmap.locationPoint(mark).x / float(img.get_width())
-        ypos = 61 * mmap.locationPoint(mark).y / float(img.get_height())
-        ctx.translate(xpos, ypos)
-
-        place_marker(ctx)
-
-        # pop
-        ctx.restore()
-        
-        ctx.translate(0, 61)
-    
-    ctx.select_font_face('Helvetica')
-    ctx.set_font_size(5)
-    ctx.show_text('Hello World')
+    #for i in range(4):
+    #    place_image(ctx, img, 86, 61)
+    #    
+    #    # push
+    #    ctx.save()
+    #
+    #    # marker center point expressed in millimeters
+    #    xpos = 86 * mmap.locationPoint(mark).x / float(img.get_width())
+    #    ypos = 61 * mmap.locationPoint(mark).y / float(img.get_height())
+    #    ctx.translate(xpos, ypos)
+    #
+    #    place_marker(ctx)
+    #
+    #    # pop
+    #    ctx.restore()
+    #    
+    #    ctx.translate(0, 61)
+    #
+    #ctx.select_font_face('Helvetica')
+    #ctx.set_font_size(5)
+    #ctx.show_text('Hello World')
     
     surf.finish()
     unlink(filename)
