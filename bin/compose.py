@@ -131,19 +131,30 @@ def draw_rounded_box(ctx, width, height):
     ctx.set_source_rgb(.8, .8, .8)
     ctx.stroke()
 
-def get_map_image(bbox, aspect):
+def get_map_image(bbox, width, height, target_dpi=200):
     """ Get a cairo ImageSurface for a given bounding box.
+    
+        Try to match a target DPI. Width and height are given in millimeters!
     """
     prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
-    lat1, lon1, lat2, lon2 = bbox
+    locA, locB = Location(bbox[0], bbox[1]), Location(bbox[2], bbox[3])
     
+    aspect = float(width) / float(height)
+    
+    mmaps = [mapByExtentZoomAspect(prov, locA, locB, zoom, aspect)
+             for zoom in range(10, 19)]
+
+    inches_wide = width * ptpmm * inppt
+    resolutions = [(mmap.dimensions.x / inches_wide, mmap) for mmap in mmaps]
+    differences = [(abs(dpi - target_dpi), mmap) for (dpi, mmap) in resolutions]
+    
+    diff, mmap = sorted(differences)[0]
+
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
-    mmap = mapByExtentZoomAspect(prov, Location(lat1, lon1), Location(lat2, lon2), 15, aspect)
     mmap.draw().save(filename)
     img = ImageSurface.create_from_png(filename)
-    
     unlink(filename)
     
     return img
@@ -285,7 +296,7 @@ if __name__ == '__main__':
     elif options.format == 'letter':
         ctx.translate(22, 17.5)
 
-    img = get_map_image(options.bbox, 84./39.)
+    img = get_map_image(options.bbox, 84, 39)
     
     draw_card_left(ctx)
 
