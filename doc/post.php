@@ -26,6 +26,9 @@
         <input type="text" name="place[location][1]">
     </p>
     <p>
+        Emergency <input type="text" name="place[emergency]">
+    </p>
+    <p>
         Full Note
         <input type="text" name="place[full-note]">
     </p>
@@ -90,6 +93,7 @@
     {
         name: ___,
         location: [ ___, ___ ],
+        emergency: ___,
         full-note: ___,
         short-note: ___
     },
