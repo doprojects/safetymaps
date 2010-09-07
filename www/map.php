@@ -137,56 +137,57 @@
     $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
     mysql_select_db('safetymaps', $db);
     
-    mysql_query('BEGIN');
-    
     if(is_array($_POST['sender']) && is_array($_POST['place']) && is_array($_POST['map']) && is_array($_POST['recipients']))
     {
+        mysql_query('BEGIN');
+        $commit_ok = false;
+
         $user_id = getset_user($db, $_POST['sender']);
-        echo "User id: {$user_id}\n";
         
-        $map_args = array(
-            'user_id' => $user_id,
-
-            'place_name' => $_POST['place']['name'],
-            'place_lat' => $_POST['place']['location'][0],
-            'place_lon' => $_POST['place']['location'][1],
-
-            'emergency' => $_POST['place']['emergency'],
-            'note_full' => $_POST['place']['full-note'],
-            'note_short' => $_POST['place']['short-note'],
-
-            'paper' => $_POST['map']['paper'],
-            'format' => $_POST['map']['format'],
-
-            'bbox_north' => $_POST['map']['bounds'][0],
-            'bbox_south' => $_POST['map']['bounds'][1],
-            'bbox_east' => $_POST['map']['bounds'][2],
-            'bbox_west' => $_POST['map']['bounds'][3],
-
-            'privacy' => $_POST['map']['privacy']
-        );
-        
-        $map_id = set_map($db, $map_args);
-        echo "Map id: {$map_id}\n";
-        
-        foreach($_POST['recipients'] as $r => $recipient)
+        if($user_id)
         {
-            $recipient['user_id'] = $user_id;
-            $recipient['map_id'] = $map_id;
-        
-            $recipient_id = set_recipient($db, $recipient);
-            echo "Recipient {$r} id: {$recipient_id}\n";
-        }
-    }
+            $map_args = array(
+                'user_id' => $user_id,
+    
+                'place_name' => $_POST['place']['name'],
+                'place_lat' => $_POST['place']['location'][0],
+                'place_lon' => $_POST['place']['location'][1],
+    
+                'emergency' => $_POST['place']['emergency'],
+                'note_full' => $_POST['place']['full-note'],
+                'note_short' => $_POST['place']['short-note'],
+    
+                'paper' => $_POST['map']['paper'],
+                'format' => $_POST['map']['format'],
+    
+                'bbox_north' => $_POST['map']['bounds'][0],
+                'bbox_south' => $_POST['map']['bounds'][1],
+                'bbox_east' => $_POST['map']['bounds'][2],
+                'bbox_west' => $_POST['map']['bounds'][3],
+    
+                'privacy' => $_POST['map']['privacy']
+            );
             
-    $res = mysql_query('DESCRIBE users', $db);
-    
-    while($row = mysql_fetch_assoc($res, MYSQL_ASSOC))
-    {
-        print_r($row);
+            $map_id = set_map($db, $map_args);
+            
+            if($map_id)
+            {
+                $commit_ok = true;
+            
+                foreach($_POST['recipients'] as $r => $recipient)
+                {
+                    $recipient['user_id'] = $user_id;
+                    $recipient['map_id'] = $map_id;
+                    $recipient_id = set_recipient($db, $recipient);
+                    
+                    if(!$recipient_id)
+                        $commit_ok = false;
+                }
+            }
+        }
+                
+        mysql_query($commit_ok ? 'COMMIT' : 'ROLLBACK');
     }
-    
-    mysql_query('COMMIT');
     
     mysql_close($db);
 
