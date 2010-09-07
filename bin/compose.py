@@ -288,11 +288,14 @@ if __name__ == '__main__':
     
     mark = Location(*options.point)
     
+    handle, filename = mkstemp(prefix='safetymap-', suffix='.pdf')
+    close(handle)
+
     if options.format == 'a4':
-        surf = PDFSurface('out.pdf', 210*ptpmm, 297*ptpmm)
+        surf = PDFSurface(filename, 210*ptpmm, 297*ptpmm)
     
     elif options.format == 'letter':
-        surf = PDFSurface('out.pdf', 8.5*ptpin, 11*ptpin)
+        surf = PDFSurface(filename, 8.5*ptpin, 11*ptpin)
     
     ctx = Context(surf)
     ctx.select_font_face('Helvetica')
@@ -315,3 +318,4 @@ if __name__ == '__main__':
         ctx.translate(-86, 61)
     
     surf.finish()
+    print filename
