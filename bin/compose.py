@@ -2,6 +2,7 @@
 """
 
 from os import close, unlink
+from time import strftime
 from tempfile import mkstemp
 from optparse import OptionParser
 from ModestMaps import mapByExtentZoom, mapByCenterZoom
@@ -175,7 +176,12 @@ def continue_text_box(ctx, left, width, leading, text):
 
         ctx.show_text(word + ' ')
 
-def draw_card_left(ctx):
+def today():
+    """ E.g. "6 Sep 2010"
+    """
+    return strftime('%d %b %Y').lstrip('0')
+
+def draw_card_left(ctx, name):
     """ Draw out the left-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -187,9 +193,9 @@ def draw_card_left(ctx):
     ctx.set_font_size(11 * mmppt)
     
     phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), 'Fred '),
-               ((.2, .2, .2),  'made on '),
-               ((0, .75, .25), '15 Aug 2010')]
+               ((0, .75, .25), name),
+               ((.2, .2, .2),  ' made on '),
+               ((0, .75, .25), today())]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -206,7 +212,7 @@ def draw_card_left(ctx):
 
     ctx.restore()
 
-def draw_card_right(ctx, img):
+def draw_card_right(ctx, img, name):
     """ Draw out the right-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -223,9 +229,9 @@ def draw_card_right(ctx, img):
     ctx.set_font_size(11 * mmppt)
     
     phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), 'Fred '),
-               ((.2, .2, .2),  'made on '),
-               ((0, .75, .25), '15 Aug 2010')]
+               ((0, .75, .25), name),
+               ((.2, .2, .2),  ' made on '),
+               ((0, .75, .25), today())]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -258,7 +264,7 @@ def draw_card_right(ctx, img):
 
 parser = OptionParser()
 
-parser.set_defaults(format='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+parser.set_defaults(name='Fred', format='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
 
 formats = 'a4 letter'.split()
 
@@ -273,6 +279,9 @@ parser.add_option('-m', '--meeting-point', dest='point',
 parser.add_option('-b', '--bbox', dest='bbox',
                   help='North, west, south, east bounds of map to show.',
                   type='float', nargs=4)
+
+parser.add_option('-n', '--name', dest='name',
+                  help='Name of recipient - keep it short!')
 
 if __name__ == '__main__':
     options, args = parser.parse_args()
@@ -299,10 +308,10 @@ if __name__ == '__main__':
     img = get_map_image(options.bbox, 84, 39)
     
     for i in range(4):
-        draw_card_left(ctx)
+        draw_card_left(ctx, options.name)
         ctx.translate(86, 0)
 
-        draw_card_right(ctx, img)
+        draw_card_right(ctx, img, options.name)
         ctx.translate(-86, 61)
     
     surf.finish()
