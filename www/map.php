@@ -45,7 +45,7 @@
         email <input type="text" name="sender[email]" value="mike@teczno.com">
     </p>
     <p>
-        Place name <input type="text" name="place[name]" value="Lake Chalet">
+        Place name <input type="text" name="place[name]" value="Dolores Park">
     </p>
     <p>
         Location
@@ -57,11 +57,11 @@
     </p>
     <p>
         Full Note
-        <input type="text" name="place[full-note]" value="Out in front by the steps">
+        <input type="text" name="place[full-note]" value="By the playground, on the benches">
     </p>
     <p>
         Short Note
-        <input type="text" name="place[short-note]" value="Out in front">
+        <input type="text" name="place[short-note]" value="By the playground">
     </p>
     <p>
         Privacy
