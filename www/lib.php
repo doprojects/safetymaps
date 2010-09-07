@@ -199,8 +199,8 @@
                 'format' => $args['map']['format'],
     
                 'bbox_north' => $args['map']['bounds'][0],
-                'bbox_south' => $args['map']['bounds'][1],
-                'bbox_east' => $args['map']['bounds'][2],
+                'bbox_south' => $args['map']['bounds'][2],
+                'bbox_east' => $args['map']['bounds'][1],
                 'bbox_west' => $args['map']['bounds'][3],
     
                 'privacy' => $args['map']['privacy']
