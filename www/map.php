@@ -5,12 +5,15 @@
     $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
     mysql_select_db('safetymaps', $db);
     
+    $ctx = new Context($db);
+
     if($_POST['sender'] && $_POST['place'] && $_POST['map'] && $_POST['recipients'])
     {
-        $added_map_id = add_map($db, $_POST);
+        $attempted_add = true;
+        $added_map_id = add_map($ctx, $_POST);
     }
     
-    mysql_close($db);
+    $ctx->close();
 
 ?>
 <!DOCTYPE html>
@@ -27,8 +30,12 @@
 <body>
 
 <? if($added_map_id) { ?>
-    <p style="color: white; background: red;">
+    <p style="color: white; background: green;">
         Added map #<?=htmlspecialchars($added_map_id)?>
+    </p>
+<? } elseif($attempted_add) { ?>
+    <p style="color: white; background: red;">
+        Failed to add map.
     </p>
 <? } ?>
 

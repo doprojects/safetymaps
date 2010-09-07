@@ -1,21 +1,36 @@
 <?php
 
+    class Context
+    {
+        var $db;
+        
+        function Context(&$db_link)
+        {
+            $this->db =& $db_link;
+        }
+        
+        function close()
+        {
+            mysql_close($this->db);
+        }
+    }
+
    /**
     * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     * 
     * name    TINYTEXT,
     * email   TINYTEXT
     */
-    function getset_user($db, $args)
+    function getset_user($ctx, $args)
     {
-        $_name = mysql_real_escape_string($args['name'], $db);
-        $_email = mysql_real_escape_string($args['email'], $db);
+        $_name = mysql_real_escape_string($args['name'], $ctx->db);
+        $_email = mysql_real_escape_string($args['email'], $ctx->db);
     
         $q = "SELECT id FROM users
               WHERE name  = '{$_name}'
                 AND email = '{$_email}'";
 
-        if($res = mysql_query($q, $db))
+        if($res = mysql_query($q, $ctx->db))
         {
             $row = mysql_fetch_assoc($res);
             
@@ -27,8 +42,8 @@
                       SET name  = '{$_name}',
                           email = '{$_email}'";
 
-                if($res = mysql_query($q, $db))
-                    return mysql_insert_id($db);
+                if($res = mysql_query($q, $ctx->db))
+                    return mysql_insert_id($ctx->db);
             }
         }
         
@@ -58,27 +73,27 @@
     * created     DATETIME,
     * privacy     ENUM('public', 'unlisted') DEFAULT 'public',
     */
-    function set_map($db, $args)
+    function set_map($ctx, $args)
     {
         $_user_id = sprintf('%d', $args['user_id']);
         
-        $_place_name = mysql_real_escape_string($args['place_name'], $db);
+        $_place_name = mysql_real_escape_string($args['place_name'], $ctx->db);
         $_place_lat = sprintf('%.6f', $args['place_lat']);
         $_place_lon = sprintf('%.6f', $args['place_lon']);
 
-        $_emergency = mysql_real_escape_string($args['emergency'], $db);
-        $_note_full = mysql_real_escape_string($args['note_full'], $db);
-        $_note_short = mysql_real_escape_string($args['note_short'], $db);
+        $_emergency = mysql_real_escape_string($args['emergency'], $ctx->db);
+        $_note_full = mysql_real_escape_string($args['note_full'], $ctx->db);
+        $_note_short = mysql_real_escape_string($args['note_short'], $ctx->db);
 
-        $_paper = mysql_real_escape_string($args['paper'], $db);
-        $_format = mysql_real_escape_string($args['format'], $db);
+        $_paper = mysql_real_escape_string($args['paper'], $ctx->db);
+        $_format = mysql_real_escape_string($args['format'], $ctx->db);
 
         $_bbox_north = sprintf('%.6f', $args['bbox_north']);
         $_bbox_south = sprintf('%.6f', $args['bbox_south']);
         $_bbox_east = sprintf('%.6f', $args['bbox_east']);
         $_bbox_west = sprintf('%.6f', $args['bbox_west']);
 
-        $_privacy = mysql_real_escape_string($args['privacy'], $db);
+        $_privacy = mysql_real_escape_string($args['privacy'], $ctx->db);
         
         $q = "INSERT INTO maps
               SET user_id    = {$_user_id},
@@ -97,8 +112,8 @@
                   created    = NOW(),
                   privacy    = '{$_privacy}'";
 
-        if($res = mysql_query($q, $db))
-            return mysql_insert_id($db);
+        if($res = mysql_query($q, $ctx->db))
+            return mysql_insert_id($ctx->db);
 
         return null;
     }
@@ -113,13 +128,13 @@
     * 
     * sent    DATETIME,
     */
-    function set_recipient($db, $args)
+    function set_recipient($ctx, $args)
     {
         $_user_id = sprintf('%d', $args['user_id']);
         $_map_id = sprintf('%d', $args['map_id']);
     
-        $_name = mysql_real_escape_string($args['name'], $db);
-        $_email = mysql_real_escape_string($args['email'], $db);
+        $_name = mysql_real_escape_string($args['name'], $ctx->db);
+        $_email = mysql_real_escape_string($args['email'], $ctx->db);
     
         $q = "INSERT INTO recipients
               SET user_id = {$_user_id},
@@ -128,8 +143,8 @@
                   email   = '{$_email}',
                   sent    = NULL";
 
-        if($res = mysql_query($q, $db))
-            return mysql_insert_id($db);
+        if($res = mysql_query($q, $ctx->db))
+            return mysql_insert_id($ctx->db);
         
         return null;
     }
@@ -160,12 +175,12 @@
     *   ]
     * }
     */
-    function add_map($db, $args)
+    function add_map($ctx, $args)
     {
         $commit_ok = false;
-        mysql_query('BEGIN', $db);
+        mysql_query('BEGIN', $ctx->db);
 
-        $user_id = getset_user($db, $args['sender']);
+        $user_id = getset_user($ctx, $args['sender']);
         
         if($user_id)
         {
@@ -191,7 +206,7 @@
                 'privacy' => $args['map']['privacy']
             );
             
-            $map_id = set_map($db, $map_args);
+            $map_id = set_map($ctx, $map_args);
             
             if($map_id)
             {
@@ -201,7 +216,7 @@
                 {
                     $recipient['user_id'] = $user_id;
                     $recipient['map_id'] = $map_id;
-                    $recipient_id = set_recipient($db, $recipient);
+                    $recipient_id = set_recipient($ctx, $recipient);
                     
                     if(!$recipient_id)
                         $commit_ok = false;
