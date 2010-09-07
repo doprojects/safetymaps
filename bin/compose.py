@@ -264,13 +264,13 @@ def draw_card_right(ctx, img, name):
 
 parser = OptionParser()
 
-parser.set_defaults(name='Fred', format='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+parser.set_defaults(name='Fred', paper='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
 
-formats = 'a4 letter'.split()
+papers = 'a4 letter'.split()
 
-parser.add_option('-f', '--format', dest='format',
-                  help='Choice of formats: %s.' % ', '.join(formats),
-                  choices=formats)
+parser.add_option('-p', '--paper', dest='paper',
+                  help='Choice of papers: %s.' % ', '.join(papers),
+                  choices=papers)
 
 parser.add_option('-m', '--meeting-point', dest='point',
                   help='Latitude and longitude of meeting point.',
@@ -283,7 +283,7 @@ parser.add_option('-b', '--bbox', dest='bbox',
 parser.add_option('-n', '--name', dest='name',
                   help='Name of recipient - keep it short!')
 
-def main(marker, format, bbox, name):
+def main(marker, paper, bbox, name):
     """
     """
     mark = Location(*marker)
@@ -291,10 +291,10 @@ def main(marker, format, bbox, name):
     handle, filename = mkstemp(prefix='safetymap-', suffix='.pdf')
     close(handle)
 
-    if format == 'a4':
+    if paper == 'a4':
         surf = PDFSurface(filename, 210*ptpmm, 297*ptpmm)
     
-    elif format == 'letter':
+    elif paper == 'letter':
         surf = PDFSurface(filename, 8.5*ptpin, 11*ptpin)
     
     ctx = Context(surf)
@@ -302,10 +302,10 @@ def main(marker, format, bbox, name):
     
     ctx.scale(ptpmm, ptpmm)
 
-    if format == 'a4':
+    if paper == 'a4':
         ctx.translate(19, 26.5)
     
-    elif format == 'letter':
+    elif paper == 'letter':
         ctx.translate(22, 17.5)
 
     img = get_map_image(bbox, 84, 39)
@@ -323,4 +323,4 @@ def main(marker, format, bbox, name):
 if __name__ == '__main__':
     options, args = parser.parse_args()
 
-    print main(options.point, options.format, options.bbox, options.name)
+    print main(options.point, options.paper, options.bbox, options.name)
