@@ -283,18 +283,18 @@ parser.add_option('-b', '--bbox', dest='bbox',
 parser.add_option('-n', '--name', dest='name',
                   help='Name of recipient - keep it short!')
 
-if __name__ == '__main__':
-    options, args = parser.parse_args()
-    
-    mark = Location(*options.point)
+def main(marker, format, bbox, name):
+    """
+    """
+    mark = Location(*marker)
     
     handle, filename = mkstemp(prefix='safetymap-', suffix='.pdf')
     close(handle)
 
-    if options.format == 'a4':
+    if format == 'a4':
         surf = PDFSurface(filename, 210*ptpmm, 297*ptpmm)
     
-    elif options.format == 'letter':
+    elif format == 'letter':
         surf = PDFSurface(filename, 8.5*ptpin, 11*ptpin)
     
     ctx = Context(surf)
@@ -302,20 +302,25 @@ if __name__ == '__main__':
     
     ctx.scale(ptpmm, ptpmm)
 
-    if options.format == 'a4':
+    if format == 'a4':
         ctx.translate(19, 26.5)
     
-    elif options.format == 'letter':
+    elif format == 'letter':
         ctx.translate(22, 17.5)
 
-    img = get_map_image(options.bbox, 84, 39)
+    img = get_map_image(bbox, 84, 39)
     
     for i in range(4):
-        draw_card_left(ctx, options.name)
+        draw_card_left(ctx, name)
         ctx.translate(86, 0)
 
-        draw_card_right(ctx, img, options.name)
+        draw_card_right(ctx, img, name)
         ctx.translate(-86, 61)
     
     surf.finish()
-    print filename
+    return filename
+
+if __name__ == '__main__':
+    options, args = parser.parse_args()
+
+    print main(options.point, options.format, options.bbox, options.name)
