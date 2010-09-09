@@ -39,7 +39,7 @@
     </p>
 <? } ?>
 
-<form method="POST" action="map.php">
+<form method="POST" action="maps.php">
     <p>
         User name <input type="text" name="sender[name]" value="Mike">
         email <input type="text" name="sender[email]" value="mike@teczno.com">
