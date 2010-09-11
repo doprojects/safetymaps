@@ -34,6 +34,7 @@ CREATE TABLE maps (
     bbox_east   DOUBLE,
     bbox_west   DOUBLE,
     
+    waiting     INT UNSIGNED,
     created     DATETIME,
     privacy     ENUM('public', 'unlisted') DEFAULT 'public',
     
@@ -54,6 +55,7 @@ CREATE TABLE recipients (
     name    TINYTEXT,
     email   TINYTEXT,
     
+    queued  DATETIME,
     sent    DATETIME,
     
     INDEX user (user_id),

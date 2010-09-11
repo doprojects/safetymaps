@@ -109,6 +109,7 @@
                   bbox_south = {$_bbox_south},
                   bbox_east  = {$_bbox_east},
                   bbox_west  = {$_bbox_west},
+                  waiting    = 0,
                   created    = NOW(),
                   privacy    = '{$_privacy}'";
 
@@ -136,14 +137,19 @@
         $_name = mysql_real_escape_string($args['name'], $ctx->db);
         $_email = mysql_real_escape_string($args['email'], $ctx->db);
     
-        $q = "INSERT INTO recipients
-              SET user_id = {$_user_id},
-                  map_id  = {$_map_id},
-                  name    = '{$_name}',
-                  email   = '{$_email}',
-                  sent    = NULL";
+        $q0 = "UPDATE maps
+               SET waiting = waiting + 1
+               WHERE id = {$_map_id}";
+        
+        $q1 = "INSERT INTO recipients
+               SET user_id = {$_user_id},
+                   map_id  = {$_map_id},
+                   name    = '{$_name}',
+                   email   = '{$_email}',
+                   queued  = NOW(),
+                   sent    = NULL";
 
-        if($res = mysql_query($q, $ctx->db))
+        if(mysql_query($q0, $ctx->db) && mysql_query($q1, $ctx->db))
             return mysql_insert_id($ctx->db);
         
         return null;
