@@ -10,20 +10,30 @@ if __name__ == '__main__':
     db = connect(host='localhost', user='safetymaps', passwd='s4f3tym4ps', db='safetymaps')
     cur = db.cursor()
     
-    cur.execute("""SELECT u.id, m.id, r.id
-                   FROM recipients AS r
-                   LEFT JOIN maps AS m
-                     ON m.id = r.map_id
-                   LEFT JOIN users AS u
-                     ON u.id = r.user_id
-                   WHERE r.sent IS NULL
-                   HAVING u.id AND m.id
-                   ORDER BY r.id ASC""")
-    
-    for (user_id, map_id, recipient_id) in cur.fetchall():
+    while True:
     
         cur.execute('BEGIN')
     
+        cur.execute("""SELECT u.id, m.id, r.id
+                       FROM recipients AS r
+                       LEFT JOIN maps AS m
+                         ON m.id = r.map_id
+                       LEFT JOIN users AS u
+                         ON u.id = r.user_id
+                       WHERE r.sent IS NULL
+                       HAVING u.id AND m.id
+                       ORDER BY r.id ASC
+                       LIMIT 1""")
+        
+        ids = cur.fetchone()
+        
+        if ids:
+            user_id, map_id, recipient_id = ids
+
+        else:
+            cur.execute('ROLLBACK')
+            break
+        
         cur.execute("""SELECT m.place_lat, m.place_lon,
                               m.bbox_north, m.bbox_west, m.bbox_south, m.bbox_east,
                               m.paper, m.format,
