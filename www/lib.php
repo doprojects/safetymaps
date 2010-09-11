@@ -150,6 +150,8 @@
     }
     
    /**
+    * Add a new map and return its ID if everything worked out.
+    *
     * {
     *   sender: { name: ___, email: ___ }
     *   place:
@@ -229,7 +231,7 @@
     }
     
    /**
-    *
+    * Convert a map row as from a database query to a GeoJSON feature array.
     */
     function map_row2feature($map_row)
     {
@@ -256,13 +258,13 @@
     }
     
    /**
-    *
+    * Get a map by ID, return a GeoJSON feature collection array.
     */
     function get_map(&$ctx, $id)
     {
         $_id = sprintf('%d', $id);
         
-        $q = "SELECT id,
+        $q = "SELECT id, user_id,
                      paper, format,
                      place_lat, place_lon,
                      emergency, place_name,
@@ -275,9 +277,14 @@
         {
             if($row = mysql_fetch_assoc($res))
             {
+                $row['user'] = get_user($ctx, $row['user_id']);
+                $row['recipients'] = get_recipients($ctx, array('map_id' => $row['id']));
+            
+                unset($row['user_id']);
+                
                 return array(
                     'type' => 'FeatureCollection',
-                    'features' => array(map_row2feature($row)),
+                    'features' => array(map_row2feature($row))
                 );
             }
         }
@@ -286,19 +293,17 @@
     }
     
    /**
-    *
+    * Get a list of maps, return a GeoJSON feature collection array.
     */
     function get_maps(&$ctx, $args)
     {
         $_count = sprintf('%d', $args['count']);
         $_offset = sprintf('%d', $args['offset']);
         
-        $q = "SELECT id,
-                     paper, format,
+        $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
-                     note_full, note_short,
-                     created, privacy
+                     note_short, created
               FROM maps
               WHERE privacy = 'public'
               ORDER BY created DESC
@@ -311,6 +316,9 @@
         
             while($row = mysql_fetch_assoc($res))
             {
+                $row['user'] = get_user($ctx, $row['user_id']);
+                unset($row['user_id']);
+            
                 $feature = map_row2feature($row);
                 $features[] = $feature;
                 
@@ -327,6 +335,57 @@
                 'bbox' => count($features) ? $bbox : array(),
                 'features' => $features,
             );
+        }
+        
+        return null;
+    }
+    
+   /**
+    * Get a single user by ID, return a simple assoc. array.
+    */
+    function get_user(&$ctx, $id)
+    {
+        $_id = sprintf('%d', $id);
+        
+        $q = "SELECT id, name, email
+              FROM users
+              WHERE id = {$_id}";
+
+        if($res = mysql_query($q, $ctx->db))
+        {
+            if($row = mysql_fetch_assoc($res))
+            {
+                $row['id'] = intval($row['id']);
+                return $row;
+            }
+        }
+        
+        return null;
+    }
+    
+   /**
+    * Get a list of recipients, return a simple array.
+    */
+    function get_recipients(&$ctx, $args)
+    {
+        $_map_id = $args['map_id'] ? sprintf('%d', $args['map_id']) : null;
+
+        $q = "SELECT id, name, email, sent
+              FROM recipients
+              WHERE map_id = {$_map_id}
+              ORDER BY id";
+
+        if($res = mysql_query($q, $ctx->db))
+        {
+            $recipients = array();
+            
+            while($row = mysql_fetch_assoc($res))
+            {
+                $row['id'] = intval($row['id']);
+                $recipients[] = $row;
+            }
+            
+            return $recipients;
         }
         
         return null;
