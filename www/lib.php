@@ -233,6 +233,9 @@
     */
     function get_maps(&$ctx, $args)
     {
+        $_count = sprintf('%d', $args['count']);
+        $_offset = sprintf('%d', $args['offset']);
+        
         $q = "SELECT id,
                      paper, format,
                      place_lat, place_lon,
@@ -241,27 +244,38 @@
                      created, privacy
               FROM maps
               WHERE privacy = 'public'
-              ORDER BY created DESC";
+              ORDER BY created DESC
+              LIMIT {$_count} OFFSET {$_offset}";
 
         if($res = mysql_query($q, $ctx->db))
         {
             $features = array();
+            $bbox = array(180, 90, -180, -90);
         
             while($row = mysql_fetch_assoc($res))
             {
+                $id = intval($row['id']);
+                $lon = floatval($row['place_lon']);
+                $lat = floatval($row['place_lat']);
+
+                unset($row['id']);
+                unset($row['place_lon']);
+                unset($row['place_lat']);
+                
                 $feature = array(
-                    'id' => $row['id'],
+                    'id' => $id,
                     'type' => 'Feature',
                     'geometry' => array(
                         'type' => 'Point',
-                        'coordinates' => array($row['place_lon'], $row['place_lat'])
+                        'coordinates' => array($lon, $lat)
                     ),
                     'properties' => array()
                 );
                 
-                unset($row['id']);
-                unset($row['place_lat']);
-                unset($row['place_lon']);
+                $bbox[0] = min($bbox[0], $lon);
+                $bbox[1] = min($bbox[1], $lat);
+                $bbox[2] = max($bbox[2], $lon);
+                $bbox[3] = max($bbox[3], $lat);
                 
                 $feature['properties'] = $row;
                 $features[] = $feature;
@@ -269,6 +283,7 @@
             
             return array(
                 'type' => 'FeatureCollection',
+                'bbox' => count($features) ? $bbox : array(),
                 'features' => $features,
             );
         }
