@@ -248,7 +248,7 @@
                 'type' => 'Point',
                 'coordinates' => array($lon, $lat)
             ),
-            'properties' => array()
+            'properties' => null
         );
         
         $feature['properties'] = $map_row;
