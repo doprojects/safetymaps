@@ -1,12 +1,25 @@
 from sys import stderr
 from os import rename, chmod
+from optparse import OptionParser
+from time import time
 
 from MySQLdb import connect
 
 from compose import main as compose
 
+parser = OptionParser()
+
+parser.set_defaults(time_limit=0)
+
+parser.add_option('-t', '--time-limit', dest='time_limit',
+                  help='Time limit in seconds',
+                  type=int)
+
 if __name__ == '__main__':
     
+    opts, args = parser.parse_args()
+    due = time() + opts.time_limit
+
     db = connect(host='localhost', user='safetymaps', passwd='s4f3tym4ps', db='safetymaps')
     cur = db.cursor()
     
@@ -64,6 +77,9 @@ if __name__ == '__main__':
         cur.execute('COMMIT')
 
         print >> stderr, realname
+        
+        if time() > due:
+            break
         
     cur.close()
     db.close()
