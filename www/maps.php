@@ -11,7 +11,7 @@
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
 
     $where = preg_match('/^bbox:-?\d+(\.\d+)?(,-?\d+(\.\d+)?){3}$/', $_GET['where'])
-                ? explode(',', substr($_GET['where'], 5))
+                ? array_map('floatval', explode(',', substr($_GET['where'], 5)))
                 : null;
     
     $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : null;
