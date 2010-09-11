@@ -364,7 +364,7 @@
     {
         $_id = sprintf('%d', $id);
         
-        $q = "SELECT id, name, email
+        $q = "SELECT id, name
               FROM users
               WHERE id = {$_id}";
 
@@ -387,7 +387,7 @@
     {
         $_map_id = $args['map_id'] ? sprintf('%d', $args['map_id']) : null;
 
-        $q = "SELECT id, name, email, sent
+        $q = "SELECT id, name, sent
               FROM recipients
               WHERE map_id = {$_map_id}
               ORDER BY id";
