@@ -17,19 +17,26 @@
     $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 10;
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
     
-    $maps = get_maps($ctx, compact('count', 'offset'));
+    $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : null;
+    
+    if($map_id) {
+        $response = get_map($ctx, $map_id);
+        
+    } else {
+        $response = get_maps($ctx, compact('count', 'offset'));
+    }
     
     $ctx->close();
     
     if($format == 'json') {
         header('Content-Type: text/json');
         header('Access-Control-Allow-Origin: *');
-        echo json_encode($maps)."\n";
+        echo json_encode($response)."\n";
     
     } elseif($format == 'text') {
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        print_r($maps);
+        print_r($response);
     
     } else {
         header('HTTP/1.1 400');

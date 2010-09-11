@@ -231,6 +231,63 @@
    /**
     *
     */
+    function map_row2feature($map_row)
+    {
+        $id = intval($map_row['id']);
+        $lon = floatval($map_row['place_lon']);
+        $lat = floatval($map_row['place_lat']);
+
+        unset($map_row['id']);
+        unset($map_row['place_lon']);
+        unset($map_row['place_lat']);
+        
+        $feature = array(
+            'id' => $id,
+            'type' => 'Feature',
+            'geometry' => array(
+                'type' => 'Point',
+                'coordinates' => array($lon, $lat)
+            ),
+            'properties' => array()
+        );
+        
+        $feature['properties'] = $map_row;
+        return $feature;
+    }
+    
+   /**
+    *
+    */
+    function get_map(&$ctx, $id)
+    {
+        $_id = sprintf('%d', $id);
+        
+        $q = "SELECT id,
+                     paper, format,
+                     place_lat, place_lon,
+                     emergency, place_name,
+                     note_full, note_short,
+                     created, privacy
+              FROM maps
+              WHERE id = {$_id}";
+
+        if($res = mysql_query($q, $ctx->db))
+        {
+            if($row = mysql_fetch_assoc($res))
+            {
+                return array(
+                    'type' => 'FeatureCollection',
+                    'features' => array(map_row2feature($row)),
+                );
+            }
+        }
+        
+        return null;
+    }
+    
+   /**
+    *
+    */
     function get_maps(&$ctx, $args)
     {
         $_count = sprintf('%d', $args['count']);
@@ -254,31 +311,15 @@
         
             while($row = mysql_fetch_assoc($res))
             {
-                $id = intval($row['id']);
-                $lon = floatval($row['place_lon']);
-                $lat = floatval($row['place_lat']);
-
-                unset($row['id']);
-                unset($row['place_lon']);
-                unset($row['place_lat']);
+                $feature = map_row2feature($row);
+                $features[] = $feature;
                 
-                $feature = array(
-                    'id' => $id,
-                    'type' => 'Feature',
-                    'geometry' => array(
-                        'type' => 'Point',
-                        'coordinates' => array($lon, $lat)
-                    ),
-                    'properties' => array()
-                );
+                list($lon, $lat) = $feature['geometry']['coordinates'];
                 
                 $bbox[0] = min($bbox[0], $lon);
                 $bbox[1] = min($bbox[1], $lat);
                 $bbox[2] = max($bbox[2], $lon);
                 $bbox[3] = max($bbox[3], $lat);
-                
-                $feature['properties'] = $row;
-                $features[] = $feature;
             }
             
             return array(
