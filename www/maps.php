@@ -14,7 +14,7 @@
                 ? array_map('floatval', explode(',', substr($_GET['where'], 5)))
                 : null;
     
-    $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : null;
+    $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : false;
     
     $ctx = new Context($db);
 
@@ -53,11 +53,11 @@
         exit();
     }
     
-    if($map_id) {
-        $response = get_map($ctx, $map_id);
+    if($map_id === false) {
+        $response = get_maps($ctx, compact('count', 'offset', 'where'));
         
     } else {
-        $response = get_maps($ctx, compact('count', 'offset', 'where'));
+        $response = get_map($ctx, $map_id);
     }
     
     $ctx->close();

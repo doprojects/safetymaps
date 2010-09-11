@@ -235,7 +235,7 @@
     */
     function map_row2feature($map_row)
     {
-        $id = intval($map_row['id']);
+        $id = $map_row['id'];
         $lon = floatval($map_row['place_lon']);
         $lat = floatval($map_row['place_lat']);
 
@@ -371,10 +371,7 @@
         if($res = mysql_query($q, $ctx->db))
         {
             if($row = mysql_fetch_assoc($res))
-            {
-                $row['id'] = intval($row['id']);
                 return $row;
-            }
         }
         
         return null;
@@ -397,10 +394,7 @@
             $recipients = array();
             
             while($row = mysql_fetch_assoc($res))
-            {
-                $row['id'] = intval($row['id']);
                 $recipients[] = $row;
-            }
             
             return $recipients;
         }
