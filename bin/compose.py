@@ -264,13 +264,18 @@ def draw_card_right(ctx, img, name):
 
 parser = OptionParser()
 
-parser.set_defaults(name='Fred', paper='letter', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+parser.set_defaults(name='Fred', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
 
 papers = 'a4 letter'.split()
+formats = '4up 2up-fridge poster'.split()
 
 parser.add_option('-p', '--paper', dest='paper',
                   help='Choice of papers: %s.' % ', '.join(papers),
                   choices=papers)
+
+parser.add_option('-f', '--format', dest='format',
+                  help='Choice of formats: %s.' % ', '.join(formats),
+                  choices=formats)
 
 parser.add_option('-m', '--meeting-point', dest='point',
                   help='Latitude and longitude of meeting point.',
@@ -283,7 +288,7 @@ parser.add_option('-b', '--bbox', dest='bbox',
 parser.add_option('-n', '--name', dest='name',
                   help='Name of recipient - keep it short!')
 
-def main(marker, paper, bbox, name):
+def main(marker, paper, format, bbox, name):
     """
     """
     mark = Location(*marker)
@@ -310,17 +315,24 @@ def main(marker, paper, bbox, name):
 
     img = get_map_image(bbox, 84, 39)
     
-    for i in range(4):
+    reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
+    
+    for i in range(reps[format]):
         draw_card_left(ctx, name)
         ctx.translate(86, 0)
 
         draw_card_right(ctx, img, name)
         ctx.translate(-86, 61)
+
+    if format in ('2up-fridge', 'poster'):
+        ctx.translate(0, 36 * mmppt)
+        ctx.set_font_size(36 * mmppt)
+        ctx.show_text('Poster part goes here.')
     
     surf.finish()
     return filename
 
 if __name__ == '__main__':
-    options, args = parser.parse_args()
+    opts, args = parser.parse_args()
 
-    print main(options.point, options.paper, options.bbox, options.name)
+    print main(opts.point, opts.paper, opts.format, opts.bbox, opts.name)

@@ -49,11 +49,12 @@ if __name__ == '__main__':
         marker = row[0:2]
         bbox = row[2:6]
         paper = row[6]
+        format = row[7]
         name = row[8]
         
         print >> stderr, 'Map', map_id, 'for', name, '...',
         
-        filename = compose(marker, paper, bbox, name)
+        filename = compose(marker, paper, format, bbox, name)
         realname = 'out-%(map_id)06d-%(recipient_id)06d.pdf' % locals()
         
         rename(filename, realname)
