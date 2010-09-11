@@ -300,12 +300,29 @@
         $_count = sprintf('%d', $args['count']);
         $_offset = sprintf('%d', $args['offset']);
         
+        $where_clauses = array("privacy = 'public'");
+        
+        if(is_array($args['where']))
+        {
+            list($lon1, $lat1, $lon2, $lat2) = $args['where'];
+
+            $_minlon = sprintf('%.6f', min($lon1, $lon2));
+            $_minlat = sprintf('%.6f', min($lat1, $lat2));
+            $_maxlon = sprintf('%.6f', max($lon1, $lon2));
+            $_maxlat = sprintf('%.6f', max($lat1, $lat2));
+            
+            $where_clauses[] = "(place_lon BETWEEN {$_minlon} AND {$_maxlon})";
+            $where_clauses[] = "(place_lat BETWEEN {$_minlat} AND {$_maxlat})";
+        }
+        
+        $_where_clause = join(' AND ', $where_clauses);
+        
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
                      note_short, created
               FROM maps
-              WHERE privacy = 'public'
+              WHERE {$_where_clause}
               ORDER BY created DESC
               LIMIT {$_count} OFFSET {$_offset}";
 

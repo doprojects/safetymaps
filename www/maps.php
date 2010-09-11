@@ -9,6 +9,10 @@
     $format = empty($_GET['format']) ? 'json' : $_GET['format'];
     $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 10;
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+    $where = preg_match('/^bbox:-?\d+(\.\d+)?(,-?\d+(\.\d+)?){3}$/', $_GET['where'])
+                ? explode(',', substr($_GET['where'], 5))
+                : null;
     
     $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : null;
     
@@ -53,7 +57,7 @@
         $response = get_map($ctx, $map_id);
         
     } else {
-        $response = get_maps($ctx, compact('count', 'offset'));
+        $response = get_maps($ctx, compact('count', 'offset', 'where'));
     }
     
     $ctx->close();
