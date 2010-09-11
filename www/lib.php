@@ -227,5 +227,53 @@
         mysql_query($commit_ok ? 'COMMIT' : 'ROLLBACK');
         return $commit_ok ? $map_id : null;
     }
+    
+   /**
+    *
+    */
+    function get_maps(&$ctx, $args)
+    {
+        $q = "SELECT id,
+                     paper, format,
+                     place_lat, place_lon,
+                     emergency, place_name,
+                     note_full, note_short,
+                     created, privacy
+              FROM maps
+              WHERE privacy = 'public'
+              ORDER BY created DESC";
+
+        if($res = mysql_query($q, $ctx->db))
+        {
+            $features = array();
+        
+            while($row = mysql_fetch_assoc($res))
+            {
+                $feature = array(
+                    'id' => $row['id'],
+                    'type' => 'Feature',
+                    'geometry' => array(
+                        'type' => 'Point',
+                        'coordinates' => array($row['place_lon'], $row['place_lat'])
+                    ),
+                    'properties' => array()
+                );
+                
+                unset($row['id']);
+                unset($row['place_lat']);
+                unset($row['place_lon']);
+                
+                $feature['properties'] = $row;
+                $features[] = $feature;
+            }
+            
+            return array(
+                'type' => 'FeatureCollection',
+                'features' => $features,
+            );
+        }
+        
+        return null;
+    }
 
 ?>

@@ -1,29 +1,3 @@
-<?php
-
-    require_once 'lib.php';
-
-    $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
-    mysql_select_db('safetymaps', $db);
-    
-    $ctx = new Context($db);
-
-    if($_POST['sender'] && $_POST['place'] && $_POST['map'] && $_POST['recipients'])
-    {
-        $attempted_add = true;
-        $added_map_id = add_map($ctx, $_POST);
-    }
-    
-    $maps = get_maps($ctx, null);
-    
-    header('Content-Type: text/json');
-    header('Access-Control-Allow-Origin: *');
-    echo json_encode($maps)."\n";
-    
-    $ctx->close();
-    
-    exit();
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,16 +10,6 @@
     </style>
 </head>
 <body>
-
-<? if($added_map_id) { ?>
-    <p style="color: white; background: green;">
-        Added map #<?=htmlspecialchars($added_map_id)?>
-    </p>
-<? } elseif($attempted_add) { ?>
-    <p style="color: white; background: red;">
-        Failed to add map.
-    </p>
-<? } ?>
 
 <form method="POST" action="maps.php">
     <p>
