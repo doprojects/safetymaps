@@ -56,8 +56,8 @@
                 ),
                 'recipient' => array('name' => $recipient_name),
 
-                'put-back' => array(
-                    'pdf' => sprintf('%s/pdf.php?id=%s', str_replace(' ', '%20', dirname(dirname($_SERVER['SCRIPT_NAME']))), urlencode($recipient_id))
+                'post-back' => array(
+                    'pdf' => sprintf('%s/pdf.php?id=%s', str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), urlencode($recipient_id))
                 )
             );
             

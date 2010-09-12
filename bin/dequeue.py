@@ -7,6 +7,11 @@ from time import time
 
 from compose import main as compose
 
+def path(url):
+    """
+    """
+    return url.path + (url.query and '?'+url.query or '')
+
 parser = OptionParser()
 
 parser.set_defaults(time_limit=0)
@@ -25,7 +30,7 @@ if __name__ == '__main__':
     while True:
     
         conn = HTTPConnection(url.netloc)
-        conn.request('GET', url.path)
+        conn.request('GET', path(url))
         resp = conn.getresponse()
         
         if resp.status != 200:
@@ -43,8 +48,21 @@ if __name__ == '__main__':
         print >> stderr, 'Map for', name, '...',
         
         filename = compose(marker, paper, format, bbox, name)
+        
         print >> stderr, filename,
-        print >> stderr, urljoin(urlunparse(url), job['put-back']['pdf'])
+
+        base_url = urlunparse(url)
+        post_url = urljoin(base_url, job['post-back']['pdf'])
+
+        print >> stderr, post_url,
+        
+        post_url = urlparse(post_url)
+        
+        conn = HTTPConnection(post_url.netloc)
+        conn.request('POST', path(post_url), open(filename, 'r'))
+        resp = conn.getresponse()
+        
+        print >> stderr, resp.status, resp.read()
         
         if time() > due:
             break
