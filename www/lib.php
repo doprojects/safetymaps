@@ -266,7 +266,7 @@
    /**
     * Get a map by ID, return a GeoJSON feature collection array.
     */
-    function get_map(&$ctx, $id)
+    function get_map(&$ctx, $id, $collection=true)
     {
         $_id = sprintf('%d', $id);
         
@@ -275,6 +275,7 @@
                      place_lat, place_lon,
                      emergency, place_name,
                      note_full, note_short,
+                     bbox_west, bbox_south, bbox_east, bbox_north,
                      created, privacy
               FROM maps
               WHERE id = {$_id}";
@@ -288,10 +289,12 @@
             
                 unset($row['user_id']);
                 
-                return array(
-                    'type' => 'FeatureCollection',
-                    'features' => array(map_row2feature($row))
-                );
+                return $collection
+                    ? array(
+                        'type' => 'FeatureCollection',
+                        'features' => array(map_row2feature($row))
+                      )
+                    : map_row2feature($row);
             }
         }
         
