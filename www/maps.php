@@ -5,7 +5,8 @@
 
     $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
     mysql_select_db('safetymaps', $db);
-    
+    $ctx = new Context($db);
+
     $format = empty($_GET['format']) ? 'json' : $_GET['format'];
     $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 10;
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
@@ -16,8 +17,6 @@
     
     $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : false;
     
-    $ctx = new Context($db);
-
     if($_SERVER['REQUEST_METHOD'] == 'POST')
     {
         $sender = is_array($_POST['sender']) ? $_POST['sender'] : null;
