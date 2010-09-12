@@ -61,13 +61,20 @@
                 )
             );
             
+            mysql_query('COMMIT', $ctx->db);
+            $ctx->close();
+            
             header('Content-Type: text/json');
             echo json_encode($job)."\n";
+            exit();
         }
     }
     
-    mysql_query('COMMIT', $ctx->db);
-    
+    mysql_query('ROLLBACK', $ctx->db);
     $ctx->close();
+    
+    header('HTTP/1.1 400');
+    header('Content-Type: text/plain');
+    echo "No jobs.\n";
 
 ?>
