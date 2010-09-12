@@ -129,7 +129,7 @@
     * 
     * sent    DATETIME,
     */
-    function set_recipient($ctx, $args)
+    function add_recipient(&$ctx, $args)
     {
         $_user_id = sprintf('%d', $args['user_id']);
         $_map_id = sprintf('%d', $args['map_id']);
@@ -153,6 +153,38 @@
             return mysql_insert_id($ctx->db);
         
         return null;
+    }
+    
+   /**
+    */
+    function finish_recipient(&$ctx, $id)
+    {
+        $_recipient_id = sprintf('%d', $id);
+    
+        $q = "SELECT map_id
+              FROM recipients
+              WHERE id = {$_recipient_id}";
+        
+        if($res = mysql_query($q, $ctx->db))
+        {
+            if($row = mysql_fetch_assoc($res))
+            {
+                $_map_id = sprintf('%d', $row['map_id']);
+                
+                $q0 = "UPDATE maps
+                       SET waiting = waiting - 1
+                       WHERE id = {$_map_id}";
+                
+                $q1 = "UPDATE recipients
+                       SET sent = NOW()
+                       WHERE id = {$_recipient_id}";
+                
+                if(mysql_query($q0, $ctx->db) && mysql_query($q1, $ctx->db))
+                    return true;
+            }
+        }
+        
+        return false;
     }
     
    /**
@@ -224,7 +256,7 @@
                 {
                     $recipient['user_id'] = $user_id;
                     $recipient['map_id'] = $map_id;
-                    $recipient_id = set_recipient($ctx, $recipient);
+                    $recipient_id = add_recipient($ctx, $recipient);
                     
                     if(!$recipient_id)
                         $commit_ok = false;
