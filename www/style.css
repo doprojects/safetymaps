@@ -33,8 +33,8 @@ body {
 
 #header img {
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 10px;
+    left: 10px;
 }
 
 #header h2 {
@@ -195,14 +195,22 @@ div#points li a:hover, div#points li a.hover {
 
 /* create form */
 
-#create, #progress {
+#create {
     margin: 40px;
     width: 600px;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
 }
 
 #create {
     background: #CCCCCC;
-    padding: 10px;
+    padding: 30px 40px;
+}
+
+#create form p.field {
+    color: #444444;
+    font-size: 80%;
 }
 
 #create a {
@@ -211,13 +219,70 @@ div#points li a:hover, div#points li a.hover {
 
 #create label {
     color: #444444;
+    margin-right: 8px;
+    font-size: 125%;
+}
+#create p.split label {
+    display: inline-block;
+    /*width: 50%;*/
+    text-align: right;
+}
+#create form p.full {
+    font-size: 100%;
+    line-height: 1.5;
+}
+#create p.full label {
+    font-size: 100%;
+    /*width: 50%;*/
+    text-align: left;
+}
+#create form p.formats {
+    font-size: 100%;
+}
+#create p.formats label {
+    display: inline-block;
+    font-size: 100%;
+    text-align: left;
+    line-height: 50px;
+    margin-top: 5px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+#create p.formats input, #create p.formats img {
+    vertical-align: middle;
+}
+
+span.note {
+    display: inline-block;
+    background: #fff;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;    
+    font-size: 66%;
+    padding: 8px;
+    width: 140px;
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 15px;
+}
+
+#create p, #create h1, #create h2, #create h3, #create h4 {
+    position: relative;
+    clear: both;
+}
+#create h3 {
+    margin-top: 30px;
 }
 
 #create input[type=text], #create textarea {
     border: 0;
     background: #FFFFFF;
-    margin-top: 5px;
-    margin-right: 5px;
+    padding: 4px;
+    margin: 8px 0px;
+}
+#create textarea {
+    width: 592px;
+    font-size: 12pt;
 }
 
 #create button {
@@ -232,54 +297,54 @@ div#points li a:hover, div#points li a.hover {
     background: #00CC00;
 }
 
-#progress span {
-    font-weight: bold;
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    color: #FFF;
-    background: #CCCCCC;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 40px;
-    font-size: 20px;
-}
-#main.step1 span.step1,
-#main.step2 span.step2,
-#main.step3 span.step3,
-#main.step4 span.step4,
-#main.step5 span.step5 {
-    display: inline-block;
-    background: #00CC00;
-}
-
-#bboxmap, #previewmap {
+#bboxmap {
     display: block;
     position: relative;
-    width: 430px;
-    height: 305px;
+    width: 594px;
+    height: 420px;
+    border: 3px dashed #00CC00;
     background: #DDDDDD;
 }
 
-#main div.step1,
-#main div.step2,
-#main div.step3,
-#main div.step4,
-#main div.step5 {
-    display: none;
+span.step {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    color: #fff;
+    background: #00CC00;
+    font-size: 20px;
+    font-weight: bold;
+    vertical-align: middle;
+    line-height: 40px;
+    text-align: center;
 }
 
-#main.step1 div.step1,
-#main.step2 div.step2,
-#main.step3 div.step3,
-#main.step4 div.step4,
-#main.step5 div.step5 {
-    display: block;
+p#done {
+    margin-top: 30px;
+    text-align: center;
+}
+p#done button {
+    padding: 6px 10px;
+    font-size: 20px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
+#preview {
+    background: #fff;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    width: 600px;
+    height: 425px;
+    height: 300px;
+    line-height: 30px;
+    text-align: center;
+}
 
 /* about page */
 
