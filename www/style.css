@@ -19,15 +19,20 @@ body {
     background: #00CC00;
     color: #FFFFFF;
     margin: 0;
-    padding: 20px 0 0 0;
+    padding: 10px 0 0 0;
 }
 
 #header h1 {
-    /* TODO: maybe Akkurat? VAG Rounded? */
-    font-size: 22pt;
+    /* ----- */
     font-weight: normal;
+    font-style: normal;
+    line-height:normal;
+    font-family: 'MgOpenModataRegular', sans-serif;
+    font-size-adjust: 0.56;
+    /* ----- */
+    font-size: 22pt;
     color: #000;
-    margin: 0 0 10px 150px;
+    margin: 0 0 0 150px;
     padding: 0;
 }
 
@@ -38,8 +43,14 @@ body {
 }
 
 #header h2 {
-    font-size: 14pt;
+    /* ----- */
     font-weight: normal;
+    font-style: normal;
+    line-height:normal;
+    font-family: 'MgOpenModataRegular', sans-serif;
+    font-size-adjust: 0.56;
+    /* ----- */
+    font-size: 14pt;
     line-height: 1.2;
     margin: 0 0 20px 150px;
     padding: 0;
@@ -75,6 +86,13 @@ body {
 }
 
 #header #nav ul {
+    /* ----- */
+    font-weight: normal;
+    font-style: normal;
+    line-height:normal;
+    font-family: 'MgOpenModataRegular', sans-serif;
+    font-size-adjust: 0.56;
+    /* ----- */
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -88,8 +106,7 @@ body {
 
 #header #nav li a {
     display: inline-block;
-    padding: 0 20px; 
-    line-height: 2.9;
+    padding: 6px 20px 10px 20px;
     color: #CCCCCC;
     text-decoration: none;
     border-left: 1px dashed #666666;

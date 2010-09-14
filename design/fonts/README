@@ -1,0 +1,12 @@
+Wikipedia's article on VAG Rounded says it's in the public domain and suggests MgOpen Modata.
+
+These were downloaded from http://www.zvr.gr/typo/mgopen/index
+
+And converted with http://www.fontsquirrel.com/fontface/generator
+
+There's more about the font-face embedding CSS here: http://paulirish.com/2009/bulletproof-font-face-implementation-syntax/
+
+And you can see this method in action here: http://css3please.com/
+(Kudos to them for figuring out the Internet Explorer filter equivalents of most CSS3)
+
+
