@@ -206,9 +206,10 @@ def draw_rounded_box(ctx, width, height):
     
     ctx.set_line_width(2 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([])
     ctx.stroke()
 
-def get_map_image(bbox, width, height, target_dpi=200):
+def get_map_image(bbox, width, height, target_dpi=100):
     """ Get a cairo ImageSurface for a given bounding box.
     
         Try to match a target DPI. Width and height are given in millimeters!
@@ -338,6 +339,29 @@ def draw_card_right(ctx, img, name):
 
     ctx.restore()
 
+def draw_header(ctx, format):
+    """ Draw out the header.
+    
+        Modify and restore the matrix stack.
+    """
+    ctx.save()
+    
+    # top-left of the page, draw the header
+    ctx.translate(20, 20)
+
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = create_cairo_font_face_for_file(face)
+    ctx.set_font_face(face)
+    ctx.set_font_size(24 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.show_text('Safety Maps')
+    
+    # top-right of the page, draw the hands icon
+    ctx.translate(170, -8)
+    place_hands(ctx, format)
+
+    ctx.restore()
+
 parser = OptionParser()
 
 parser.set_defaults(name='Fred', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
@@ -381,25 +405,9 @@ def main(marker, paper, format, bbox, name):
     ctx = Context(surf)
     
     ctx.scale(ptpmm, ptpmm)
-    
-    # top-left of the page, draw the header
-    ctx.translate(20, 20)
-
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
-    face = create_cairo_font_face_for_file(face)
-    ctx.set_font_face(face)
-    ctx.set_font_size(24 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
-    ctx.show_text('Safety Maps')
-    
     ctx.select_font_face('Helvetica')
     
-    # top-right of the page, draw the hands icon
-    ctx.translate(172, -8)
-    place_hands(ctx, format)
-    
-    # back to zero
-    ctx.translate(*ctx.device_to_user(0, 0))
+    draw_header(ctx, format)
 
     if paper == 'a4':
         ctx.translate(19, 24)
@@ -412,6 +420,21 @@ def main(marker, paper, format, bbox, name):
     reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
     
     for i in range(reps[format]):
+    
+        # dashed outlines
+        ctx.move_to(0, 61)
+        ctx.line_to(0, 0)
+        ctx.line_to(172, 0)
+        ctx.line_to(172, 61)
+        #ctx.move_to(86, 0)
+        #ctx.line_to(86, 61)
+
+        ctx.set_line_width(.25 * mmppt)
+        ctx.set_source_rgb(.8, .8, .8)
+        ctx.set_dash([3 * mmppt])
+        ctx.stroke()
+    
+        # two card sides and contents
         draw_card_left(ctx, name)
         ctx.translate(86, 0)
 
@@ -423,7 +446,16 @@ def main(marker, paper, format, bbox, name):
         ctx.translate(*ctx.device_to_user(0, 0))
         ctx.translate(19, 269)
         ctx.rotate(-pi/2)
-        
+    
+        # dashed outlines
+        ctx.rectangle(0, 0, 123, 172)
+
+        ctx.set_line_width(.25 * mmppt)
+        ctx.set_source_rgb(.8, .8, .8)
+        ctx.set_dash([3 * mmppt])
+        ctx.stroke()
+    
+        # round box and contents
         ctx.translate(1, 1)
         draw_rounded_box(ctx, 121, 170)
 
@@ -434,6 +466,7 @@ def main(marker, paper, format, bbox, name):
         ctx.rectangle(0, 0, 109, 77)
         ctx.set_line_width(1 * mmppt)
         ctx.set_source_rgb(.8, .8, .8)
+        ctx.set_dash([])
         ctx.stroke()
 
     surf.finish()
