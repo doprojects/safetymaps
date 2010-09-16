@@ -320,9 +320,9 @@ def draw_card_right(ctx, img, name):
     
     phrases = [((.2, .2, .2),  "In case of"),
                ((0, .75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2),  "let•s meet at"),
+               ((.2, .2, .2),  "let’s meet at"),
                ((0, .75, .25), "Madison Square park."),
-               ((.2, .2, .2),  "I•ve marked the spot on this map:")]
+               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
