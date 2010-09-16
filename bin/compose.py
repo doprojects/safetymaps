@@ -4,6 +4,7 @@
 from sys import stderr
 from os import close, unlink, chmod
 from os.path import dirname, join as pathjoin
+from math import pi
 from time import strftime
 from tempfile import mkstemp
 from optparse import OptionParser
@@ -11,8 +12,9 @@ from ModestMaps import mapByExtentZoom, mapByCenterZoom
 from ModestMaps.Geo import Location
 from ModestMaps.Core import Point
 from ModestMaps.Providers import TemplatedMercatorProvider
-from cairo import PDFSurface, ImageSurface, Context
+from cairo import PDFSurface, ImageSurface, Context, FORMAT_A8
 import rsvg
+import ctypes
 
 mmppt = 0.352777778
 inppt = 0.013888889
@@ -37,6 +39,55 @@ def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
         dimensions = Point(int(mmap.dimensions.y * aspect), mmap.dimensions.y)
     
     return mapByCenterZoom(prov, center, zoom, dimensions)
+
+def create_cairo_font_face_for_file(filename, faceindex=0, loadoptions=0):
+    """
+    
+        http://cairographics.org/freetypepython
+    """
+
+    CAIRO_STATUS_SUCCESS = 0
+    FT_Err_Ok = 0
+
+    # find shared objects
+    _freetype_so = ctypes.CDLL("libfreetype.so.6")
+    _cairo_so = ctypes.CDLL("libcairo.so.2")
+
+    # initialize freetype
+    _ft_lib = ctypes.c_void_p()
+    if FT_Err_Ok != _freetype_so.FT_Init_FreeType(ctypes.byref(_ft_lib)):
+      raise "Error initialising FreeType library."
+
+    class PycairoContext(ctypes.Structure):
+        _fields_ = [("PyObject_HEAD", ctypes.c_byte * object.__basicsize__),
+                    ("ctx", ctypes.c_void_p),
+                    ("base", ctypes.c_void_p)]
+
+    _surface = ImageSurface(FORMAT_A8, 0, 0)
+
+    # create freetype face
+    ft_face = ctypes.c_void_p()
+    cairo_ctx = Context(_surface)
+    cairo_t = PycairoContext.from_address(id(cairo_ctx)).ctx
+    _cairo_so.cairo_ft_font_face_create_for_ft_face.restype = ctypes.c_void_p
+
+    if FT_Err_Ok != _freetype_so.FT_New_Face(_ft_lib, filename, faceindex, ctypes.byref(ft_face)):
+        raise Exception("Error creating FreeType font face for " + filename)
+
+    # create cairo font face for freetype face
+    cr_face = _cairo_so.cairo_ft_font_face_create_for_ft_face(ft_face, loadoptions)
+
+    if CAIRO_STATUS_SUCCESS != _cairo_so.cairo_font_face_status(cr_face):
+        raise Exception("Error creating cairo font face for " + filename)
+
+    _cairo_so.cairo_set_font_face(cairo_t, cr_face)
+
+    if CAIRO_STATUS_SUCCESS != _cairo_so.cairo_status(cairo_t):
+        raise Exception("Error creating cairo font face for " + filename)
+
+    face = cairo_ctx.get_font_face()
+
+    return face
 
 def place_image(context, img, width, height):
     """ Add an image to a given context, at a given size in millimeters.
@@ -268,9 +319,9 @@ def draw_card_right(ctx, img, name):
     
     phrases = [((.2, .2, .2),  "In case of"),
                ((0, .75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2),  "let’s meet at"),
+               ((.2, .2, .2),  "let•s meet at"),
                ((0, .75, .25), "Madison Square park."),
-               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+               ((.2, .2, .2),  "I•ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -328,12 +379,23 @@ def main(marker, paper, format, bbox, name):
         surf = PDFSurface(filename, 8.5*ptpin, 11*ptpin)
     
     ctx = Context(surf)
-    ctx.select_font_face('Helvetica')
     
     ctx.scale(ptpmm, ptpmm)
     
+    # top-left of the page, draw the header
+    ctx.translate(20, 20)
+
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = create_cairo_font_face_for_file(face)
+    ctx.set_font_face(face)
+    ctx.set_font_size(24 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.show_text('Safety Maps')
+    
+    ctx.select_font_face('Helvetica')
+    
     # top-right of the page, draw the hands icon
-    ctx.translate(192, 12)
+    ctx.translate(172, -8)
     place_hands(ctx, format)
     
     # back to zero
@@ -347,7 +409,6 @@ def main(marker, paper, format, bbox, name):
         ctx.translate(22, 17.5)
 
     img = get_map_image(bbox, 84, 39)
-    
     reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
     
     for i in range(reps[format]):
@@ -357,11 +418,24 @@ def main(marker, paper, format, bbox, name):
         draw_card_right(ctx, img, name)
         ctx.translate(-86, 61)
 
-    if format in ('2up-fridge', 'poster'):
-        ctx.translate(0, 36 * mmppt)
-        ctx.set_font_size(36 * mmppt)
-        ctx.show_text('Poster part goes here.')
-    
+    if format == '2up-fridge':
+        # prepare to draw sideways
+        ctx.translate(*ctx.device_to_user(0, 0))
+        ctx.translate(19, 269)
+        ctx.rotate(-pi/2)
+        
+        ctx.translate(1, 1)
+        draw_rounded_box(ctx, 121, 170)
+
+        ctx.translate(6, 26)
+        img = get_map_image(bbox, 109, 77)
+        place_image(ctx, img, 109, 77)
+
+        ctx.rectangle(0, 0, 109, 77)
+        ctx.set_line_width(1 * mmppt)
+        ctx.set_source_rgb(.8, .8, .8)
+        ctx.stroke()
+
     surf.finish()
     chmod(filename, 0644)
     return filename
