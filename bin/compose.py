@@ -1,7 +1,9 @@
 ﻿""" Generate a PDF of a meeting point map.
 """
 
-from os import close, unlink
+from sys import stderr
+from os import close, unlink, chmod
+from os.path import dirname, join as pathjoin
 from time import strftime
 from tempfile import mkstemp
 from optparse import OptionParser
@@ -10,6 +12,7 @@ from ModestMaps.Geo import Location
 from ModestMaps.Core import Point
 from ModestMaps.Providers import TemplatedMercatorProvider
 from cairo import PDFSurface, ImageSurface, Context
+import rsvg
 
 mmppt = 0.352777778
 inppt = 0.013888889
@@ -54,6 +57,28 @@ def place_image(context, img, width, height):
     # paint the image
     context.set_source_surface(img, 0, 0)
     context.paint()
+
+    # pop
+    context.restore()
+
+def place_hands(context, format):
+    """ Add the hands icon, flush-right.
+    """
+    # push
+    context.save()
+
+    # switch to point scale for the sake of the drawing dimensions
+    context.scale(mmppt, mmppt)
+    
+    # Guess what? It's a pain in the ass to use SVG from Cairo:
+    # http://cairographics.org/pyrsvg
+    svg = 'hands-%(format)s.svg' % locals()
+    svg = rsvg.Handle(pathjoin(dirname(__file__), svg))
+
+    w, h, w_, h_ = svg.get_dimension_data()
+    context.translate(-w, 0)
+
+    svg.render_cairo(context)
 
     # pop
     context.restore()
@@ -306,11 +331,19 @@ def main(marker, paper, format, bbox, name):
     ctx.select_font_face('Helvetica')
     
     ctx.scale(ptpmm, ptpmm)
+    
+    # top-right of the page, draw the hands icon
+    ctx.translate(192, 12)
+    place_hands(ctx, format)
+    
+    # back to zero
+    ctx.translate(*ctx.device_to_user(0, 0))
 
     if paper == 'a4':
-        ctx.translate(19, 26.5)
+        ctx.translate(19, 24)
     
     elif paper == 'letter':
+        raise Exception('wah')
         ctx.translate(22, 17.5)
 
     img = get_map_image(bbox, 84, 39)
@@ -330,6 +363,7 @@ def main(marker, paper, format, bbox, name):
         ctx.show_text('Poster part goes here.')
     
     surf.finish()
+    chmod(filename, 0644)
     return filename
 
 if __name__ == '__main__':
