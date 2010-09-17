@@ -469,9 +469,15 @@ def main(marker, paper, format, bbox, name):
         raise Exception('wah')
         ctx.translate(22, 17.5)
 
-    img = get_map_image(bbox, 84, 39)
+    ctx.set_line_width(.25 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([3 * mmppt])
+
     reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
     
+    if reps[format]:
+        card_img = get_map_image(bbox, 84, 39)
+        
     for i in range(reps[format]):
     
         # dashed outlines
@@ -481,35 +487,37 @@ def main(marker, paper, format, bbox, name):
         ctx.line_to(172, 61)
         #ctx.move_to(86, 0)
         #ctx.line_to(86, 61)
-
-        ctx.set_line_width(.25 * mmppt)
-        ctx.set_source_rgb(.8, .8, .8)
-        ctx.set_dash([3 * mmppt])
         ctx.stroke()
     
         # two card sides and contents
         draw_card_left(ctx, name)
         ctx.translate(86, 0)
 
-        draw_card_right(ctx, img, name)
+        draw_card_right(ctx, card_img, name)
         ctx.translate(-86, 61)
 
-    if format == '2up-fridge':
+    if format == '4up':
+        # bottom dashed outline
+        ctx.move_to(0, 0)
+        ctx.line_to(172, 0)
+        ctx.stroke()
+
+    elif format == '2up-fridge':
         # prepare to draw sideways
         ctx.translate(*ctx.device_to_user(0, 0))
         ctx.translate(19, 269)
         ctx.rotate(-pi/2)
 
-        img = get_map_image(bbox, 109, 77)
-        draw_small_poster(ctx, img, name)
+        poster_img = get_map_image(bbox, 109, 77)
+        draw_small_poster(ctx, poster_img, name)
 
     elif format == 'poster':
         ctx.translate(*ctx.device_to_user(0, 0))
         ctx.translate(19, 24)
         
-        img = get_map_image(bbox, 153, 108)
+        poster_img = get_map_image(bbox, 153, 108)
         
-        place_image(ctx, img, 10, 39, 153, 108)
+        place_image(ctx, poster_img, 10, 39, 153, 108)
 
     surf.finish()
     chmod(filename, 0644)
