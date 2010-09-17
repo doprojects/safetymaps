@@ -112,6 +112,24 @@ def place_image(context, img, width, height):
     # pop
     context.restore()
 
+def place_logo(context):
+    """ Add the logo.
+    """
+    # push
+    context.save()
+
+    # switch to point scale for the sake of the drawing dimensions
+    context.scale(mmppt, mmppt)
+    
+    # Guess what? It's a pain in the ass to use SVG from Cairo:
+    # http://cairographics.org/pyrsvg
+    svg = rsvg.Handle(pathjoin(dirname(__file__), 'logo.svg'))
+
+    svg.render_cairo(context)
+
+    # pop
+    context.restore()
+
 def place_hands(context, format):
     """ Add the hands icon, flush-right.
     """
@@ -143,44 +161,14 @@ def place_marker(context):
     # switch to point scale for the sake of the drawing dimensions
     context.scale(mmppt, mmppt)
 
-    # adjust for marker center
-    context.translate(-14.1735, -14.1735)
-    
-    # draw the marker
-    context.move_to(23.622, 9.449)
-    context.rel_line_to(-1.94, 1.94)
-    context.rel_line_to(2.784, 2.784)
-    context.rel_line_to(-2.784, 2.785)
-    context.rel_line_to(1.94, 1.94)
-    context.rel_line_to(4.725, -4.725)
-    context.line_to(23.622, 9.449)
+    # Guess what? It's a pain in the ass to use SVG from Cairo:
+    # http://cairographics.org/pyrsvg
+    svg = rsvg.Handle(pathjoin(dirname(__file__), 'marker.svg'))
 
-    context.move_to(9.448, 4.725)
-    context.rel_line_to(1.94, 1.94)
-    context.rel_line_to(2.784, -2.784)
-    context.rel_line_to(2.784, 2.784)
-    context.rel_line_to(1.94, -1.94)
-    context.line_to(14.173, 0)
-    context.line_to(9.448, 4.725)
+    w_, h_, w, h = svg.get_dimension_data()
+    context.translate(-w/2, -h/2)
 
-    context.move_to(14.173, 24.466)
-    context.rel_line_to(-2.784, -2.785)
-    context.rel_line_to(-1.939, 1.94)
-    context.rel_line_to(4.724, 4.725)
-    context.rel_line_to(4.725, -4.725)
-    context.rel_line_to(-1.94, -1.94)
-    context.line_to(14.173, 24.466)
-
-    context.move_to(6.664, 11.389)
-    context.rel_line_to(-1.939, -1.94)
-    context.line_to(0, 14.173)
-    context.rel_line_to(4.725, 4.725)
-    context.rel_line_to(1.939, -1.94)
-    context.rel_line_to(-2.783, -2.785)
-    context.line_to(6.664, 11.389)
-
-    context.set_source_rgb(0, 0, 0)
-    context.fill()
+    svg.render_cairo(context)
 
     # pop
     context.restore()
@@ -264,25 +252,25 @@ def draw_card_left(ctx, name):
         Modify and restore the matrix stack.
     """
     ctx.save()
+    
+    # logo
+    ctx.translate(4, 3)
+    place_logo(ctx)
+    ctx.translate(-4, -3)
 
     # big title text
-    ctx.move_to(4, 7.5)
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
+
+    ctx.move_to(12, 8)
     
     phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), name),
-               ((.2, .2, .2),  ' made on '),
-               ((0, .75, .25), today())]
+               ((0, .75, .25), name)]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
         ctx.show_text(phrase)
-
-    # text on the bottom
-    ctx.move_to(4, 58.75)
-    ctx.set_source_rgb(.6, .6, .6)
-    ctx.set_font_size(4 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
 
     ctx.translate(1, 1)
     draw_rounded_box(ctx, 84, 59)
@@ -302,12 +290,13 @@ def draw_card_right(ctx, img, name):
     ctx.restore()
 
     # big title text
-    ctx.move_to(4, 7.5)
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
+
+    ctx.move_to(4, 7.5)
     
-    phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), name),
-               ((.2, .2, .2),  ' made on '),
+    phrases = [((.2, .2, .2),  'This Safety Map was made on '),
                ((0, .75, .25), today())]
     
     for (rgb, phrase) in phrases:
@@ -315,8 +304,10 @@ def draw_card_right(ctx, img, name):
         ctx.show_text(phrase)
     
     # explanation
-    ctx.move_to(4, 9 + 9.6 * mmppt)
     ctx.set_font_size(8 * mmppt)
+    ctx.select_font_face('Helvetica')
+
+    ctx.move_to(4, 9 + 9.6 * mmppt)
     
     phrases = [((.2, .2, .2),  "In case of"),
                ((0, .75, .25), "fire or explosion near our apartment,"),
