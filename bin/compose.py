@@ -179,11 +179,13 @@ def place_marker(context):
     # pop
     context.restore()
 
-def draw_rounded_box(ctx, width, height):
+def draw_rounded_box(ctx, x, y, width, height):
     """ Draw a rounded box with corner radius of 2.
-    
-        Don't modify the matrix stack.
     """
+    ctx.save()
+    
+    ctx.translate(x, y)
+    
     radius = 2
     bezier = radius / 2
     
@@ -202,6 +204,8 @@ def draw_rounded_box(ctx, width, height):
     ctx.set_source_rgb(.8, .8, .8)
     ctx.set_dash([])
     ctx.stroke()
+    
+    ctx.restore()
 
 def get_map_image(bbox, width, height, target_dpi=100):
     """ Get a cairo ImageSurface for a given bounding box.
@@ -276,8 +280,7 @@ def draw_card_left(ctx, name):
         ctx.set_source_rgb(*rgb)
         ctx.show_text(phrase)
 
-    ctx.translate(1, 1)
-    draw_rounded_box(ctx, 84, 59)
+    draw_rounded_box(ctx, 1, 1, 84, 59)
 
     ctx.restore()
 
@@ -326,8 +329,7 @@ def draw_card_right(ctx, img, name):
     ctx.set_font_size(4 * mmppt)
     ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
 
-    ctx.translate(1, 1)
-    draw_rounded_box(ctx, 84, 59)
+    draw_rounded_box(ctx, 1, 1, 84, 59)
 
     ctx.restore()
 
@@ -337,6 +339,17 @@ def draw_small_poster(ctx, img, name):
         Modify and restore the matrix stack.
     """
     ctx.save()
+
+    # dashed outlines
+    ctx.rectangle(0, 0, 123, 172)
+
+    ctx.set_line_width(.25 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([3 * mmppt])
+    ctx.stroke()
+
+    # round box and contents
+    draw_rounded_box(ctx, 1, 1, 121, 170)
 
     # big title text
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
@@ -370,21 +383,68 @@ def draw_small_poster(ctx, img, name):
         ctx.set_source_rgb(*rgb)
         continue_text_box(ctx, 18, 113, 12 * mmppt, phrase)
     
+    place_image(ctx, img, 7, 27, 109, 77)
+
+    ctx.rectangle(7, 27, 109, 77)
+    ctx.set_line_width(1 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([])
+    ctx.stroke()
+
+    ctx.restore()
+
+def draw_large_poster(ctx, img, name):
+    """ Draw a large version of the poster.
+    
+        Modify and restore the matrix stack.
+    """
+    ctx.save()
+
     # dashed outlines
-    ctx.rectangle(0, 0, 123, 172)
+    ctx.rectangle(0, 0, 173, 245)
 
     ctx.set_line_width(.25 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
     ctx.set_dash([3 * mmppt])
     ctx.stroke()
 
-    # round box and contents
-    ctx.translate(1, 1)
-    draw_rounded_box(ctx, 121, 170)
+    draw_rounded_box(ctx, 2, 2, 169, 241)
 
-    place_image(ctx, img, 6, 26, 109, 77)
+    # big title text
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    ctx.set_font_size(19.6 * mmppt)
 
-    ctx.rectangle(6, 26, 109, 77)
+    ctx.move_to(12, 16)
+    
+    phrases = [((.2, .2, .2),  'Safety Map for '),
+               ((0, .75, .25), name)]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        ctx.show_text(phrase)
+    
+    place_logo(ctx, 12, 21.6, 11.9, 11.9)
+    
+    # explanation
+    ctx.set_font_size(14 * mmppt)
+    ctx.select_font_face('Helvetica')
+
+    ctx.move_to(27, 26)
+    
+    phrases = [((.2, .2, .2),  "In case of"),
+               ((0, .75, .25), "fire or explosion near our apartment,"),
+               ((.2, .2, .2),  "let’s meet at"),
+               ((0, .75, .25), "Madison Square park."),
+               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        continue_text_box(ctx, 27, 163, 17 * mmppt, phrase)
+    
+    place_image(ctx, img, 10, 39, 153, 108)
+
+    ctx.rectangle(10, 39, 153, 108)
     ctx.set_line_width(1 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
     ctx.set_dash([])
@@ -516,8 +576,7 @@ def main(marker, paper, format, bbox, name):
         ctx.translate(19, 24)
         
         poster_img = get_map_image(bbox, 153, 108)
-        
-        place_image(ctx, poster_img, 10, 39, 153, 108)
+        draw_large_poster(ctx, poster_img, name)
 
     surf.finish()
     chmod(filename, 0644)
