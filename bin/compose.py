@@ -112,11 +112,15 @@ def place_image(context, img, width, height):
     # pop
     context.restore()
 
-def place_logo(context):
+def place_logo(context, x, y, w, h):
     """ Add the logo.
+    
+        Position and size are given in millimeters.
     """
     # push
     context.save()
+    
+    context.translate(x, y)
 
     # switch to point scale for the sake of the drawing dimensions
     context.scale(mmppt, mmppt)
@@ -124,6 +128,9 @@ def place_logo(context):
     # Guess what? It's a pain in the ass to use SVG from Cairo:
     # http://cairographics.org/pyrsvg
     svg = rsvg.Handle(pathjoin(dirname(__file__), 'logo.svg'))
+
+    w__, h__, w_, h_ = svg.get_dimension_data()
+    context.scale(ptpmm * w/w_, ptpmm * h/h_)
 
     svg.render_cairo(context)
 
@@ -254,9 +261,7 @@ def draw_card_left(ctx, name):
     ctx.save()
     
     # logo
-    ctx.translate(4, 3)
-    place_logo(ctx)
-    ctx.translate(-4, -3)
+    place_logo(ctx, 4, 3, 6.9, 6.9)
 
     # big title text
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
@@ -329,6 +334,62 @@ def draw_card_right(ctx, img, name):
     draw_rounded_box(ctx, 84, 59)
 
     ctx.restore()
+
+def draw_small_poster(ctx, img, name):
+    """
+    """
+    # big title text
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    ctx.set_font_size(14 * mmppt)
+
+    ctx.move_to(7, 11)
+    
+    phrases = [((.2, .2, .2),  'Safety Map for '),
+               ((0, .75, .25), name)]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        ctx.show_text(phrase)
+    
+    place_logo(ctx, 7, 14.6, 8.5, 8.5)
+    
+    # explanation
+    ctx.set_font_size(10 * mmppt)
+    ctx.select_font_face('Helvetica')
+
+    ctx.move_to(18, 18)
+    
+    phrases = [((.2, .2, .2),  "In case of"),
+               ((0, .75, .25), "fire or explosion near our apartment,"),
+               ((.2, .2, .2),  "let’s meet at"),
+               ((0, .75, .25), "Madison Square park."),
+               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        continue_text_box(ctx, 18, 113, 12 * mmppt, phrase)
+    
+    # dashed outlines
+    ctx.rectangle(0, 0, 123, 172)
+
+    ctx.set_line_width(.25 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([3 * mmppt])
+    ctx.stroke()
+
+    # round box and contents
+    ctx.translate(1, 1)
+    draw_rounded_box(ctx, 121, 170)
+
+    ctx.translate(6, 26)
+    place_image(ctx, img, 109, 77)
+
+    ctx.rectangle(0, 0, 109, 77)
+    ctx.set_line_width(1 * mmppt)
+    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_dash([])
+    ctx.stroke()
 
 def draw_header(ctx, format):
     """ Draw out the header.
@@ -437,28 +498,9 @@ def main(marker, paper, format, bbox, name):
         ctx.translate(*ctx.device_to_user(0, 0))
         ctx.translate(19, 269)
         ctx.rotate(-pi/2)
-    
-        # dashed outlines
-        ctx.rectangle(0, 0, 123, 172)
 
-        ctx.set_line_width(.25 * mmppt)
-        ctx.set_source_rgb(.8, .8, .8)
-        ctx.set_dash([3 * mmppt])
-        ctx.stroke()
-    
-        # round box and contents
-        ctx.translate(1, 1)
-        draw_rounded_box(ctx, 121, 170)
-
-        ctx.translate(6, 26)
         img = get_map_image(bbox, 109, 77)
-        place_image(ctx, img, 109, 77)
-
-        ctx.rectangle(0, 0, 109, 77)
-        ctx.set_line_width(1 * mmppt)
-        ctx.set_source_rgb(.8, .8, .8)
-        ctx.set_dash([])
-        ctx.stroke()
+        draw_small_poster(ctx, img, name)
 
     surf.finish()
     chmod(filename, 0644)
