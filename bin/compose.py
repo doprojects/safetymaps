@@ -89,13 +89,13 @@ def create_cairo_font_face_for_file(filename, faceindex=0, loadoptions=0):
 
     return face
 
-def place_image(context, img, width, height):
-    """ Add an image to a given context, at a given size in millimeters.
+def place_image(context, img, x, y, width, height):
+    """ Add an image to a given context, at a position and size given in millimeters.
     
         Assume that the scale matrix of the context is already in mm.
     """
-    # push
     context.save()
+    context.translate(x, y)
     
     # switch to point scale for the sake of the image dimensions
     context.scale(mmppt, mmppt)
@@ -109,7 +109,6 @@ def place_image(context, img, width, height):
     context.set_source_surface(img, 0, 0)
     context.paint()
 
-    # pop
     context.restore()
 
 def place_logo(context, x, y, w, h):
@@ -289,10 +288,7 @@ def draw_card_right(ctx, img, name):
     """
     ctx.save()
     
-    ctx.save()
-    ctx.translate(1, 18)
-    place_image(ctx, img, 84, 39)
-    ctx.restore()
+    place_image(ctx, img, 1, 18, 84, 39)
 
     # big title text
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
@@ -336,8 +332,12 @@ def draw_card_right(ctx, img, name):
     ctx.restore()
 
 def draw_small_poster(ctx, img, name):
+    """ Draw a small version of the poster.
+    
+        Modify and restore the matrix stack.
     """
-    """
+    ctx.save()
+
     # big title text
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
@@ -382,14 +382,15 @@ def draw_small_poster(ctx, img, name):
     ctx.translate(1, 1)
     draw_rounded_box(ctx, 121, 170)
 
-    ctx.translate(6, 26)
-    place_image(ctx, img, 109, 77)
+    place_image(ctx, img, 6, 26, 109, 77)
 
-    ctx.rectangle(0, 0, 109, 77)
+    ctx.rectangle(6, 26, 109, 77)
     ctx.set_line_width(1 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
     ctx.set_dash([])
     ctx.stroke()
+
+    ctx.restore()
 
 def draw_header(ctx, format):
     """ Draw out the header.
@@ -501,6 +502,14 @@ def main(marker, paper, format, bbox, name):
 
         img = get_map_image(bbox, 109, 77)
         draw_small_poster(ctx, img, name)
+
+    elif format == 'poster':
+        ctx.translate(*ctx.device_to_user(0, 0))
+        ctx.translate(19, 24)
+        
+        img = get_map_image(bbox, 153, 108)
+        
+        place_image(ctx, img, 10, 39, 153, 108)
 
     surf.finish()
     chmod(filename, 0644)
