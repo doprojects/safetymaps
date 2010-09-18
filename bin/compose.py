@@ -290,7 +290,7 @@ def write_phrases(ctx, phrases, justify_right=False):
         if justify_right:
             ctx.rel_move_to(-w, 0)
 
-def draw_card_left(ctx, name):
+def draw_card_left(ctx, recipient, sender):
     """ Draw out the left-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -310,14 +310,14 @@ def draw_card_left(ctx, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'Safety Map for '),
-                   (green,   name)])
+                   (green,   recipient)])
 
     # "from" text
     ctx.move_to(81.4, 56)
 
     write_phrases(ctx,
                   [(dk_gray, 'from '),
-                   (green,   name)],
+                   (green,   sender)],
                   justify_right=True)
 
     # body text
@@ -337,7 +337,7 @@ def draw_card_left(ctx, name):
     
     ctx.restore()
 
-def draw_card_right(ctx, img, point, name):
+def draw_card_right(ctx, img, point):
     """ Draw out the right-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -385,7 +385,7 @@ def draw_card_right(ctx, img, point, name):
 
     ctx.restore()
 
-def draw_small_poster(ctx, img, point, name):
+def draw_small_poster(ctx, img, point, recipient, sender):
     """ Draw a small version of the poster.
     
         Modify and restore the matrix stack.
@@ -414,7 +414,7 @@ def draw_small_poster(ctx, img, point, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'Safety Map for '),
-                   (green,   name)])
+                   (green,   recipient)])
     
     # "from" text
     ctx.move_to(115.8, 159)
@@ -423,7 +423,7 @@ def draw_small_poster(ctx, img, point, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'from '),
-                   (green,   name)],
+                   (green,   sender)],
                   justify_right=True)
 
     # explanation text
@@ -470,7 +470,7 @@ def draw_small_poster(ctx, img, point, name):
 
     ctx.restore()
 
-def draw_large_poster(ctx, img, point, name):
+def draw_large_poster(ctx, img, point, recipient, sender):
     """ Draw a large version of the poster.
     
         Modify and restore the matrix stack.
@@ -499,7 +499,7 @@ def draw_large_poster(ctx, img, point, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'Safety Map for '),
-                   (green,   name)])
+                   (green,   recipient)])
     
     # "from" text
     ctx.move_to(163, 224)
@@ -508,7 +508,7 @@ def draw_large_poster(ctx, img, point, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'from '),
-                   (green,   name)],
+                   (green,   sender)],
                   justify_right=True)
 
     # explanation text
@@ -645,7 +645,7 @@ def draw_letter_master(ctx, format):
 
 parser = OptionParser()
 
-parser.set_defaults(name='Fred', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+parser.set_defaults(recipient='Fred', sender='Wilma', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
 
 papers = 'a4 letter'.split()
 formats = '4up 2up-fridge poster'.split()
@@ -666,10 +666,13 @@ parser.add_option('-b', '--bbox', dest='bbox',
                   help='North, west, south, east bounds of map to show.',
                   type='float', nargs=4)
 
-parser.add_option('-n', '--name', dest='name',
+parser.add_option('-r', '--recipient', dest='recipient',
                   help='Name of recipient - keep it short!')
 
-def main(marker, paper, format, bbox, name):
+parser.add_option('-s', '--sender', dest='sender',
+                  help='Name of sender - keep it short!')
+
+def main(marker, paper, format, bbox, recipient, sender):
     """
     """
     mark = Location(*marker)
@@ -717,10 +720,10 @@ def main(marker, paper, format, bbox, name):
         ctx.stroke()
     
         # two card sides and contents
-        draw_card_left(ctx, name)
+        draw_card_left(ctx, recipient, sender)
         ctx.translate(86.5, 0)
 
-        draw_card_right(ctx, card_img, mark_point, name)
+        draw_card_right(ctx, card_img, mark_point)
         ctx.translate(-86.5, 61)
 
     if format == '4up':
@@ -738,14 +741,14 @@ def main(marker, paper, format, bbox, name):
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 109, 77, mark)
-        draw_small_poster(ctx, poster_img, mark_point, name)
+        draw_small_poster(ctx, poster_img, mark_point, recipient, sender)
 
     elif format == 'poster':
         ctx.rectangle(0, 0, 173, 245)
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 153, 108, mark)
-        draw_large_poster(ctx, poster_img, mark_point, name)
+        draw_large_poster(ctx, poster_img, mark_point, recipient, sender)
 
     surf.finish()
     chmod(filename, 0644)
@@ -754,4 +757,4 @@ def main(marker, paper, format, bbox, name):
 if __name__ == '__main__':
     opts, args = parser.parse_args()
 
-    print main(opts.point, opts.paper, opts.format, opts.bbox, opts.name)
+    print main(opts.point, opts.paper, opts.format, opts.bbox, opts.recipient, opts.sender)
