@@ -167,11 +167,13 @@ def place_hands(context, x, y, format):
     filename = pathjoin(dirname(__file__), 'hands-%(format)s.svg' % locals())
     place_svg_image(context, filename, x, y, flush_right=True)
 
-def place_marker(context):
+def place_marker(context, x, y):
     """ Draw a provisional-looking marker.
     """
     # push
     context.save()
+    
+    context.translate(x, y)
 
     # switch to point scale for the sake of the drawing dimensions
     context.scale(mmppt, mmppt)
@@ -216,12 +218,12 @@ def draw_rounded_box(ctx, x, y, width, height):
     
     ctx.restore()
 
-def get_map_image(bbox, width, height, target_dpi=100):
-    """ Get a cairo ImageSurface for a given bounding box.
+def get_map_image(bbox, width, height, marker, target_dpi=100):
+    """ Get a cairo ImageSurface for a given bounding box, plus the (x, y) point of a marker.
     
         Try to match a target DPI. Width and height are given in millimeters!
     """
-    prov = TemplatedMercatorProvider('http://127.0.0.1/~migurski/TileStache/tilestache.cgi/osm/{Z}/{X}/{Y}.png')
+    prov = TemplatedMercatorProvider('http://a.tile.cloudmade.com/1a914755a77758e49e19a26e799268b7/22677/256/{Z}/{X}/{Y}.png')
     locA, locB = Location(bbox[0], bbox[1]), Location(bbox[2], bbox[3])
     
     aspect = float(width) / float(height)
@@ -238,11 +240,15 @@ def get_map_image(bbox, width, height, target_dpi=100):
     handle, filename = mkstemp(suffix='.png')
     close(handle)
     
+    point = mmap.locationPoint(marker)
+    x = width * point.x / mmap.dimensions.x
+    y = height * point.y / mmap.dimensions.y
+    
     mmap.draw().save(filename)
     img = ImageSurface.create_from_png(filename)
     unlink(filename)
     
-    return img
+    return img, (x, y)
 
 def continue_text_box(ctx, left, width, leading, text):
     """ Fill up a text box with words.
@@ -331,7 +337,7 @@ def draw_card_left(ctx, name):
     
     ctx.restore()
 
-def draw_card_right(ctx, img, name):
+def draw_card_right(ctx, img, point, name):
     """ Draw out the right-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -339,6 +345,7 @@ def draw_card_right(ctx, img, name):
     ctx.save()
     
     place_image(ctx, img, 1, 18, 84, 39)
+    place_marker(ctx, 1 + point[0], 18 + point[1])
 
     draw_rounded_box(ctx, 1, 1, 84, 59)
 
@@ -351,7 +358,8 @@ def draw_card_right(ctx, img, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today())])
+                   (green,   today()),
+                   (dk_gray, '.')])
 
     # explanation text
     ctx.set_font_size(8 * mmppt)
@@ -377,7 +385,7 @@ def draw_card_right(ctx, img, name):
 
     ctx.restore()
 
-def draw_small_poster(ctx, img, name):
+def draw_small_poster(ctx, img, point, name):
     """ Draw a small version of the poster.
     
         Modify and restore the matrix stack.
@@ -387,6 +395,7 @@ def draw_small_poster(ctx, img, name):
     draw_rounded_box(ctx, 1.5, 1.5, 119.5, 170)
     
     place_image(ctx, img, 6.8, 27, 109, 77)
+    place_marker(ctx, 6.8 + point[0], 27 + point[1])
 
     ctx.rectangle(6.8, 27, 109, 77)
     ctx.set_line_width(1 * mmppt)
@@ -440,7 +449,8 @@ def draw_small_poster(ctx, img, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today())],
+                   (green,   today()),
+                   (dk_gray, '.')],
                   justify_right=True)
 
     # body text
@@ -460,7 +470,7 @@ def draw_small_poster(ctx, img, name):
 
     ctx.restore()
 
-def draw_large_poster(ctx, img, name):
+def draw_large_poster(ctx, img, point, name):
     """ Draw a large version of the poster.
     
         Modify and restore the matrix stack.
@@ -470,6 +480,7 @@ def draw_large_poster(ctx, img, name):
     draw_rounded_box(ctx, 2.5, 2.5, 168, 240)
     
     place_image(ctx, img, 10, 39, 153, 108)
+    place_marker(ctx, 10 + point[0], 39 + point[1])
 
     ctx.rectangle(10, 39, 153, 108)
     ctx.set_line_width(1 * mmppt)
@@ -523,7 +534,8 @@ def draw_large_poster(ctx, img, name):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today())],
+                   (green,   today()),
+                   (dk_gray, '.')],
                   justify_right=True)
 
     # body text
@@ -691,7 +703,7 @@ def main(marker, paper, format, bbox, name):
     reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
     
     if reps[format]:
-        card_img = get_map_image(bbox, 84, 39)
+        card_img, mark_point = get_map_image(bbox, 84, 39, mark)
         
     for i in range(reps[format]):
     
@@ -708,7 +720,7 @@ def main(marker, paper, format, bbox, name):
         draw_card_left(ctx, name)
         ctx.translate(86.5, 0)
 
-        draw_card_right(ctx, card_img, name)
+        draw_card_right(ctx, card_img, mark_point, name)
         ctx.translate(-86.5, 61)
 
     if format == '4up':
@@ -725,15 +737,15 @@ def main(marker, paper, format, bbox, name):
         ctx.rectangle(0, 0, 122.5, 173)
         ctx.stroke()
 
-        poster_img = get_map_image(bbox, 109, 77)
-        draw_small_poster(ctx, poster_img, name)
+        poster_img, mark_point = get_map_image(bbox, 109, 77, mark)
+        draw_small_poster(ctx, poster_img, mark_point, name)
 
     elif format == 'poster':
         ctx.rectangle(0, 0, 173, 245)
         ctx.stroke()
 
-        poster_img = get_map_image(bbox, 153, 108)
-        draw_large_poster(ctx, poster_img, name)
+        poster_img, mark_point = get_map_image(bbox, 153, 108, mark)
+        draw_large_poster(ctx, poster_img, mark_point, name)
 
     surf.finish()
     chmod(filename, 0644)
