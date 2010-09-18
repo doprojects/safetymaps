@@ -148,7 +148,7 @@ def place_do_logo(context, x, y):
     filename = pathjoin(dirname(__file__), 'do.svg')
     place_svg_image(context, filename, x, y, flush_right=True)
 
-def place_logo(context, x, y, w, h):
+def place_sm_logo(context, x, y, w, h):
     """ Add the logo.
     
         Position and size are given in millimeters.
@@ -260,6 +260,25 @@ def today():
     """
     return strftime('%d %b %Y').lstrip('0')
 
+def write_phrases(ctx, phrases, justify_right=False):
+    """
+    """
+    if justify_right:
+        phrases = reversed(phrases)
+    
+    for (rgb, phrase) in phrases:
+        ctx.set_source_rgb(*rgb)
+        
+        w = ctx.text_extents(phrase)[4]
+        
+        if justify_right:
+            ctx.rel_move_to(-w, 0)
+        
+        ctx.show_text(phrase)
+        
+        if justify_right:
+            ctx.rel_move_to(-w, 0)
+
 def draw_card_left(ctx, name):
     """ Draw out the left-hand side of a card.
     
@@ -267,25 +286,44 @@ def draw_card_left(ctx, name):
     """
     ctx.save()
     
-    # logo
-    place_logo(ctx, 4, 3, 6.9, 6.9)
+    draw_rounded_box(ctx, 1.5, 1, 84, 59)
+
+    place_sm_logo(ctx, 4.2, 3.4, 6.9, 6.9)
 
     # big title text
+    ctx.move_to(12.5, 8.4)
+    
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
-    ctx.move_to(12, 8)
-    
-    phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), name)]
-    
-    for (rgb, phrase) in phrases:
-        ctx.set_source_rgb(*rgb)
-        ctx.show_text(phrase)
+    write_phrases(ctx,
+                  [((.2, .2, .2), 'Safety Map for '),
+                   ((0, .8, 0),   name)])
 
-    draw_rounded_box(ctx, 1, 1, 84, 59)
+    # "from" text
+    ctx.move_to(81.4, 56)
 
+    write_phrases(ctx,
+                  [((.2, .2, .2), 'from '),
+                   ((0, .8, 0),   name)],
+                  justify_right=True)
+
+    # body text
+    ctx.set_source_rgb(.6, .6, .6)
+    ctx.select_font_face('Helvetica')
+    
+    ctx.move_to(5.5, 17)
+    ctx.set_font_size(8 * mmppt)
+    
+    ctx.show_text('(Leave a personal note here)')
+    
+    ctx.move_to(5.5, 24.5)
+    ctx.set_font_size(10 * mmppt)
+    
+    continue_text_box(ctx, 5.5, 77, 12 * mmppt,
+                      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo invent ore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.\n\nMy love always, G.')
+    
     ctx.restore()
 
 def draw_card_right(ctx, img, name):
@@ -297,43 +335,40 @@ def draw_card_right(ctx, img, name):
     
     place_image(ctx, img, 1, 18, 84, 39)
 
+    draw_rounded_box(ctx, 1, 1, 84, 59)
+
     # big title text
+    ctx.move_to(3.2, 6.9)
+    
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
-    ctx.move_to(4, 7.5)
-    
-    phrases = [((.2, .2, .2),  'This Safety Map was made on '),
-               ((0, .75, .25), today())]
-    
-    for (rgb, phrase) in phrases:
-        ctx.set_source_rgb(*rgb)
-        ctx.show_text(phrase)
-    
-    # explanation
+    write_phrases(ctx,
+                  [((.2, .2, .2), 'This Safety Map was made on '),
+                   ((0, .8, 0),   today())])
+
+    # explanation text
     ctx.set_font_size(8 * mmppt)
     ctx.select_font_face('Helvetica')
 
-    ctx.move_to(4, 9 + 9.6 * mmppt)
+    ctx.move_to(3.6, 12)
     
-    phrases = [((.2, .2, .2),  "In case of"),
-               ((0, .75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2),  "let’s meet at"),
-               ((0, .75, .25), "Madison Square park."),
-               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+    phrases = [((.2, .2, .2), "In case of"),
+               ((0, .8, 0),   "fire or explosion near our apartment,"),
+               ((.2, .2, .2), "let’s meet at"),
+               ((0, .8, 0),   "Madison Square park."),
+               ((.2, .2, .2), "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
-        continue_text_box(ctx, 4, 78, 9.6 * mmppt, phrase)
+        continue_text_box(ctx, 3.6, 78, 9.6 * mmppt, phrase)
 
     # text on the bottom
-    ctx.move_to(4, 58.75)
-    ctx.set_source_rgb(.6, .6, .6)
+    ctx.move_to(3.8, 58.8)
+    ctx.set_source_rgb(.4, .4, .4)
     ctx.set_font_size(4 * mmppt)
     ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
-
-    draw_rounded_box(ctx, 1, 1, 84, 59)
 
     ctx.restore()
 
@@ -362,14 +397,14 @@ def draw_small_poster(ctx, img, name):
 
     ctx.move_to(7, 11)
     
-    phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), name)]
+    phrases = [((.2, .2, .2), 'Safety Map for '),
+               ((0, .8, 0),   name)]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
         ctx.show_text(phrase)
     
-    place_logo(ctx, 7, 14.6, 8.5, 8.5)
+    place_sm_logo(ctx, 7, 14.6, 8.5, 8.5)
     
     # explanation
     ctx.set_font_size(10 * mmppt)
@@ -377,11 +412,11 @@ def draw_small_poster(ctx, img, name):
 
     ctx.move_to(18, 18)
     
-    phrases = [((.2, .2, .2),  "In case of"),
-               ((0, .75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2),  "let’s meet at"),
-               ((0, .75, .25), "Madison Square park."),
-               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+    phrases = [((.2, .2, .2), "In case of"),
+               ((0, .8, 0),   "fire or explosion near our apartment,"),
+               ((.2, .2, .2), "let’s meet at"),
+               ((0, .8, 0),   "Madison Square park."),
+               ((.2, .2, .2), "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -421,14 +456,14 @@ def draw_large_poster(ctx, img, name):
 
     ctx.move_to(12, 16)
     
-    phrases = [((.2, .2, .2),  'Safety Map for '),
-               ((0, .75, .25), name)]
+    phrases = [((.2, .2, .2), 'Safety Map for '),
+               ((0, .8, 0),   name)]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
         ctx.show_text(phrase)
     
-    place_logo(ctx, 12, 21.6, 11.9, 11.9)
+    place_sm_logo(ctx, 12, 21.6, 11.9, 11.9)
     
     # explanation
     ctx.set_font_size(14 * mmppt)
@@ -436,11 +471,11 @@ def draw_large_poster(ctx, img, name):
 
     ctx.move_to(27, 26)
     
-    phrases = [((.2, .2, .2),  "In case of"),
-               ((0, .75, .25), "fire or explosion near our apartment,"),
-               ((.2, .2, .2),  "let’s meet at"),
-               ((0, .75, .25), "Madison Square park."),
-               ((.2, .2, .2),  "I’ve marked the spot on this map:")]
+    phrases = [((.2, .2, .2), "In case of"),
+               ((0, .8, 0),   "fire or explosion near our apartment,"),
+               ((.2, .2, .2), "let’s meet at"),
+               ((0, .8, 0),   "Madison Square park."),
+               ((.2, .2, .2), "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -595,7 +630,7 @@ def main(marker, paper, format, bbox, name):
     
     elif paper == 'letter':
         draw_letter_master(ctx, format)
-        ctx.translate(22, 17.5)
+        ctx.translate(21, 18)
 
     ctx.set_line_width(.25 * mmppt)
     ctx.set_source_rgb(.8, .8, .8)
@@ -611,18 +646,18 @@ def main(marker, paper, format, bbox, name):
         # dashed outlines
         ctx.move_to(0, 61)
         ctx.line_to(0, 0)
-        ctx.line_to(172, 0)
-        ctx.line_to(172, 61)
+        ctx.line_to(173, 0)
+        ctx.line_to(173, 61)
         #ctx.move_to(86, 0)
         #ctx.line_to(86, 61)
         ctx.stroke()
     
         # two card sides and contents
         draw_card_left(ctx, name)
-        ctx.translate(86, 0)
+        ctx.translate(86.5, 0)
 
         draw_card_right(ctx, card_img, name)
-        ctx.translate(-86, 61)
+        ctx.translate(-86.5, 61)
 
     if format == '4up':
         # bottom dashed outline
