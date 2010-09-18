@@ -455,7 +455,7 @@ def draw_small_poster(ctx, img, name):
     # text on the bottom
     ctx.move_to(6.8, 167.6)
     ctx.set_source_rgb(*md_gray)
-    ctx.set_font_size(7 * mmppt)
+    ctx.set_font_size(7.1 * mmppt)
     ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
 
     ctx.restore()
@@ -467,38 +467,45 @@ def draw_large_poster(ctx, img, name):
     """
     ctx.save()
 
-    # dashed outlines
-    ctx.rectangle(0, 0, 173, 245)
+    draw_rounded_box(ctx, 2.5, 2.5, 168, 240)
+    
+    place_image(ctx, img, 10, 39, 153, 108)
 
-    ctx.set_line_width(.25 * mmppt)
-    ctx.set_source_rgb(*md_gray)
-    ctx.set_dash([3 * mmppt])
+    ctx.rectangle(10, 39, 153, 108)
+    ctx.set_line_width(1 * mmppt)
+    ctx.set_source_rgb(*lt_gray)
+    ctx.set_dash([])
     ctx.stroke()
 
-    draw_rounded_box(ctx, 2, 2, 169, 241)
+    place_sm_logo(ctx, 12.1, 21.6, 11.9, 11.9)
 
     # big title text
+    ctx.move_to(11.9, 15.9)
+    
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(19.6 * mmppt)
 
-    ctx.move_to(12, 16)
+    write_phrases(ctx,
+                  [(dk_gray, 'Safety Map for '),
+                   (green,   name)])
     
-    phrases = [(dk_gray, 'Safety Map for '),
-               (green,   name)]
+    # "from" text
+    ctx.move_to(163, 224)
+
+    ctx.set_font_size(14 * mmppt)
+
+    write_phrases(ctx,
+                  [(dk_gray, 'from '),
+                   (green,   name)],
+                  justify_right=True)
+
+    # explanation text
+    ctx.move_to(26.8, 26)
     
-    for (rgb, phrase) in phrases:
-        ctx.set_source_rgb(*rgb)
-        ctx.show_text(phrase)
-    
-    place_sm_logo(ctx, 12, 21.6, 11.9, 11.9)
-    
-    # explanation
     ctx.set_font_size(14 * mmppt)
     ctx.select_font_face('Helvetica')
 
-    ctx.move_to(27, 26)
-    
     phrases = [(dk_gray, "In case of"),
                (green,   "fire or explosion near our apartment,"),
                (dk_gray, "let’s meet at"),
@@ -507,15 +514,32 @@ def draw_large_poster(ctx, img, name):
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
-        continue_text_box(ctx, 27, 163, 17 * mmppt, phrase)
-    
-    place_image(ctx, img, 10, 39, 153, 108)
+        continue_text_box(ctx, 26.8, 26.8 + 136, 16.8 * mmppt, phrase)
 
-    ctx.rectangle(10, 39, 153, 108)
-    ctx.set_line_width(1 * mmppt)
+    # text on the bottom
+    ctx.move_to(163, 150.5)
+
+    ctx.set_font_size(7 * mmppt)
+
+    write_phrases(ctx,
+                  [(dk_gray, 'This Safety Map was made on '),
+                   (green,   today())],
+                  justify_right=True)
+
+    # body text
+    ctx.move_to(15, 170)
+    
     ctx.set_source_rgb(*md_gray)
-    ctx.set_dash([])
-    ctx.stroke()
+    ctx.set_font_size(14 * mmppt)
+    
+    continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt,
+                      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo invent ore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.\n\nMy love always, G.')
+
+    # text on the bottom
+    ctx.move_to(10, 236)
+    ctx.set_source_rgb(*md_gray)
+    ctx.set_font_size(10.8 * mmppt)
+    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
@@ -705,9 +729,9 @@ def main(marker, paper, format, bbox, name):
         draw_small_poster(ctx, poster_img, name)
 
     elif format == 'poster':
-        ctx.translate(*ctx.device_to_user(0, 0))
-        ctx.translate(19, 24)
-        
+        ctx.rectangle(0, 0, 173, 245)
+        ctx.stroke()
+
         poster_img = get_map_image(bbox, 153, 108)
         draw_large_poster(ctx, poster_img, name)
 
