@@ -153,25 +153,8 @@ def place_logo(context, x, y, w, h):
     
         Position and size are given in millimeters.
     """
-    # push
-    context.save()
-    
-    context.translate(x, y)
-
-    # switch to point scale for the sake of the drawing dimensions
-    context.scale(mmppt, mmppt)
-    
-    # Guess what? It's a pain in the ass to use SVG from Cairo:
-    # http://cairographics.org/pyrsvg
-    svg = rsvg.Handle(pathjoin(dirname(__file__), 'logo.svg'))
-
-    w__, h__, w_, h_ = svg.get_dimension_data()
-    context.scale(ptpmm * w/w_, ptpmm * h/h_)
-
-    svg.render_cairo(context)
-
-    # pop
-    context.restore()
+    filename = pathjoin(dirname(__file__), 'logo.svg')
+    place_svg_image(context, filename, x, y, width=w, height=h)
 
 def place_hands(context, x, y, format):
     """ Add the hands icon, flush-right.
@@ -473,29 +456,6 @@ def draw_large_poster(ctx, img, name):
 
     ctx.restore()
 
-def draw_header(ctx, format):
-    """ Draw out the header.
-    
-        Modify and restore the matrix stack.
-    """
-    ctx.save()
-    
-    # top-left of the page, draw the header
-    ctx.translate(20, 20)
-
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
-    face = create_cairo_font_face_for_file(face)
-    ctx.set_font_face(face)
-    ctx.set_font_size(24 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
-    ctx.show_text('Safety Maps')
-    
-    # top-right of the page, draw the hands icon
-    ctx.translate(170, -8)
-    place_hands(ctx, format)
-
-    ctx.restore()
-
 def draw_a4_master(ctx, format):
     """
     """
@@ -524,19 +484,19 @@ def draw_a4_master(ctx, format):
     # bottom-left of page, draw the footer
     ctx.set_font_size(9 * mmppt)
 
-    ctx.move_to(25, 276)
+    ctx.move_to(25.5, 276)
     ctx.show_text('2011 Do projects.')
 
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(20, 281)
-    ctx.show_text('Safety Maps and Open Street Map data are offered to you under a')
+    ctx.show_text('Safety Maps and OpenStreetMap.org data are offered to you under')
     ctx.move_to(20, 281 + 9 * mmppt)
-    ctx.show_text('Creative Commons Attribution-Noncommercial-Share Alike license.')
+    ctx.show_text('a Creative Commons Attribution-Noncommercial-Share Alike license.')
     ctx.move_to(20, 281 + 18 * mmppt)
     ctx.show_text('Please see creativecommons.org/licenses/by-nc-sa/3.0 for details.')
     
-    place_cc_logo(ctx, 20, 273, 4.4, 4.4)
+    place_cc_logo(ctx, 20, 272.7, 4.7, 4.7)
     place_do_logo(ctx, 192, 280)
     
     ctx.restore()
@@ -545,6 +505,42 @@ def draw_letter_master(ctx, format):
     """
     """
     ctx.save()
+    
+    # top-left of page, draw the header
+    ctx.set_source_rgb(.6, .6, .6)
+
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = create_cairo_font_face_for_file(face)
+    ctx.set_font_face(face)
+    ctx.set_font_size(24 * mmppt)
+
+    ctx.move_to(22, 12)
+    ctx.show_text('Safety Maps')
+    
+    ctx.select_font_face('Helvetica')
+    ctx.set_font_size(8 * mmppt)
+
+    ctx.move_to(22, 16)
+    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    
+    # top-right of page, draw the hands icon
+    place_hands(ctx, 193, 6, format)
+    
+    # bottom-left of page, draw the footer
+    ctx.set_font_size(6 * mmppt)
+
+    ctx.move_to(25, 268)
+    ctx.show_text('2011 Do projects.')
+
+    ctx.move_to(43, 268)
+    ctx.show_text('Safety Maps and OpenStreetMap.org data are offered to you under')
+    ctx.move_to(43, 268 + 7 * mmppt)
+    ctx.show_text('a Creative Commons Attribution-Noncommercial-Share Alike license.')
+    ctx.move_to(43, 268 + 14 * mmppt)
+    ctx.show_text('Please see creativecommons.org/licenses/by-nc-sa/3.0 for details.')
+    
+    place_cc_logo(ctx, 21, 265.7, 3.3, 3.3)
+    place_do_logo(ctx, 192, 268)
     
     ctx.restore()
 
