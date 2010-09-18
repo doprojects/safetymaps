@@ -111,6 +111,43 @@ def place_image(context, img, x, y, width, height):
 
     context.restore()
 
+def place_svg_image(context, filename, x, y, width=None, height=None, flush_right=False):
+    """
+    """
+    context.save()
+    context.translate(x, y)
+
+    # switch to point scale for the sake of the drawing dimensions
+    context.scale(mmppt, mmppt)
+    
+    # Guess what? It's a pain in the ass to use SVG from Cairo:
+    # http://cairographics.org/pyrsvg
+    svg = rsvg.Handle(filename)
+
+    w_, h_, w, h = svg.get_dimension_data()
+    
+    if width and height:
+        context.scale(ptpmm * width/w, ptpmm * height/h)
+
+    if flush_right:
+        context.translate(-w, 0)
+    
+    svg.render_cairo(context)
+    
+    context.restore()
+
+def place_cc_logo(context, x, y, w, h):
+    """
+    """
+    filename = pathjoin(dirname(__file__), 'cc.svg')
+    place_svg_image(context, filename, x, y, width=w, height=h)
+
+def place_do_logo(context, x, y):
+    """
+    """
+    filename = pathjoin(dirname(__file__), 'do.svg')
+    place_svg_image(context, filename, x, y, flush_right=True)
+
 def place_logo(context, x, y, w, h):
     """ Add the logo.
     
@@ -136,27 +173,11 @@ def place_logo(context, x, y, w, h):
     # pop
     context.restore()
 
-def place_hands(context, format):
+def place_hands(context, x, y, format):
     """ Add the hands icon, flush-right.
     """
-    # push
-    context.save()
-
-    # switch to point scale for the sake of the drawing dimensions
-    context.scale(mmppt, mmppt)
-    
-    # Guess what? It's a pain in the ass to use SVG from Cairo:
-    # http://cairographics.org/pyrsvg
-    svg = 'hands-%(format)s.svg' % locals()
-    svg = rsvg.Handle(pathjoin(dirname(__file__), svg))
-
-    w, h, w_, h_ = svg.get_dimension_data()
-    context.translate(-w, 0)
-
-    svg.render_cairo(context)
-
-    # pop
-    context.restore()
+    filename = pathjoin(dirname(__file__), 'hands-%(format)s.svg' % locals())
+    place_svg_image(context, filename, x, y, flush_right=True)
 
 def place_marker(context):
     """ Draw a provisional-looking marker.
@@ -475,6 +496,58 @@ def draw_header(ctx, format):
 
     ctx.restore()
 
+def draw_a4_master(ctx, format):
+    """
+    """
+    ctx.save()
+    
+    # top-left of page, draw the header
+    ctx.set_source_rgb(.6, .6, .6)
+
+    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = create_cairo_font_face_for_file(face)
+    ctx.set_font_face(face)
+    ctx.set_font_size(24 * mmppt)
+
+    ctx.move_to(21, 18)
+    ctx.show_text('Safety Maps')
+    
+    ctx.select_font_face('Helvetica')
+    ctx.set_font_size(8 * mmppt)
+
+    ctx.move_to(21, 22)
+    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    
+    # top-right of page, draw the hands icon
+    place_hands(ctx, 192, 11, format)
+    
+    # bottom-left of page, draw the footer
+    ctx.set_font_size(9 * mmppt)
+
+    ctx.move_to(25, 276)
+    ctx.show_text('2011 Do projects.')
+
+    ctx.set_font_size(8 * mmppt)
+
+    ctx.move_to(20, 281)
+    ctx.show_text('Safety Maps and Open Street Map data are offered to you under a')
+    ctx.move_to(20, 281 + 9 * mmppt)
+    ctx.show_text('Creative Commons Attribution-Noncommercial-Share Alike license.')
+    ctx.move_to(20, 281 + 18 * mmppt)
+    ctx.show_text('Please see creativecommons.org/licenses/by-nc-sa/3.0 for details.')
+    
+    place_cc_logo(ctx, 20, 273, 4.4, 4.4)
+    place_do_logo(ctx, 192, 280)
+    
+    ctx.restore()
+
+def draw_letter_master(ctx, format):
+    """
+    """
+    ctx.save()
+    
+    ctx.restore()
+
 parser = OptionParser()
 
 parser.set_defaults(name='Fred', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
@@ -520,13 +593,12 @@ def main(marker, paper, format, bbox, name):
     ctx.scale(ptpmm, ptpmm)
     ctx.select_font_face('Helvetica')
     
-    draw_header(ctx, format)
-
     if paper == 'a4':
+        draw_a4_master(ctx, format)
         ctx.translate(19, 24)
     
     elif paper == 'letter':
-        raise Exception('wah')
+        draw_letter_master(ctx, format)
         ctx.translate(22, 17.5)
 
     ctx.set_line_width(.25 * mmppt)
@@ -564,8 +636,7 @@ def main(marker, paper, format, bbox, name):
 
     elif format == '2up-fridge':
         # prepare to draw sideways
-        ctx.translate(*ctx.device_to_user(0, 0))
-        ctx.translate(19, 269)
+        ctx.translate(0, 123)
         ctx.rotate(-pi/2)
 
         poster_img = get_map_image(bbox, 109, 77)
