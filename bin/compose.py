@@ -22,6 +22,11 @@ inppt = 0.013888889
 ptpin = 1./inppt
 ptpmm = 1./mmppt
 
+green = (0, .8, 0)
+dk_gray = (.2, .2, .2) # for text, alternates with green
+md_gray = (.6, .6, .6) # mostly for page master text & dotted lines
+lt_gray = (.8, .8, .8) # fat, round borders
+
 def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
     """ Get a map by extent and zoom, and adjust it to the desired aspect ratio.
     
@@ -205,7 +210,7 @@ def draw_rounded_box(ctx, x, y, width, height):
     ctx.rel_curve_to(0, -bezier, bezier, -radius, radius, -radius)
     
     ctx.set_line_width(2 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*lt_gray)
     ctx.set_dash([])
     ctx.stroke()
     
@@ -298,19 +303,19 @@ def draw_card_left(ctx, name):
     ctx.set_font_size(11 * mmppt)
 
     write_phrases(ctx,
-                  [((.2, .2, .2), 'Safety Map for '),
-                   ((0, .8, 0),   name)])
+                  [(dk_gray, 'Safety Map for '),
+                   (green,   name)])
 
     # "from" text
     ctx.move_to(81.4, 56)
 
     write_phrases(ctx,
-                  [((.2, .2, .2), 'from '),
-                   ((0, .8, 0),   name)],
+                  [(dk_gray, 'from '),
+                   (green,   name)],
                   justify_right=True)
 
     # body text
-    ctx.set_source_rgb(.6, .6, .6)
+    ctx.set_source_rgb(*md_gray)
     ctx.select_font_face('Helvetica')
     
     ctx.move_to(5.5, 17)
@@ -345,8 +350,8 @@ def draw_card_right(ctx, img, name):
     ctx.set_font_size(11 * mmppt)
 
     write_phrases(ctx,
-                  [((.2, .2, .2), 'This Safety Map was made on '),
-                   ((0, .8, 0),   today())])
+                  [(dk_gray, 'This Safety Map was made on '),
+                   (green,   today())])
 
     # explanation text
     ctx.set_font_size(8 * mmppt)
@@ -354,11 +359,11 @@ def draw_card_right(ctx, img, name):
 
     ctx.move_to(3.6, 12)
     
-    phrases = [((.2, .2, .2), "In case of"),
-               ((0, .8, 0),   "fire or explosion near our apartment,"),
-               ((.2, .2, .2), "let’s meet at"),
-               ((0, .8, 0),   "Madison Square park."),
-               ((.2, .2, .2), "I’ve marked the spot on this map:")]
+    phrases = [(dk_gray, "In case of"),
+               (green,   "fire or explosion near our apartment,"),
+               (dk_gray, "let’s meet at"),
+               (green,   "Madison Square park."),
+               (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -383,7 +388,7 @@ def draw_small_poster(ctx, img, name):
     ctx.rectangle(0, 0, 123, 172)
 
     ctx.set_line_width(.25 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*md_gray)
     ctx.set_dash([3 * mmppt])
     ctx.stroke()
 
@@ -397,8 +402,8 @@ def draw_small_poster(ctx, img, name):
 
     ctx.move_to(7, 11)
     
-    phrases = [((.2, .2, .2), 'Safety Map for '),
-               ((0, .8, 0),   name)]
+    phrases = [(dk_gray, 'Safety Map for '),
+               (green,   name)]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -412,11 +417,11 @@ def draw_small_poster(ctx, img, name):
 
     ctx.move_to(18, 18)
     
-    phrases = [((.2, .2, .2), "In case of"),
-               ((0, .8, 0),   "fire or explosion near our apartment,"),
-               ((.2, .2, .2), "let’s meet at"),
-               ((0, .8, 0),   "Madison Square park."),
-               ((.2, .2, .2), "I’ve marked the spot on this map:")]
+    phrases = [(dk_gray, "In case of"),
+               (green,   "fire or explosion near our apartment,"),
+               (dk_gray, "let’s meet at"),
+               (green,   "Madison Square park."),
+               (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -426,7 +431,7 @@ def draw_small_poster(ctx, img, name):
 
     ctx.rectangle(7, 27, 109, 77)
     ctx.set_line_width(1 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*lt_gray)
     ctx.set_dash([])
     ctx.stroke()
 
@@ -443,7 +448,7 @@ def draw_large_poster(ctx, img, name):
     ctx.rectangle(0, 0, 173, 245)
 
     ctx.set_line_width(.25 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*md_gray)
     ctx.set_dash([3 * mmppt])
     ctx.stroke()
 
@@ -456,8 +461,8 @@ def draw_large_poster(ctx, img, name):
 
     ctx.move_to(12, 16)
     
-    phrases = [((.2, .2, .2), 'Safety Map for '),
-               ((0, .8, 0),   name)]
+    phrases = [(dk_gray, 'Safety Map for '),
+               (green,   name)]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -471,11 +476,11 @@ def draw_large_poster(ctx, img, name):
 
     ctx.move_to(27, 26)
     
-    phrases = [((.2, .2, .2), "In case of"),
-               ((0, .8, 0),   "fire or explosion near our apartment,"),
-               ((.2, .2, .2), "let’s meet at"),
-               ((0, .8, 0),   "Madison Square park."),
-               ((.2, .2, .2), "I’ve marked the spot on this map:")]
+    phrases = [(dk_gray, "In case of"),
+               (green,   "fire or explosion near our apartment,"),
+               (dk_gray, "let’s meet at"),
+               (green,   "Madison Square park."),
+               (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
         ctx.set_source_rgb(*rgb)
@@ -485,7 +490,7 @@ def draw_large_poster(ctx, img, name):
 
     ctx.rectangle(10, 39, 153, 108)
     ctx.set_line_width(1 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*md_gray)
     ctx.set_dash([])
     ctx.stroke()
 
@@ -497,7 +502,7 @@ def draw_a4_master(ctx, format):
     ctx.save()
     
     # top-left of page, draw the header
-    ctx.set_source_rgb(.6, .6, .6)
+    ctx.set_source_rgb(*md_gray)
 
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     face = create_cairo_font_face_for_file(face)
@@ -542,7 +547,7 @@ def draw_letter_master(ctx, format):
     ctx.save()
     
     # top-left of page, draw the header
-    ctx.set_source_rgb(.6, .6, .6)
+    ctx.set_source_rgb(*md_gray)
 
     face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
     face = create_cairo_font_face_for_file(face)
@@ -633,7 +638,7 @@ def main(marker, paper, format, bbox, name):
         ctx.translate(21, 18)
 
     ctx.set_line_width(.25 * mmppt)
-    ctx.set_source_rgb(.8, .8, .8)
+    ctx.set_source_rgb(*md_gray)
     ctx.set_dash([3 * mmppt])
 
     reps = {'4up': 4, '2up-fridge': 2, 'poster': 0}
