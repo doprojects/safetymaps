@@ -286,6 +286,8 @@ def continue_text_box(ctx, left, width, leading, tail):
             else:
                 ctx.show_text(space)
 
+    ctx.show_text(' ')
+
 def today_short():
     """ E.g. "6 Sep 2010"
     """
