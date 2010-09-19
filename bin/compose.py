@@ -1,9 +1,10 @@
 ﻿""" Generate a PDF of a meeting point map.
 """
 
-from sys import stderr
+from sys import stderr, stdin
 from os import close, unlink, chmod
 from os.path import dirname, join as pathjoin
+from re import compile, DOTALL
 from math import pi
 from time import strftime
 from tempfile import mkstemp
@@ -250,26 +251,52 @@ def get_map_image(bbox, width, height, marker, target_dpi=100):
     
     return img, (x, y)
 
-def continue_text_box(ctx, left, width, leading, text):
+def continue_text_box(ctx, left, width, leading, tail):
     """ Fill up a text box with words.
     
         This function can be called repeatedly with parts of a paragraph.
     """
-    words = text.split()
+    words_pat = compile(r'^(\S+)(.*)$', DOTALL)
+    white_pat = compile(r'^(\s)(.*)$', DOTALL)
     
-    for word in words:
+    while tail:
         x, y = ctx.get_current_point()
-        x += ctx.text_extents(word)[4]
+
+        words = words_pat.match(tail)
+        white = white_pat.match(tail)
         
-        if x > width:
-            ctx.move_to(left, y + leading)
+        if words:
+            word, tail = words.group(1), words.group(2)
+        
+            x += ctx.text_extents(word)[4]
+            
+            if x > width:
+                # carriage return
+                ctx.move_to(left, y + leading)
+    
+            ctx.show_text(word)
 
-        ctx.show_text(word + ' ')
+        elif white:
+            space, tail = white.group(1), white.group(2)
+            
+            if space in ('\n', '\r'):
+                # new line
+                ctx.move_to(left, y + leading)
 
-def today():
+            else:
+                ctx.show_text(space)
+
+def today_short():
     """ E.g. "6 Sep 2010"
     """
     return strftime('%d %b %Y').lstrip('0')
+
+def today_long():
+    """ E.g. "6th September 2010"
+    """
+    day, month = strftime('%d').lstrip('0'), strftime('%B %Y')
+    suffix = {'1': 'st', '2': 'nd', '3': 'rd'}.get(day[-1], 'th')
+    return '%(day)s%(suffix)s %(month)s' % locals()
 
 def write_phrases(ctx, phrases, justify_right=False):
     """
@@ -290,7 +317,7 @@ def write_phrases(ctx, phrases, justify_right=False):
         if justify_right:
             ctx.rel_move_to(-w, 0)
 
-def draw_card_left(ctx, recipient, sender):
+def draw_card_left(ctx, recipient, sender, text):
     """ Draw out the left-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -308,16 +335,13 @@ def draw_card_left(ctx, recipient, sender):
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
-    write_phrases(ctx,
-                  [(dk_gray, 'Safety Map for '),
-                   (green,   recipient)])
+    write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
 
     # "from" text
     ctx.move_to(81.4, 56)
 
     write_phrases(ctx,
-                  [(dk_gray, 'from '),
-                   (green,   sender)],
+                  [(dk_gray, 'from '), (green, sender)],
                   justify_right=True)
 
     # body text
@@ -332,12 +356,11 @@ def draw_card_left(ctx, recipient, sender):
     ctx.move_to(5.5, 24.5)
     ctx.set_font_size(10 * mmppt)
     
-    continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt,
-                      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo invent ore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.\n\nMy love always, G.')
+    continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt, text)
     
     ctx.restore()
 
-def draw_card_right(ctx, img, point):
+def draw_card_right(ctx, img, point, emergency, place):
     """ Draw out the right-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -358,8 +381,7 @@ def draw_card_right(ctx, img, point):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today()),
-                   (dk_gray, '.')])
+                   (green, today_short() + '.')])
 
     # explanation text
     ctx.set_font_size(8 * mmppt)
@@ -367,10 +389,8 @@ def draw_card_right(ctx, img, point):
 
     ctx.move_to(3.6, 12)
     
-    phrases = [(dk_gray, "In case of"),
-               (green,   "fire or explosion near our apartment,"),
-               (dk_gray, "let’s meet at"),
-               (green,   "Madison Square park."),
+    phrases = [(dk_gray, "In case of"), (green, emergency + ','),
+               (dk_gray, "let’s meet at"), (green, place + '.'),
                (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
@@ -385,7 +405,7 @@ def draw_card_right(ctx, img, point):
 
     ctx.restore()
 
-def draw_small_poster(ctx, img, point, recipient, sender):
+def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text):
     """ Draw a small version of the poster.
     
         Modify and restore the matrix stack.
@@ -412,9 +432,7 @@ def draw_small_poster(ctx, img, point, recipient, sender):
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(14 * mmppt)
 
-    write_phrases(ctx,
-                  [(dk_gray, 'Safety Map for '),
-                   (green,   recipient)])
+    write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
     
     # "from" text
     ctx.move_to(115.8, 159)
@@ -432,10 +450,8 @@ def draw_small_poster(ctx, img, point, recipient, sender):
     ctx.set_font_size(10 * mmppt)
     ctx.select_font_face('Helvetica')
 
-    phrases = [(dk_gray, "In case of"),
-               (green,   "fire or explosion near our apartment,"),
-               (dk_gray, "let’s meet at"),
-               (green,   "Madison Square park."),
+    phrases = [(dk_gray, "In case of"), (green, emergency + ','),
+               (dk_gray, "let’s meet at"), (green, place + '.'),
                (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
@@ -449,8 +465,7 @@ def draw_small_poster(ctx, img, point, recipient, sender):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today()),
-                   (dk_gray, '.')],
+                   (green, today_long() + '.')],
                   justify_right=True)
 
     # body text
@@ -459,8 +474,7 @@ def draw_small_poster(ctx, img, point, recipient, sender):
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(10 * mmppt)
     
-    continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt,
-                      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo invent ore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.\n\nMy love always, G.')
+    continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt, text)
 
     # text on the bottom
     ctx.move_to(6.8, 167.6)
@@ -470,7 +484,7 @@ def draw_small_poster(ctx, img, point, recipient, sender):
 
     ctx.restore()
 
-def draw_large_poster(ctx, img, point, recipient, sender):
+def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text):
     """ Draw a large version of the poster.
     
         Modify and restore the matrix stack.
@@ -498,8 +512,7 @@ def draw_large_poster(ctx, img, point, recipient, sender):
     ctx.set_font_size(19.6 * mmppt)
 
     write_phrases(ctx,
-                  [(dk_gray, 'Safety Map for '),
-                   (green,   recipient)])
+                  [(dk_gray, 'Safety Map for '), (green, recipient)])
     
     # "from" text
     ctx.move_to(163, 224)
@@ -507,8 +520,7 @@ def draw_large_poster(ctx, img, point, recipient, sender):
     ctx.set_font_size(14 * mmppt)
 
     write_phrases(ctx,
-                  [(dk_gray, 'from '),
-                   (green,   sender)],
+                  [(dk_gray, 'from '), (green, sender)],
                   justify_right=True)
 
     # explanation text
@@ -517,10 +529,8 @@ def draw_large_poster(ctx, img, point, recipient, sender):
     ctx.set_font_size(14 * mmppt)
     ctx.select_font_face('Helvetica')
 
-    phrases = [(dk_gray, "In case of"),
-               (green,   "fire or explosion near our apartment,"),
-               (dk_gray, "let’s meet at"),
-               (green,   "Madison Square park."),
+    phrases = [(dk_gray, "In case of"), (green, emergency + ','),
+               (dk_gray, "let’s meet at"), (green, place + '.'),
                (dk_gray, "I’ve marked the spot on this map:")]
     
     for (rgb, phrase) in phrases:
@@ -534,8 +544,7 @@ def draw_large_poster(ctx, img, point, recipient, sender):
 
     write_phrases(ctx,
                   [(dk_gray, 'This Safety Map was made on '),
-                   (green,   today()),
-                   (dk_gray, '.')],
+                   (green, today_long() + '.')],
                   justify_right=True)
 
     # body text
@@ -544,8 +553,7 @@ def draw_large_poster(ctx, img, point, recipient, sender):
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(14 * mmppt)
     
-    continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt,
-                      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo invent ore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.\n\nMy love always, G.')
+    continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt, text)
 
     # text on the bottom
     ctx.move_to(10, 236)
@@ -645,7 +653,15 @@ def draw_letter_master(ctx, format):
 
 parser = OptionParser()
 
-parser.set_defaults(recipient='Fred', sender='Wilma', paper='letter', format='4up', point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302))
+parser.set_defaults(recipient='Fred', sender='Wilma', emergency='earthquake',
+                    place='Dolores Park playground', point=(37.75883, -122.42689),
+                    bbox=(37.7669, -122.4177, 37.7565, -122.4302),
+                    text='Sed ut perspiciatis, unde omnis iste natus error sit ' \
+                    + 'voluptatem accusantium doloremque laudantium, totam rem ' \
+                    + 'aperiam eaque ipsa, quae ab illo invent ore veritatis et ' \
+                    + 'quasi architecto beatae vitae dicta sunt, explicabo.\n\n' \
+                    + 'My love always, G.',
+                    paper='letter', format='4up')
 
 papers = 'a4 letter'.split()
 formats = '4up 2up-fridge poster'.split()
@@ -667,12 +683,21 @@ parser.add_option('-b', '--bbox', dest='bbox',
                   type='float', nargs=4)
 
 parser.add_option('-r', '--recipient', dest='recipient',
-                  help='Name of recipient - keep it short!')
+                  help='Name of recipient.')
 
 parser.add_option('-s', '--sender', dest='sender',
-                  help='Name of sender - keep it short!')
+                  help='Name of sender.')
 
-def main(marker, paper, format, bbox, recipient, sender):
+parser.add_option('-e', '--emergency', dest='emergency',
+                  help='Name of emergency.')
+
+parser.add_option('-n', '--place-name', dest='place',
+                  help='Name of meeting place.')
+
+parser.add_option('-t', '--text', dest='text',
+                  help='Message text, "-" to use stdin.')
+
+def main(marker, paper, format, bbox, emergency, place, recipient, sender, text):
     """
     """
     mark = Location(*marker)
@@ -720,10 +745,10 @@ def main(marker, paper, format, bbox, recipient, sender):
         ctx.stroke()
     
         # two card sides and contents
-        draw_card_left(ctx, recipient, sender)
+        draw_card_left(ctx, recipient, sender, text)
         ctx.translate(86.5, 0)
 
-        draw_card_right(ctx, card_img, mark_point)
+        draw_card_right(ctx, card_img, mark_point, emergency, place)
         ctx.translate(-86.5, 61)
 
     if format == '4up':
@@ -741,14 +766,14 @@ def main(marker, paper, format, bbox, recipient, sender):
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 109, 77, mark)
-        draw_small_poster(ctx, poster_img, mark_point, recipient, sender)
+        draw_small_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text)
 
     elif format == 'poster':
         ctx.rectangle(0, 0, 173, 245)
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 153, 108, mark)
-        draw_large_poster(ctx, poster_img, mark_point, recipient, sender)
+        draw_large_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text)
 
     surf.finish()
     chmod(filename, 0644)
@@ -756,5 +781,8 @@ def main(marker, paper, format, bbox, recipient, sender):
 
 if __name__ == '__main__':
     opts, args = parser.parse_args()
+    
+    text = (opts.text == '-') and stdin.read().strip() or opts.text
 
-    print main(opts.point, opts.paper, opts.format, opts.bbox, opts.recipient, opts.sender)
+    print main(opts.point, opts.paper, opts.format, opts.bbox, opts.emergency,
+               opts.place, opts.recipient, opts.sender, text)
