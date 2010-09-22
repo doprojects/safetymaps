@@ -40,14 +40,18 @@ if __name__ == '__main__':
         job = loads(resp.read())
     
         marker = job['place']['location']
-        bbox = job['map']['bounds']
         paper = job['map']['paper']
         format = job['map']['format']
-        name = job['recipient']['name']
+        bbox = job['map']['bounds']
+        emergency = job['place']['emergency']
+        place = job['place']['name']
+        recipient = job['recipient']['name']
+        sender = job['sender']['name']
+        text = job['place']['full-note']
         
-        print >> stderr, 'Map for', name, '...',
+        print >> stderr, 'Map for', recipient, '...',
         
-        filename = compose(marker, paper, format, bbox, name)
+        filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text)
         
         print >> stderr, filename,
 
