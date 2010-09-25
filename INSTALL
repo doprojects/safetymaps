@@ -1,3 +1,4 @@
-apt-get install python-cairo python-rsvg
+apt-get install python-cairo python-rsvg python-setuptools
 apt-get install apache2-mpm-prefork php5-mysql mysql-server
+easy_install ModestMaps
 
