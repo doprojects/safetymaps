@@ -333,7 +333,7 @@ def draw_card_left(ctx, recipient, sender, text):
     # big title text
     ctx.move_to(12.5, 8.4)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
@@ -377,7 +377,7 @@ def draw_card_right(ctx, img, point, emergency, place):
     # big title text
     ctx.move_to(3.2, 6.9)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
@@ -430,7 +430,7 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
     # big title text
     ctx.move_to(8.3, 10.5)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(14 * mmppt)
 
@@ -509,7 +509,7 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
     # big title text
     ctx.move_to(11.9, 15.9)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(19.6 * mmppt)
 
@@ -573,7 +573,7 @@ def draw_a4_master(ctx, format):
     # top-left of page, draw the header
     ctx.set_source_rgb(*md_gray)
 
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     face = create_cairo_font_face_for_file(face)
     ctx.set_font_face(face)
     ctx.set_font_size(24 * mmppt)
@@ -618,7 +618,7 @@ def draw_letter_master(ctx, format):
     # top-left of page, draw the header
     ctx.set_source_rgb(*md_gray)
 
-    face = pathjoin(dirname(__file__), '../design/fonts/MgOpen/MgOpenModataBold.ttf')
+    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
     face = create_cairo_font_face_for_file(face)
     ctx.set_font_face(face)
     ctx.set_font_size(24 * mmppt)
