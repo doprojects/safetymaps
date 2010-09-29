@@ -25,7 +25,7 @@ ptpmm = 1./mmppt
 
 green = (0, .8, 0)
 dk_gray = (.2, .2, .2) # for text, alternates with green
-md_gray = (.6, .6, .6) # mostly for page master text & dotted lines
+md_gray = (.4, .4, .4) # mostly for page master text & dotted lines
 lt_gray = (.8, .8, .8) # fat, round borders
 
 def mapByExtentZoomAspect(prov, locA, locB, zoom, aspect):
