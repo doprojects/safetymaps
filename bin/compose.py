@@ -145,13 +145,13 @@ def place_svg_image(context, filename, x, y, width=None, height=None, flush_righ
 def place_cc_logo(context, x, y, w, h):
     """
     """
-    filename = pathjoin(dirname(__file__), 'cc.svg')
+    filename = pathjoin(dirname(__file__), 'assets/cc.svg')
     place_svg_image(context, filename, x, y, width=w, height=h)
 
 def place_do_logo(context, x, y):
     """
     """
-    filename = pathjoin(dirname(__file__), 'do.svg')
+    filename = pathjoin(dirname(__file__), 'assets/do.svg')
     place_svg_image(context, filename, x, y, flush_right=True)
 
 def place_sm_logo(context, x, y, w, h):
@@ -159,13 +159,13 @@ def place_sm_logo(context, x, y, w, h):
     
         Position and size are given in millimeters.
     """
-    filename = pathjoin(dirname(__file__), 'logo.svg')
+    filename = pathjoin(dirname(__file__), 'assets/logo.svg')
     place_svg_image(context, filename, x, y, width=w, height=h)
 
 def place_hands(context, x, y, format):
     """ Add the hands icon, flush-right.
     """
-    filename = pathjoin(dirname(__file__), 'hands-%(format)s.svg' % locals())
+    filename = pathjoin(dirname(__file__), 'assets/hands-%(format)s.svg' % locals())
     place_svg_image(context, filename, x, y, flush_right=True)
 
 def place_marker(context, x, y):
@@ -181,7 +181,7 @@ def place_marker(context, x, y):
 
     # Guess what? It's a pain in the ass to use SVG from Cairo:
     # http://cairographics.org/pyrsvg
-    svg = rsvg.Handle(pathjoin(dirname(__file__), 'marker.svg'))
+    svg = rsvg.Handle(pathjoin(dirname(__file__), 'assets/marker.svg'))
 
     w_, h_, w, h = svg.get_dimension_data()
     context.translate(-w/2, -h/2)
@@ -333,7 +333,7 @@ def draw_card_left(ctx, recipient, sender, text):
     # big title text
     ctx.move_to(12.5, 8.4)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
+    face = pathjoin(dirname(__file__), 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_face(create_cairo_font_face_for_file(face))
     ctx.set_font_size(11 * mmppt)
 
