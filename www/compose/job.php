@@ -1,10 +1,11 @@
 <?php
 
     ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'..');
+    require_once 'config.php';
     require_once 'lib.php';
 
-    $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
-    mysql_select_db('safetymaps', $db);
+    $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
+    mysql_select_db(MYSQL_DATABASE, $db);
     $ctx = new Context($db);
     
     mysql_query('BEGIN', $ctx->db);
