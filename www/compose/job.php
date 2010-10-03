@@ -74,7 +74,7 @@
     mysql_query('ROLLBACK', $ctx->db);
     $ctx->close();
     
-    header('HTTP/1.1 400');
+    header('HTTP/1.1 404');
     header('Content-Type: text/plain');
     echo "No jobs.\n";
 
