@@ -401,11 +401,12 @@
    /**
     * Get a single user by ID, return a simple assoc. array.
     */
-    function get_user(&$ctx, $id)
+    function get_user(&$ctx, $id, $include_email=false)
     {
         $_id = sprintf('%d', $id);
+        $_columns = $include_email ? 'id, name, email' : 'id, name';
         
-        $q = "SELECT id, name
+        $q = "SELECT {$_columns}
               FROM users
               WHERE id = {$_id}";
 
@@ -446,11 +447,12 @@
    /**
     * Get a single recipient, return a simple assoc. array.
     */
-    function get_recipient(&$ctx, $id)
+    function get_recipient(&$ctx, $id, $include_email=false)
     {
         $_id = sprintf('%d', $id);
+        $_columns = $include_email ? 'id, name, email, sent, map_id' : 'id, name, sent, map_id';
         
-        $q = "SELECT id, name, sent, map_id
+        $q = "SELECT {$_columns}
               FROM recipients
               WHERE id = {$_id}";
 

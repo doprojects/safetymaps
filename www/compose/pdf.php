@@ -35,20 +35,25 @@
     
     function send_mail(&$ctx, $recipient_id, $pdf_filename)
     {
+        $recipient = get_recipient($ctx, $recipient_id, true);
+        $map = get_map($ctx, $recipient['map_id'], false);
+        $user = get_user($ctx, $map['properties']['user']['id'], true);
+        
         $base_dirname = dirname(dirname(__FILE__));
         $base_urlpath = dirname(dirname($_SERVER['SCRIPT_NAME']));
         $pdf_href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.substr($pdf_filename, strlen($base_dirname));
         
         $mm = new Mail_mime("\n");
     
-        $mm->setFrom("Safety Maps <mike@teczno.com>");
+        $mm->setFrom("{$user['name']} <info@safety-maps.org>");
         $mm->setSubject("Safety Maps Test");
     
-        $mm->setTXTBody("Made new map for recipient {$recipient_id}: {$pdf_href}");
-        $mm->setHTMLBody("Made new map for recipient {$recipient_id}: {$pdf_href}");
+        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$pdf_href}");
+        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$pdf_href}");
     
         $body = $mm->get();
-        $head = $mm->headers(array('To' => 'mike@teczno.com'));
+        $head = $mm->headers(array('To' => $recipient['email'],
+                                   'Reply-To' => $user['email']));
     
         $m =& Mail::factory('smtp', array('auth' => true,
                                           'host' => SMTP_HOST,
@@ -56,7 +61,7 @@
                                           'username' => SMTP_USER,
                                           'password' => SMTP_PASS));
         
-        return $m->send('mike@teczno.com', $head, $body);
+        return $m->send($recipient['email'], $head, $body);
     }
 
     $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
