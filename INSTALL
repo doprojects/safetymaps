@@ -1,4 +1,15 @@
+---- Required Packages (Ubuntu) ----
+
 apt-get install python-cairo python-imaging python-rsvg python-setuptools
 apt-get install apache2-mpm-prefork php5-mysql mysql-server php-pear
 easy_install ModestMaps
 pear install --alldeps Mail Mail_mime
+
+---- Safety Maps ----
+
+1.  Clone the Git repo from http://github.com/doprojects/safetymaps
+2.  Create database using doc/create.mysql
+3.  Populate www/config.php with MySQL & SMTP details
+4.  cd www && make
+5.  Add to crontab something like:
+    * * * * *	cd bin && python http://example.com/path/to/www/compose/job.php
