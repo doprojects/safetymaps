@@ -442,5 +442,23 @@
         
         return null;
     }
+    
+   /**
+    * Get a single recipient, return a simple assoc. array.
+    */
+    function get_recipient(&$ctx, $id)
+    {
+        $_id = sprintf('%d', $id);
+        
+        $q = "SELECT id, name, sent, map_id
+              FROM recipients
+              WHERE id = {$_id}";
+
+        if($res = mysql_query($q, $ctx->db))
+            if($row = mysql_fetch_assoc($res))
+                return $row;
+        
+        return null;
+    }
 
 ?>
