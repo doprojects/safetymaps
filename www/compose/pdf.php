@@ -3,8 +3,13 @@
     ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'..');
     require_once 'config.php';
     require_once 'lib.php';
+
+    require_once 'PEAR.php';
+    require_once 'Mail.php';
+    require_once 'Mail/mail.php';
+    require_once 'Mail/mime.php';
     
-    function save_pdf(&$ctx, $src_filename, $recipient_id)
+    function save_pdf(&$ctx, $recipient_id, $src_filename)
     {
         $recipient = get_recipient($ctx, $recipient_id);
         $map = get_map($ctx, $recipient['map_id'], false);
@@ -13,7 +18,7 @@
         @mkdir($map_dirname);
         @chmod($map_dirname, 0775);
         
-        $pdf_dirname = realpath("{$map_dirname}/{$recipient['id']}");
+        $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
@@ -24,6 +29,34 @@
         fwrite($fp, $pdf_content);
         fclose($fp);
         chmod($pdf_filename, 0664);
+        
+        return realpath($pdf_filename);
+    }
+    
+    function send_mail(&$ctx, $recipient_id, $pdf_filename)
+    {
+        $base_dirname = dirname(dirname(__FILE__));
+        $base_urlpath = dirname(dirname($_SERVER['SCRIPT_NAME']));
+        $pdf_href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.substr($pdf_filename, strlen($base_dirname));
+        
+        $mm = new Mail_mime("\n");
+    
+        $mm->setFrom("Safety Maps <mike@teczno.com>");
+        $mm->setSubject("Safety Maps Test");
+    
+        $mm->setTXTBody("Made new map for recipient {$recipient_id}: {$pdf_href}");
+        $mm->setHTMLBody("Made new map for recipient {$recipient_id}: {$pdf_href}");
+    
+        $body = $mm->get();
+        $head = $mm->headers(array('To' => 'mike@teczno.com'));
+    
+        $m =& Mail::factory('smtp', array('auth' => true,
+                                          'host' => SMTP_HOST,
+                                          'port' => SMTP_PORT,
+                                          'username' => SMTP_USER,
+                                          'password' => SMTP_PASS));
+        
+        return $m->send('mike@teczno.com', $head, $body);
     }
 
     $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
@@ -32,8 +65,26 @@
     
     $recipient_id = $_GET['id'];
     
-    save_pdf($ctx, 'php://input', $recipient_id);
+    $filename = save_pdf($ctx, $recipient_id, 'php://input');
     
+    if(!file_exists($filename))
+    {
+        $ctx->close();
+
+        header('HTTP/1.1 500');
+        die("no {$filename}\n");
+    }
+    
+    $sentmail = send_mail($ctx, $recipient_id, $filename);
+    
+    if(PEAR::isError($sentmail))
+    {
+        $ctx->close();
+
+        header('HTTP/1.1 500');
+        die("{$sentmail->msg}\n");
+    }
+
     mysql_query('BEGIN', $ctx->db);
     
     $finished = finish_recipient($ctx, $recipient_id);
@@ -48,7 +99,5 @@
     }
 
     $ctx->close();
-
-    echo strlen(file_get_contents('php://input'));
 
 ?>
