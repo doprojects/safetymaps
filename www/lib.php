@@ -254,6 +254,9 @@
             
                 foreach($args['recipients'] as $r => $recipient)
                 {
+                    if(empty($recipient['name']) || empty($recipient['email']))
+                        continue;
+
                     $recipient['user_id'] = $user_id;
                     $recipient['map_id'] = $map_id;
                     $recipient_id = add_recipient($ctx, $recipient);
@@ -264,8 +267,14 @@
             }
         }
         
-        mysql_query($commit_ok ? 'COMMIT' : 'ROLLBACK');
-        return $commit_ok ? $map_id : null;
+        if(!$commit_ok)
+        {
+            mysql_query('ROLLBACK');
+            return null;
+        }
+
+        mysql_query('COMMIT');
+        return $map_id;
     }
     
    /**
