@@ -95,6 +95,13 @@ def create_cairo_font_face_for_file(filename, faceindex=0, loadoptions=0):
 
     return face
 
+def set_font_face_from_file(ctx, filename):
+    """
+    """
+    fullpath = pathjoin(dirname(__file__), filename)
+    fontface = create_cairo_font_face_for_file(fullpath)
+    ctx.set_font_face(fontface)
+
 def place_image(context, img, x, y, width, height):
     """ Add an image to a given context, at a position and size given in millimeters.
     
@@ -333,8 +340,7 @@ def draw_card_left(ctx, recipient, sender, text):
     # big title text
     ctx.move_to(12.5, 8.4)
     
-    face = pathjoin(dirname(__file__), 'assets/VAGRoundedStd-Bold.otf')
-    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(11 * mmppt)
 
     write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
@@ -347,8 +353,8 @@ def draw_card_left(ctx, recipient, sender, text):
                   justify_right=True)
 
     # body text
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_source_rgb(*md_gray)
-    ctx.select_font_face('Helvetica')
     
     ctx.move_to(5.5, 17)
     ctx.set_font_size(8 * mmppt)
@@ -377,8 +383,7 @@ def draw_card_right(ctx, img, point, emergency, place):
     # big title text
     ctx.move_to(3.2, 6.9)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
-    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(11 * mmppt)
 
     write_phrases(ctx,
@@ -386,8 +391,8 @@ def draw_card_right(ctx, img, point, emergency, place):
                    (green, today_short() + '.')])
 
     # explanation text
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_font_size(8 * mmppt)
-    ctx.select_font_face('Helvetica')
 
     ctx.move_to(3.6, 12)
     
@@ -430,8 +435,7 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
     # big title text
     ctx.move_to(8.3, 10.5)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
-    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(14 * mmppt)
 
     write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
@@ -449,8 +453,8 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
     # explanation text
     ctx.move_to(18.8, 17.7)
     
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_font_size(10 * mmppt)
-    ctx.select_font_face('Helvetica')
 
     phrases = [(dk_gray, "In case of"), (green, emergency + ','),
                (dk_gray, "let’s meet at"), (green, place + '.'),
@@ -509,8 +513,7 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
     # big title text
     ctx.move_to(11.9, 15.9)
     
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
-    ctx.set_font_face(create_cairo_font_face_for_file(face))
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(19.6 * mmppt)
 
     write_phrases(ctx,
@@ -528,8 +531,8 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
     # explanation text
     ctx.move_to(26.8, 26)
     
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_font_size(14 * mmppt)
-    ctx.select_font_face('Helvetica')
 
     phrases = [(dk_gray, "In case of"), (green, emergency + ','),
                (dk_gray, "let’s meet at"), (green, place + '.'),
@@ -573,15 +576,13 @@ def draw_a4_master(ctx, format):
     # top-left of page, draw the header
     ctx.set_source_rgb(*md_gray)
 
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
-    face = create_cairo_font_face_for_file(face)
-    ctx.set_font_face(face)
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(24 * mmppt)
 
     ctx.move_to(21, 18)
     ctx.show_text('Safety Maps')
     
-    ctx.select_font_face('Helvetica')
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(21, 22)
@@ -618,15 +619,13 @@ def draw_letter_master(ctx, format):
     # top-left of page, draw the header
     ctx.set_source_rgb(*md_gray)
 
-    face = pathjoin(dirname(__file__), '../design/fonts/VAGRoundedStd-Bold.otf')
-    face = create_cairo_font_face_for_file(face)
-    ctx.set_font_face(face)
+    set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(24 * mmppt)
 
     ctx.move_to(22, 12)
     ctx.show_text('Safety Maps')
     
-    ctx.select_font_face('Helvetica')
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(22, 16)
@@ -716,7 +715,8 @@ def main(marker, paper, format, bbox, emergency, place, recipient, sender, text)
     ctx = Context(surf)
     
     ctx.scale(ptpmm, ptpmm)
-    ctx.select_font_face('Helvetica')
+
+    set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     
     if paper == 'a4':
         draw_a4_master(ctx, format)
