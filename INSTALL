@@ -8,8 +8,17 @@ pear install --alldeps Mail Mail_mime
 ---- Safety Maps ----
 
 1.  Clone the Git repo from http://github.com/doprojects/safetymaps
-2.  Create database using doc/create.mysql
+2.  Create database:
+    %   mysql -u root
+    >   CREATE DATABASE safetymaps_example;
+    >   GRANT SELECT, INSERT, UPDATE, DELETE, LOCK TABLES, 
+        CREATE TEMPORARY TABLES ON safetymaps_example.*
+        TO safetymaps@localhost IDENTIFIED BY 's4f3tym4ps';
+    >   SOURCE doc/create.mysql;
+    >   FLUSH PRIVILEGES;
 3.  Populate www/config.php with MySQL & SMTP details
-4.  cd www && make
+4.  Post-installation tasks:
+    %   cd www
+    %   make
 5.  Add to crontab something like:
     * * * * *	cd bin && python http://example.com/path/to/www/compose/job.php
