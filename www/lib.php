@@ -466,20 +466,25 @@
    /**
     * Save a PDF and return its complete local filename, or null in case of failure.
     */
-    function save_pdf(&$ctx, $recipient_id, $src_filename)
+    function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
     {
+        error_log('--------------------------------------------------------');
+
         $recipient = get_recipient($ctx, $recipient_id);
         $map = get_map($ctx, $recipient['map_id'], false);
         
-        $map_dirname = dirname(__FILE__)."/../files/{$map['id']}";
+        $map_dirname = "{$dest_dirname}/{$map['id']}";
+        error_log($map_dirname);
         @mkdir($map_dirname);
         @chmod($map_dirname, 0775);
         
         $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
+        error_log($pdf_dirname);
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
         $pdf_filename = "{$pdf_dirname}/{$map['properties']['paper']}-{$map['properties']['format']}.pdf";
+        error_log($pdf_filename);
         $pdf_content = file_get_contents($src_filename);
     
         $fp = fopen($pdf_filename, 'w');
@@ -493,15 +498,11 @@
    /**
     * Send email to a recipient to notify them that a PDF file is available.
     */
-    function send_mail(&$ctx, $recipient_id, $pdf_filename)
+    function send_mail(&$ctx, $recipient_id, $pdf_href)
     {
         $recipient = get_recipient($ctx, $recipient_id, true);
         $map = get_map($ctx, $recipient['map_id'], false);
         $user = get_user($ctx, $map['properties']['user']['id'], true);
-        
-        $base_dirname = dirname(dirname(__FILE__));
-        $base_urlpath = dirname(dirname($_SERVER['SCRIPT_NAME']));
-        $pdf_href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.substr($pdf_filename, strlen($base_dirname));
         
         $mm = new Mail_mime("\n");
     

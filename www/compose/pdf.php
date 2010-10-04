@@ -15,7 +15,8 @@
     
     $recipient_id = $_GET['id'];
     
-    $filename = save_pdf($ctx, $recipient_id, 'php://input');
+    $filesdir = dirname(dirname(__FILE__)).'/files';
+    $filename = save_pdf($ctx, $recipient_id, 'php://input', $filesdir);
     
     if(is_null($filename))
     {
@@ -25,7 +26,11 @@
         die("Failed to create PDF file.\n");
     }
     
-    $sentmail = send_mail($ctx, $recipient_id, $filename);
+    $base_dirname = dirname(dirname(__FILE__));
+    $base_urlpath = dirname(dirname($_SERVER['SCRIPT_NAME']));
+    $href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.substr($filename, strlen($base_dirname));
+
+    $sentmail = send_mail($ctx, $recipient_id, $href);
     
     if(PEAR::isError($sentmail))
     {
