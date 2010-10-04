@@ -468,23 +468,18 @@
     */
     function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
     {
-        error_log('--------------------------------------------------------');
-
         $recipient = get_recipient($ctx, $recipient_id);
         $map = get_map($ctx, $recipient['map_id'], false);
         
         $map_dirname = "{$dest_dirname}/{$map['id']}";
-        error_log($map_dirname);
         @mkdir($map_dirname);
         @chmod($map_dirname, 0775);
         
         $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
-        error_log($pdf_dirname);
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
         $pdf_filename = "{$pdf_dirname}/{$map['properties']['paper']}-{$map['properties']['format']}.pdf";
-        error_log($pdf_filename);
         $pdf_content = file_get_contents($src_filename);
     
         $fp = fopen($pdf_filename, 'w');

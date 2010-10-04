@@ -27,8 +27,9 @@
     }
     
     $base_dirname = dirname(dirname(__FILE__));
-    $base_urlpath = dirname(dirname($_SERVER['SCRIPT_NAME']));
-    $href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.substr($filename, strlen($base_dirname));
+    $base_urlpath = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $file_relpath = substr($filename, strlen($base_dirname));
+    $href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.$file_relpath;
 
     $sentmail = send_mail($ctx, $recipient_id, $href);
     
