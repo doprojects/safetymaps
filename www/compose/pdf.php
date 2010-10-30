@@ -9,9 +9,7 @@
     require_once 'Mail/mail.php';
     require_once 'Mail/mime.php';
 
-    $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
-    mysql_select_db(MYSQL_DATABASE, $db);
-    $ctx = new Context($db);
+    $ctx = default_context();
     
     $recipient_id = $_GET['id'];
     

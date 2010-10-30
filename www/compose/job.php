@@ -4,9 +4,7 @@
     require_once 'config.php';
     require_once 'lib.php';
 
-    $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
-    mysql_select_db(MYSQL_DATABASE, $db);
-    $ctx = new Context($db);
+    $ctx = default_context();
     
     mysql_query('BEGIN', $ctx->db);
     

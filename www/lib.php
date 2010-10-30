@@ -1,12 +1,19 @@
 <?php
 
+    require_once 'smarty/Smarty.class.php';
+
     class Context
     {
+        // Database connection
         var $db;
+
+        // Smarty instance
+        var $sm;
         
-        function Context(&$db_link)
+        function Context(&$db_link, &$smarty)
         {
             $this->db =& $db_link;
+            $this->sm =& $smarty;
         }
         
         function close()
@@ -14,6 +21,64 @@
             mysql_close($this->db);
         }
     }
+    
+    function &default_context()
+    {
+        $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
+        mysql_select_db(MYSQL_DATABASE, $db);
+        
+        $sm = new Smarty();
+
+        $sm->compile_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
+        $sm->cache_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
+
+        $sm->template_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
+        $sm->config_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
+        
+       /*
+        // later perhaps
+        $sm->assign('domain', get_domain_name());
+        $sm->assign('base_dir', get_base_dir());
+        $sm->assign('base_href', get_base_href());
+        */
+
+        $sm->assign('constants', get_defined_constants());
+        $sm->assign('request', array('get' => $_GET, 'uri' => $_SERVER['REQUEST_URI']));
+        
+        $ctx = new Context($db, $sm);
+        
+        return $ctx;
+    }
+    
+   /*
+    // later perhaps
+    function get_domain_name()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_DOMAIN_NAME;
+        
+        return $_SERVER['SERVER_NAME'];
+    }
+    
+    function get_base_dir()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_BASE_DIRECTORY;
+        
+        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
+    }
+    
+    function get_base_href()
+    {
+        if(php_sapi_name() == 'cli')
+            return '';
+        
+        $query_pos = strpos($_SERVER['REQUEST_URI'], '?');
+        
+        return ($query_pos === false) ? $_SERVER['REQUEST_URI']
+                                      : substr($_SERVER['REQUEST_URI'], 0, $query_pos);
+    }
+    */
 
    /**
     * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

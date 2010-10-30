@@ -4,11 +4,9 @@
     require_once 'lib.php';
     header('Access-Control-Allow-Origin: *');
 
-    $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
-    mysql_select_db(MYSQL_DATABASE, $db);
-    $ctx = new Context($db);
+    $ctx = default_context();
 
-    $format = empty($_GET['format']) ? 'json' : $_GET['format'];
+    $format = empty($_GET['format']) ? 'html' : $_GET['format'];
     $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 10;
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
 
@@ -55,9 +53,11 @@
     
     if($map_id === false) {
         $response = get_maps($ctx, compact('count', 'offset', 'where'));
+        $ctx->sm->assign('maps', $response);
         
     } else {
         $response = get_map($ctx, $map_id);
+        $ctx->sm->assign('map', $response);
     }
     
     $ctx->close();
@@ -69,6 +69,11 @@
     } elseif($format == 'text') {
         header('Content-Type: text/plain');
         print_r($response);
+    
+    } elseif($format == 'html') {
+
+        header("Content-Type: text/html; charset=UTF-8");
+        print $ctx->sm->fetch('maps.html.tpl');
     
     } else {
         header('HTTP/1.1 400');
