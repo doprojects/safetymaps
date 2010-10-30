@@ -23,8 +23,7 @@
             
                 <div id="map"> </div>
             
-                <div id="maps">
-                    <ul>
+                    <ul id="maps">
                         {foreach item="map" from=$maps.features}
                             <li class="map">
                                 <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.properties.place_name|escape}</a>
@@ -39,7 +38,6 @@
                             </li>
                         {/foreach}
                     </ul>
-                </div>
             {/if}
         </div>
 

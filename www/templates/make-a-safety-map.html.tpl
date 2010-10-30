@@ -21,7 +21,7 @@
         
             <!-- TODO: demand javascript, the map selection is impossible without it -->
         
-            <div id="create">
+            <div id="make">
 
                 <p>By answering these few simple questions, you can make a custom map of a 	place you think it will be safe* for your friends, family or loved ones to meet in 	the event of an emergency.</p>
 

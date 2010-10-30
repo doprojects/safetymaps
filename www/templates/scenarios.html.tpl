@@ -11,9 +11,7 @@
         {include file="header.htmlf.tpl" current="scenarios"}
 
         <div id="main">
-            <div id="scenarios">
-                <h2>Scenarios</h2>
-            </div>
+            <h2>Scenarios</h2>
         </div>
 
         {include file="footer.htmlf.tpl"}

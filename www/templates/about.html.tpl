@@ -11,10 +11,8 @@
         {include file="header.htmlf.tpl" current="about"}
 
         <div id="main">
-            <div id="about">
-                <h2>About Safety Maps</h2>
-                <h2>About Do projects</h2>
-            </div>
+            <h2>About Safety Maps</h2>
+            <h2>About Do projects</h2>
         </div>
 
         {include file="footer.htmlf.tpl"}
