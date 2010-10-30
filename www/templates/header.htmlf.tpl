@@ -12,14 +12,14 @@
     <div id="questions">
         <p>
             What happens when disaster strikes?<br>
-            You're separated from those you care about.<br>
-            Your phone doesn't work anymore...<br>
-            Where do you think it's a safe place to gather?<br>
+            You’re separated from those you care about.<br>
+            Your phone doesn’t work anymore...<br>
+            Where do you think it’s a safe place to gather?<br>
             Use Safety Maps to choose and share safe<br>
             meeting points with your familiy and friends.
         </p>
         <p>
-            <a href="#create-your-map">Click here to start a scenario.</a>
+            <a href="make-a-safety-map.php">Click here to start a scenario.</a>
         </p>
     </div>
 
