@@ -14,6 +14,7 @@ pear install --alldeps Mail Mail_mime
     >   GRANT SELECT, INSERT, UPDATE, DELETE, LOCK TABLES, 
         CREATE TEMPORARY TABLES ON safetymaps_example.*
         TO safetymaps@localhost IDENTIFIED BY 's4f3tym4ps';
+    >   USE safetymaps_example;
     >   SOURCE doc/create.mysql;
     >   FLUSH PRIVILEGES;
 3.  Populate www/config.php with MySQL & SMTP details
