@@ -24,14 +24,15 @@
                 bboxmap.setCenterZoom(new mm.Location(40.7143528, -74.0059731), 13);
                 function onMapChange() {
                     var extent = bboxmap.getExtent();
-                    if (extent[0].lat-extent[1].lat > 0.001 && extent[0].lon-extent[1].lon > 0.001) {
+                    if (extent[0].lat-extent[1].lat > 0.001 && extent[1].lon-extent[0].lon > 0.001) {
                         var loc = mm.Location.interpolate(extent[0], extent[1], 0.5);
-                        $("input[name='place[location][0]']").attr('value', loc[0].toFixed(6));
-                        $("input[name='place[location][1]']").attr('value', loc[1].toFixed(6));
-                        $("input[name='map[bounds][0]']").attr('value', extent[0].lat.toFixed(6));
-                        $("input[name='map[bounds][1]']").attr('value', extent[0].lon.toFixed(6));
-                        $("input[name='map[bounds][2]']").attr('value', extent[1].lat.toFixed(6));
-                        $("input[name='map[bounds][3]']").attr('value', extent[1].lon.toFixed(6)); 
+                        console.log(loc);
+                        $("input#loc0").attr('value', loc.lat.toFixed(6));
+                        $("input#loc1").attr('value', loc.lon.toFixed(6));
+                        $("input#bbox0").attr('value', extent[0].lat.toFixed(6));
+                        $("input#bbox1").attr('value', extent[0].lon.toFixed(6));
+                        $("input#bbox2").attr('value', extent[1].lat.toFixed(6));
+                        $("input#bbox3").attr('value', extent[1].lon.toFixed(6)); 
                     }
                 };
                 bboxmap.addCallback('drawn', onMapChange);
@@ -60,11 +61,12 @@
                 
                 $('a.addrecipient').live('click', function() {
                     // TODO: can we clone a node and find/replace instead?
+                    // or use jquery templates?
                     try {
                         var index = $('#recipients p').length;
                         $('#recipients').append($('<p class="field full">'+nth(index+1)+' recipient:<br>'
-                            + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients[0][name]" size="15">'
-                            + ' <label for="recipients['+index+'][email]">email:<\/label><input type="text" name="recipients[0][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
+                            + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients['+index+'][name]" size="15">'
+                            + ' <label for="recipients['+index+'][email]">email:<\/label><input type="text" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
                             + '<\/p>'));
                     }
                     catch(e) {
@@ -266,11 +268,11 @@
 
                 <h2>Are you ready to get started?</h2>
                 
-                <form id="mapform"> <!-- method="POST" action="http://geo.stamen.com/~migurski/safety-maps/www/maps.php" -->
+                <form id="mapform" method="POST" action="maps.php">
                 
                     <p class="field split">
-                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="Mike"><br><!-- TODO: required or optional? -->
-                        <label for="sender[email]">What's your email address?</label><input type="text" name="sender[email]" value="mike@teczno.com"><!-- TODO: required or optional? -->
+                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value=""><br><!-- TODO: required or optional? -->
+                        <label for="sender[email]">What's your email address?</label><input type="text" name="sender[email]" value=""><!-- TODO: required or optional? -->
                     </p>
 
                     <h3><span class="step">1</span> Who's this map for?</h3>
@@ -288,15 +290,14 @@
                     <p>Drag the map to change the area that will be printed. <!-- TODO Drag the green marker to move it to the precise meeting point.--></p>
                     <!-- TODO: better copy? -->
                     <!-- TODO: editable center point -->
-                    <!-- TODO: timer for panning outside visible area -->
                     <!-- TODO: buttons for zooming -->                    
-                    <input type="hidden" name="place[location][0]">
-                    <input type="hidden" name="place[location][1]">
+                    <input type="hidden" id="loc0" name="place[location][0]">
+                    <input type="hidden" id="loc1" name="place[location][1]">
                     <br>
-                    <input type="hidden" name="map[bounds][0]">
-                    <input type="hidden" name="map[bounds][1]">
-                    <input type="hidden" name="map[bounds][2]">
-                    <input type="hidden" name="map[bounds][3]">
+                    <input type="hidden" id="bbox0" name="map[bounds][0]">
+                    <input type="hidden" id="bbox1" name="map[bounds][1]">
+                    <input type="hidden" id="bbox2" name="map[bounds][2]">
+                    <input type="hidden" id="bbox3" name="map[bounds][3]">
                     <div id="bboxmap">
                         <img src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; position:absolute; left: 50%; top: 50%; z-index:1000;">
                         <p id="zoom" style="position:absolute; margin: 5px; padding: 0; left: 0; top: 0; z-index:2000;"><a href="#" id="zoomin" style="background:#fff; padding: 0px 3px; text-decoration: none;">zoom in</a> <a href="#" id="zoomout" style="background:#fff; padding: 0px 3px; text-decoration: none;">zoom out</a></p>
@@ -307,19 +308,19 @@
                     
                     <p class="field">
                         <label for="place[name]">What would you like to call this meeting place?</label><br>
-                        <input type="text" name="place[name]" size="50" value="playground"><br>
+                        <input type="text" name="place[name]" size="50" value=""><br>
                         (You can call it anything you like.)
                     </p>                                        
                                         
                     <p class="field">
                         <label for="place[full-note]">Include a personal note for your recipients:</label><br>
-                        <textarea type="text" name="place[full-note]" rows="6">By the playground</textarea>
+                        <textarea type="text" name="place[full-note]" rows="6"></textarea>
                         (Please note that everyone you send this map to will get the same note.)
                     </p>
                     
                     <p class="field">
                         <label for="place[short-note]">Here's a summary of your note, please edit it if it doesn't make sense:</label><br>
-                        <input type="text" name="place[short-note]" value="By the playground" size="50">
+                        <input type="text" name="place[short-note]" value="" size="50">
                         <!-- derive from full note, optionally? -->
                     </p>
                     
