@@ -8,7 +8,7 @@
     </head>
     <body>
 
-        {include file="header.htmlf.tpl"}
+        {include file="header.htmlf.tpl" current="home"}
 
         <div id="main">
             

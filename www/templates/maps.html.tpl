@@ -14,7 +14,7 @@
     </head>
     <body>
 
-        {include file="header.htmlf.tpl"}
+        {include file="header.htmlf.tpl" current="maps"}
 
         <div id="main">
             {if $map}

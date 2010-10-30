@@ -25,10 +25,10 @@
 
     <div id="nav">
         <ul>
-            <li><a href="index.php" class="current">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="make_a_safety_map.html">Make a Safety Map</a></li>
-            <li><a href="maps.php">See meeting points other people have chosen</a></li>
+            <li><a class="{if $current == 'home'}current{/if}" href="index.php">Home</a></li>
+            <li><a class="{if $current == 'about'}current{/if}" href="about.html">About</a></li>
+            <li><a class="{if $current == 'make'}current{/if}" href="make-a-safety-map.php">Make a Safety Map</a></li>
+            <li><a class="{if $current == 'maps'}current{/if}" href="maps.php">See meeting points other people have chosen</a></li>
             <li><a href="#scenarios">View disaster scenarios</a></li>
         </ul>
     </div>
