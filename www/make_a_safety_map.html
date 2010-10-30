@@ -306,6 +306,19 @@
 
                     <h3><span class="step">3</span> Describe your map</h3>
                     
+                    <p class="field split">
+                        <label for="place[emergency]">What kind of emergency is this map for?</label>
+                        <select name="place[emergency]">
+                            <option>an emergency</option>
+                            <option>an earthquake</option>
+                            <option>a blackout</option>
+                            <option>a fire</option>
+                            <option>a flood</option>
+                            <option>a public transportation failure</option>
+                            <option>Other (please specify)</option><!-- TODO, how to specify? -->
+                        </select>
+                    </p>                             
+
                     <p class="field">
                         <label for="place[name]">What would you like to call this meeting place?</label><br>
                         <input type="text" name="place[name]" size="50" value=""><br>
@@ -332,20 +345,7 @@
                         <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked> This note is private.</label><br>
                     </p>
                     
-                    <h3><span class="step">4</span> Just three more questions...</h3>
-
-                    <p class="field split">
-                        <label for="place[emergency]">What kind of emergency is this map for?</label>
-                        <select name="place[emergency]">
-                            <option>an emergency</option>
-                            <option>an earthquake</option>
-                            <option>a blackout</option>
-                            <option>a fire</option>
-                            <option>a flood</option>
-                            <option>a public transportation failure</option>
-                            <option>Other (please specify)</option><!-- TODO, how to specify? -->
-                        </select>
-                    </p>                             
+                    <h3><span class="step">4</span> Just two more questions...</h3>
 
                     <p class="field split">
                         <label for="map[paper]">What size will you print this out at?</label>
