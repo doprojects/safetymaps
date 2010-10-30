@@ -142,41 +142,6 @@ body {
     margin: 0;
 }
 
-div#map {
-    position: relative;
-    width: 700px;
-    height: 600px;
-}
-
-div#points {
-    position: absolute;
-    top: 0;
-    left: 700px;
-    width: 260px;
-}
-
-div#points ul  {
-    list-style-type: none;
-    margin: 30px 20px;
-    padding: 0;
-}
-
-div#points li {
-    margin: 15px 0;
-    padding: 0;
-}
-
-div#points li a {
-    text-decoration: none;
-    color: #888888;
-    padding: 5px;
-}
-
-div#points li a:hover, div#points li a.hover {
-    background: #CCCCCC;
-    color: #333333;
-}
-
 /* footer! */
 
 #footer {
@@ -371,6 +336,6 @@ p#done button {
 
 /* maps page */
 
-#maps {
+#meeting-points {
     margin: 40px;
 }
