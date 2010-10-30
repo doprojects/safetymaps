@@ -1,9 +1,8 @@
-
 html, body {
     margin: 0;
     padding: 0;
     border: 0;
-    background: #fff;
+    background: #A6A6A6;
     color: #000;
 }
 
@@ -125,6 +124,7 @@ body {
 /* section! */
 
 #main {
+    background: #fff;
     position: relative;
     border-bottom: 1px solid #666;    
     padding: 40px;
