@@ -28,22 +28,28 @@
                     <a href="#create-your-map">Click here to start a scenario.</a>
                 </p>
             </div>
-            <div id="nav">
-                <ul>
-                    <li><a href="index.html" class="current">Home</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="make_a_safety_map.html">Make a Safety Map</a></li>
-                    <li><a href="#meeting-points">See meeting points other people have chosen</a></li>
-                    <li><a href="#scenarios">View disaster scenarios</a></li>
-                </ul>
-            </div>
+            {include file="nav.htmlf.tpl"}
         </div>
         <div id="main">
-            <div id="maps">
+            <div id="meeting-points">
                 {if $map}
                     <pre>{$map.features.0|@print_r:1|escape:'html'}</pre>
                 {elseif $maps}
-                    <pre>{$maps|@print_r:1|escape:'html'}</pre>
+                    <ul id="maps">
+                        {foreach item="map" from=$maps.features}
+                            <li class="map">
+                                <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.properties.place_name|escape}</a>
+                                from <span class="user-name">{$map.properties.user.name|escape}</span>
+
+                                <span class="geo">
+                                    <span class="latitude">{$map.geometry.coordinates.1}</span>
+                                    <span class="longitude">{$map.geometry.coordinates.0}</span>
+                                </span>
+
+                                {*<pre>{$map|@print_r:1|escape:'html'}</pre>*}
+                            </li>
+                        {/foreach}
+                    </ul>
                 {/if}
             </div>
         </div>
