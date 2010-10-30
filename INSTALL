@@ -1,7 +1,7 @@
 ---- Required Packages (Ubuntu) ----
 
 apt-get install python-cairo python-imaging python-rsvg python-setuptools
-apt-get install apache2-mpm-prefork php5-mysql mysql-server php-pear
+apt-get install apache2-mpm-prefork php5-mysql mysql-server php-pear smarty
 easy_install ModestMaps
 pear install --alldeps Mail Mail_mime
 
