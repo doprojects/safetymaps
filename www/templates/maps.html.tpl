@@ -2,34 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Safety Maps: About</title>
+        <title>Safety Maps: Meeting Points</title>
         <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
     <body>
-        <div id="header">
-            <h1>Safety Maps</h1>
-            <h2>
-                Where will you meet your loved ones in<br>
-                the event of a natural disaster or other<br>
-                emergency?
-            </h2>
-            <img src="logo.png" alt="Safety Maps Logo">
-            <div id="questions">
-                <p>
-                    What happens when disaster strikes?<br>
-                    You're separated from those you care about.<br>
-                    Your phone doesn't work anymore...<br>
-                    Where do you think it's a safe place to gather?<br>
-                    Use Safety Maps to choose and share safe<br>
-                    meeting points with your familiy and friends.
-                </p>
-                <p>
-                    <a href="#create-your-map">Click here to start a scenario.</a>
-                </p>
-            </div>
-            {include file="nav.htmlf.tpl"}
-        </div>
+
+        {include file="header.htmlf.tpl"}
+
         <div id="main">
             <div id="meeting-points">
                 {if $map}
@@ -53,8 +33,8 @@
                 {/if}
             </div>
         </div>
-        <div id="footer">
-            <p>&copy; 2010 Do Projects. Credits, Privacy Policy, etc.</p>
-        </div>
+
+        {include file="footer.htmlf.tpl"}
+
     </body>
 </html>
