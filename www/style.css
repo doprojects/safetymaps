@@ -27,7 +27,7 @@ body {
     font-weight: normal;
     font-style: normal;
     line-height:normal;
-    font-family: 'MgOpenModataRegular', sans-serif;
+    font-family: 'VAGRoundedStdBold', 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
     font-size: 22pt;
@@ -47,7 +47,7 @@ body {
     font-weight: normal;
     font-style: normal;
     line-height:normal;
-    font-family: 'MgOpenModataRegular', sans-serif;
+    font-family: 'VAGRoundedStdBold', 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
     font-size: 14pt;
@@ -90,7 +90,7 @@ body {
     font-weight: normal;
     font-style: normal;
     line-height:normal;
-    font-family: 'MgOpenModataRegular', sans-serif;
+    font-family: 'VAGRoundedStdBold', 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
     list-style-type: none;
