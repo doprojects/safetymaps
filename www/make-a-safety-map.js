@@ -3,7 +3,11 @@ $(document).ready(function() {
     $('#emergencyplace').bind('change', function() {
       if($('#otherplace').attr('selected')) {
         if ($('#otherinput').length == 0) {
-          $('<input id="otherinput" type="text"></input>').insertAfter($('#emergencyplace'));
+          $('<input id="otherinput" type="text"></input>')
+              .bind('change', function() {
+                $('#otherplace').attr('value', $(this).attr('value'));
+              })
+              .insertAfter($('#emergencyplace'));
         }
       }
       else {
