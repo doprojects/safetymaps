@@ -18,7 +18,13 @@ body {
     background: #00CC00;
     color: #FFFFFF;
     margin: 0;
-    padding: 10px 0 0 0;
+    padding: 0;
+}
+
+#header img {
+    margin: 10px 20px;
+    display: block;
+    float: left;
 }
 
 #header h1 {
@@ -29,16 +35,11 @@ body {
     font-family: 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
-    font-size: 22pt;
+    font-size: 48px;
     color: #000;
-    margin: 0 0 0 150px;
+    float: left;
+    margin: 24px 34px 0 10px;
     padding: 0;
-}
-
-#header img {
-    position: absolute;
-    top: 10px;
-    left: 10px;
 }
 
 #header h2 {
@@ -49,32 +50,11 @@ body {
     font-family: 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
-    font-size: 14pt;
-    line-height: 1.2;
-    margin: 0 0 20px 150px;
+    font-size: 18px;
+    line-height: 24px;
+    float: left;
+    margin: 40px 0 0 0;
     padding: 0;
-}
-
-#header #questions {
-    font-size: 10pt;
-    width: 300px;
-    position: absolute;
-    left: 640px;
-    top: 0px;
-    margin: 10px 0 0 0;
-    padding: 0;
-}
-#header #questions p {
-    line-height: 1.1;            
-    margin: 10px 0 0 0;
-    padding: 0;
-}
-#header #questions p a {
-    color: #FFFFFF;
-    text-decoration: none;
-}
-#header #questions p a:hover {
-    text-decoration: underline;
 }
 
 #header #nav {
@@ -82,6 +62,7 @@ body {
     /* I'm ashamed of myself, but this takes the edge off the html crispiness a bit */
     border-top: 1px solid #00AF23;
     border-bottom: 1px solid #888888;
+    clear: both;
 }
 
 #header #nav ul {
