@@ -100,7 +100,7 @@
                     
                     <p class="field full">
                         Personal note privacy:<br>
-                        <span class="note"><strong>"Public" definition:</strong> this note will be displayed alongside the place you selected on the <a href="#meeting-points">collective map</a>. Anybody who visits the site will be able to read it.</span>
+                        <span class="note"><strong>"Public" definition:</strong> this note will be displayed alongside the place you selected on the <a href="maps.php">collective map</a>. Anybody who visits the site will be able to read it.</span>
                         <span class="note"><strong>"Private" definition:</strong> this note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.</span>
                         <label for="rdpublic"><input type="radio" id="rdpublic" name="map[privacy]" value="public"> Make this note public?</label><br>
                         <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked> This note is private.</label><br>
