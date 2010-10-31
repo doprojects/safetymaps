@@ -52,23 +52,26 @@
     }
     
     if($map_id === false) {
-        $response = get_maps($ctx, compact('count', 'offset', 'where'));
-        $ctx->sm->assign('maps', $response);
+        $maps = get_maps($ctx, compact('count', 'offset', 'where'));
         
     } else {
-        $response = get_map($ctx, $map_id);
-        $ctx->sm->assign('map', $response);
+        $map = get_map($ctx, $map_id);
+        $ctx->sm->assign('map', $map);
+
+        $maps = array($map);
     }
+
+    $ctx->sm->assign('maps', $maps);
     
     $ctx->close();
     
     if($format == 'json') {
         header('Content-Type: text/json');
-        echo json_encode($response)."\n";
+        echo json_encode(map_rows2collection($maps))."\n";
     
     } elseif($format == 'text') {
         header('Content-Type: text/plain');
-        print_r($response);
+        print_r($maps);
     
     } elseif($format == 'html') {
 

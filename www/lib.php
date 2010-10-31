@@ -343,7 +343,33 @@
     }
     
    /**
-    * Convert a map row as from a database query to a GeoJSON feature array.
+    * Convert a list of map row as from a database query to a GeoJSON feature collection.
+    */
+    function map_rows2collection($map_rows)
+    {
+        $features = array();
+        $bbox = array(180, 90, -180, -90);
+    
+        foreach($map_rows as $row)
+        {
+            $feature = map_row2feature($row);
+            $features[] = $feature;
+            
+            $bbox[0] = min($bbox[0], $row['place_lon']);
+            $bbox[1] = min($bbox[1], $row['place_lat']);
+            $bbox[2] = max($bbox[2], $row['place_lon']);
+            $bbox[3] = max($bbox[3], $row['place_lat']);
+        }
+        
+        return array(
+            'type' => 'FeatureCollection',
+            'bbox' => count($features) ? $bbox : array(),
+            'features' => $features,
+        );
+    }
+    
+   /**
+    * Convert a map row as from a database query to a GeoJSON feature.
     */
     function map_row2feature($map_row)
     {
@@ -372,7 +398,7 @@
    /**
     * Get a map by ID, return a GeoJSON feature collection array.
     */
-    function get_map(&$ctx, $id, $collection=true)
+    function get_map(&$ctx, $id)
     {
         $_id = sprintf('%d', $id);
         
@@ -392,15 +418,17 @@
             {
                 $row['user'] = get_user($ctx, $row['user_id']);
                 $row['recipients'] = get_recipients($ctx, array('map_id' => $row['id']));
+                
+                $row['place_lat'] = floatval($row['place_lat']);
+                $row['place_lon'] = floatval($row['place_lon']);
+                $row['bbox_west'] = floatval($row['bbox_west']);
+                $row['bbox_east'] = floatval($row['bbox_east']);
+                $row['bbox_south'] = floatval($row['bbox_south']);
+                $row['bbox_north'] = floatval($row['bbox_north']);
             
                 unset($row['user_id']);
                 
-                return $collection
-                    ? array(
-                        'type' => 'FeatureCollection',
-                        'features' => array(map_row2feature($row))
-                      )
-                    : map_row2feature($row);
+                return $row;
             }
         }
         
@@ -443,30 +471,21 @@
 
         if($res = mysql_query($q, $ctx->db))
         {
-            $features = array();
-            $bbox = array(180, 90, -180, -90);
-        
+            $rows = array();
+            
             while($row = mysql_fetch_assoc($res))
             {
                 $row['user'] = get_user($ctx, $row['user_id']);
+                
+                $row['place_lat'] = floatval($row['place_lat']);
+                $row['place_lon'] = floatval($row['place_lon']);
+
                 unset($row['user_id']);
             
-                $feature = map_row2feature($row);
-                $features[] = $feature;
-                
-                list($lon, $lat) = $feature['geometry']['coordinates'];
-                
-                $bbox[0] = min($bbox[0], $lon);
-                $bbox[1] = min($bbox[1], $lat);
-                $bbox[2] = max($bbox[2], $lon);
-                $bbox[3] = max($bbox[3], $lat);
+                $rows[] = $row;
             }
             
-            return array(
-                'type' => 'FeatureCollection',
-                'bbox' => count($features) ? $bbox : array(),
-                'features' => $features,
-            );
+            return $rows;
         }
         
         return null;
@@ -543,7 +562,7 @@
     function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
     {
         $recipient = get_recipient($ctx, $recipient_id);
-        $map = get_map($ctx, $recipient['map_id'], false);
+        $map = get_map($ctx, $recipient['map_id']);
         
         $map_dirname = "{$dest_dirname}/{$map['id']}";
         @mkdir($map_dirname);
@@ -553,7 +572,7 @@
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
-        $pdf_filename = "{$pdf_dirname}/{$map['properties']['paper']}-{$map['properties']['format']}.pdf";
+        $pdf_filename = "{$pdf_dirname}/{$map['paper']}-{$map['format']}.pdf";
         $pdf_content = file_get_contents($src_filename);
     
         $fp = fopen($pdf_filename, 'w');
@@ -570,8 +589,8 @@
     function send_mail(&$ctx, $recipient_id, $pdf_href)
     {
         $recipient = get_recipient($ctx, $recipient_id, true);
-        $map = get_map($ctx, $recipient['map_id'], false);
-        $user = get_user($ctx, $map['properties']['user']['id'], true);
+        $map = get_map($ctx, $recipient['map_id']);
+        $user = get_user($ctx, $map['user']['id'], true);
         
         $mm = new Mail_mime("\n");
     

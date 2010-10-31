@@ -18,20 +18,20 @@
 
         <div id="main">
             {if $map}
-                <pre>{$map.features.0|@print_r:1|escape:'html'}</pre>
+                <pre>{$map|@print_r:1|escape:'html'}</pre>
             {elseif $maps}
             
                 <div id="map"> </div>
             
                     <ul id="maps">
-                        {foreach item="map" from=$maps.features}
+                        {foreach item="map" from=$maps}
                             <li class="map">
-                                <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.properties.place_name|escape}</a>
-                                from <span class="user-name">{$map.properties.user.name|escape}</span>
+                                <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
+                                from <span class="user-name">{$map.user.name|escape}</span>
 
                                 <span class="geo">
-                                    <span class="latitude">{$map.geometry.coordinates.1}</span>
-                                    <span class="longitude">{$map.geometry.coordinates.0}</span>
+                                    <span class="latitude">{$map.place_lat}</span>
+                                    <span class="longitude">{$map.place_lon}</span>
                                 </span>
 
                                 {*<pre>{$map|@print_r:1|escape:'html'}</pre>*}
