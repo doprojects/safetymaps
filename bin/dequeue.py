@@ -1,4 +1,5 @@
 from sys import stderr
+from os import unlink
 from optparse import OptionParser
 from urlparse import urlparse, urlunparse, urljoin
 from httplib import HTTPConnection
@@ -34,27 +35,31 @@ if __name__ == '__main__':
         resp = conn.getresponse()
         
         if resp.status != 200:
-            print resp.status
+            print >> stderr, resp.status
             break
 
         job = loads(resp.read())
     
         marker = job['place']['location']
-        bbox = job['map']['bounds']
         paper = job['map']['paper']
         format = job['map']['format']
-        name = job['recipient']['name']
+        bbox = job['map']['bounds']
+        emergency = job['place']['emergency']
+        place = job['place']['name']
+        recipient = job['recipient']['name']
+        sender = job['sender']['name']
+        text = job['place']['full-note']
         
-        print >> stderr, 'Map for', name, '...',
+        print 'Map for', recipient, '...',
         
-        filename = compose(marker, paper, format, bbox, name)
+        filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text)
         
-        print >> stderr, filename,
+        print filename,
 
         base_url = urlunparse(url)
         post_url = urljoin(base_url, job['post-back']['pdf'])
 
-        print >> stderr, post_url,
+        print post_url,
         
         post_url = urlparse(post_url)
         
@@ -62,7 +67,9 @@ if __name__ == '__main__':
         conn.request('POST', path(post_url), open(filename, 'r'))
         resp = conn.getresponse()
         
-        print >> stderr, resp.status, resp.read()
+        print resp.status, resp.read()
+        
+        unlink(filename)
         
         if time() > due:
             break

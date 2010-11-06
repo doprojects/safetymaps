@@ -1,11 +1,10 @@
 <?php
 
     ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'..');
+    require_once 'config.php';
     require_once 'lib.php';
 
-    $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
-    mysql_select_db('safetymaps', $db);
-    $ctx = new Context($db);
+    $ctx = default_context();
     
     mysql_query('BEGIN', $ctx->db);
     
@@ -31,28 +30,24 @@
 
             $res = mysql_query($q, $ctx->db);
             
-            $map = get_map($ctx, $row['map_id'], false);
-            list($lon, $lat) = $map['geometry']['coordinates'];
-            $properties = $map['properties'];
+            $map = get_map($ctx, $row['map_id']);
             
             $job = array(
-                'sender' => array('name' => $properties['user']['name']),
+                'sender' => array('name' => $map['user']['name']),
                 'place' => array(
-                    'name' => $properties['place_name'],
-                    'location' => array($lat, $lon),
-                    'emergency' => $properties['emergency'],
-                    'full-note' => $properties['note_full'],
-                    'short-note' => $properties['note_short']
+                    'name' => $map['place_name'],
+                    'location' => array($map['place_lat'], $map['place_lon']),
+                    'emergency' => $map['emergency'],
+                    'full-note' => $map['note_full'],
+                    'short-note' => $map['note_short']
                 ),
                 'map' => array(
                     'bounds' => array(
-                        floatval($properties['bbox_north']),
-                        floatval($properties['bbox_east']),
-                        floatval($properties['bbox_south']),
-                        floatval($properties['bbox_west'])
+                        $map['bbox_north'], $map['bbox_east'],
+                        $map['bbox_south'], $map['bbox_west']
                     ),
-                    'paper' => $properties['paper'],
-                    'format' => $properties['format']
+                    'paper' => $map['paper'],
+                    'format' => $map['format']
                 ),
                 'recipient' => array('name' => $recipient_name),
 
@@ -73,7 +68,7 @@
     mysql_query('ROLLBACK', $ctx->db);
     $ctx->close();
     
-    header('HTTP/1.1 400');
+    header('HTTP/1.1 404');
     header('Content-Type: text/plain');
     echo "No jobs.\n";
 

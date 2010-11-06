@@ -1,0 +1,43 @@
+#main
+{
+    padding: 0;
+}
+
+div#map
+{
+    position: relative;
+    width: 700px;
+    height: 600px;
+}
+
+ul#maps
+{
+    position: absolute;
+    top: 0;
+    left: 700px;
+    width: 260px;
+
+    list-style-type: none;
+    margin: 30px 20px;
+    padding: 0;
+}
+
+ul#maps li.map
+{
+    margin: 0 0 15px 0;
+    padding: 0;
+}
+
+ul#maps li.map a
+{
+    text-decoration: none;
+    color: #888888;
+    padding: 5px;
+}
+
+ul#maps li.map a:hover,
+ul#maps li.map a.hover
+{
+    background: #CCCCCC;
+    color: #333333;
+}

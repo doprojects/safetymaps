@@ -1,0 +1,160 @@
+select#emergencyplace,
+input#otherinput
+{
+    margin: 6px 6px 6px 0px;
+}
+
+#make {
+    width: 600px;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+}
+
+#make {
+    background: #CCCCCC;
+    padding: 30px 40px;
+}
+
+#make form p.field {
+    color: #444444;
+    font-size: 80%;
+}
+
+#make a {
+    color: #000000;
+}
+
+#make label {
+    color: #444444;
+    margin-right: 8px;
+    font-size: 125%;
+}
+#make p.split label {
+    display: inline-block;
+    /*width: 50%;*/
+    text-align: right;
+}
+#make form p.full {
+    font-size: 100%;
+    line-height: 1.5;
+}
+#make p.full label {
+    font-size: 100%;
+    /*width: 50%;*/
+    text-align: left;
+}
+#make form p.formats {
+    font-size: 100%;
+}
+#make p.formats label {
+    display: inline-block;
+    font-size: 100%;
+    text-align: left;
+    line-height: 50px;
+    margin-top: 5px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+#make p.formats input, #make p.formats img {
+    vertical-align: middle;
+}
+
+span.note {
+    display: inline-block;
+    background: #fff;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;    
+    font-size: 66%;
+    padding: 8px;
+    width: 140px;
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 15px;
+}
+
+#make p,
+#make h1,
+#make h2,
+#make h3,
+#make h4 {
+    position: relative;
+    clear: both;
+}
+#make h3 {
+    margin-top: 30px;
+}
+
+#make input[type=text],
+#make textarea {
+    border: 0;
+    background: #FFFFFF;
+    padding: 4px;
+    margin: 8px 0px;
+}
+#make textarea {
+    width: 592px;
+    font-size: 12pt;
+}
+
+#make button {
+    background: #444444;
+    color: #FFFFFF;
+    border: 0;
+    padding: 5px;
+    margin: 0 10px 0 0;
+    font-weight: bold;
+}
+#make button[type=submit] {
+    background: #00CC00;
+}
+
+#bboxmap {
+    display: block;
+    position: relative;
+    width: 594px;
+    height: 420px;
+    border: 3px dashed #00CC00;
+    background: #DDDDDD;
+}
+
+span.step {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    color: #fff;
+    background: #00CC00;
+    font-size: 20px;
+    font-weight: bold;
+    vertical-align: middle;
+    line-height: 40px;
+    text-align: center;
+}
+
+p#done {
+    margin-top: 30px;
+    text-align: center;
+}
+p#done button {
+    padding: 6px 10px;
+    font-size: 20px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#preview {
+    background: #fff;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    width: 600px;
+    height: 425px;
+    height: 300px;
+    line-height: 30px;
+    text-align: center;
+}

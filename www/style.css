@@ -1,14 +1,13 @@
-
 html, body {
     margin: 0;
     padding: 0;
     border: 0;
-    background: #fff;
+    background: #A6A6A6;
     color: #000;
 }
 
 body {
-    font: 11pt/1.0 Helvetica, Arial, sans-serif;            
+    font: 14px/18px Helvetica, Arial, sans-serif;            
     min-width: 960px;
 }
 
@@ -19,7 +18,13 @@ body {
     background: #00CC00;
     color: #FFFFFF;
     margin: 0;
-    padding: 10px 0 0 0;
+    padding: 0;
+}
+
+#header img {
+    margin: 10px 20px;
+    display: block;
+    float: left;
 }
 
 #header h1 {
@@ -30,16 +35,11 @@ body {
     font-family: 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
-    font-size: 22pt;
+    font-size: 48px;
     color: #000;
-    margin: 0 0 0 150px;
+    float: left;
+    margin: 24px 34px 0 10px;
     padding: 0;
-}
-
-#header img {
-    position: absolute;
-    top: 10px;
-    left: 10px;
 }
 
 #header h2 {
@@ -50,32 +50,11 @@ body {
     font-family: 'MgOpenModataRegular', sans-serif;
     font-size-adjust: 0.56;
     /* ----- */
-    font-size: 14pt;
-    line-height: 1.2;
-    margin: 0 0 20px 150px;
+    font-size: 18px;
+    line-height: 24px;
+    float: left;
+    margin: 40px 0 0 0;
     padding: 0;
-}
-
-#header #questions {
-    font-size: 10pt;
-    width: 300px;
-    position: absolute;
-    left: 640px;
-    top: 0px;
-    margin: 10px 0 0 0;
-    padding: 0;
-}
-#header #questions p {
-    line-height: 1.1;            
-    margin: 10px 0 0 0;
-    padding: 0;
-}
-#header #questions p a {
-    color: #FFFFFF;
-    text-decoration: none;
-}
-#header #questions p a:hover {
-    text-decoration: underline;
 }
 
 #header #nav {
@@ -83,6 +62,7 @@ body {
     /* I'm ashamed of myself, but this takes the edge off the html crispiness a bit */
     border-top: 1px solid #00AF23;
     border-bottom: 1px solid #888888;
+    clear: both;
 }
 
 #header #nav ul {
@@ -125,56 +105,10 @@ body {
 /* section! */
 
 #main {
+    background: #fff;
     position: relative;
     border-bottom: 1px solid #666;    
-}
-
-#main h1 {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    background: #fff;
-    font-size: 12pt;
-    font-weight: bold;
-    color: #00CC00;
-    padding: 8px;
-    margin: 0;
-}
-
-div#map {
-    position: relative;
-    width: 700px;
-    height: 600px;
-}
-
-div#points {
-    position: absolute;
-    top: 0;
-    left: 700px;
-    width: 260px;
-}
-
-div#points ul  {
-    list-style-type: none;
-    margin: 30px 20px;
-    padding: 0;
-}
-
-div#points li {
-    margin: 15px 0;
-    padding: 0;
-}
-
-div#points li a {
-    text-decoration: none;
-    color: #888888;
-    padding: 5px;
-}
-
-div#points li a:hover, div#points li a.hover {
-    background: #CCCCCC;
-    color: #333333;
+    padding: 40px;
 }
 
 /* footer! */
@@ -207,164 +141,4 @@ div#points li a:hover, div#points li a.hover {
 }
 .marker.hover {
     background-image: url(cross_big.png);
-}
-
-
-/* create form */
-
-#create {
-    margin: 40px;
-    width: 600px;
-    border-radius: 20px;
-    -moz-border-radius: 20px;
-    -webkit-border-radius: 20px;
-}
-
-#create {
-    background: #CCCCCC;
-    padding: 30px 40px;
-}
-
-#create form p.field {
-    color: #444444;
-    font-size: 80%;
-}
-
-#create a {
-    color: #000000;
-}
-
-#create label {
-    color: #444444;
-    margin-right: 8px;
-    font-size: 125%;
-}
-#create p.split label {
-    display: inline-block;
-    /*width: 50%;*/
-    text-align: right;
-}
-#create form p.full {
-    font-size: 100%;
-    line-height: 1.5;
-}
-#create p.full label {
-    font-size: 100%;
-    /*width: 50%;*/
-    text-align: left;
-}
-#create form p.formats {
-    font-size: 100%;
-}
-#create p.formats label {
-    display: inline-block;
-    font-size: 100%;
-    text-align: left;
-    line-height: 50px;
-    margin-top: 5px;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-#create p.formats input, #create p.formats img {
-    vertical-align: middle;
-}
-
-span.note {
-    display: inline-block;
-    background: #fff;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;    
-    font-size: 66%;
-    padding: 8px;
-    width: 140px;
-    float: right;
-    margin-left: 10px;
-    margin-bottom: 15px;
-}
-
-#create p, #create h1, #create h2, #create h3, #create h4 {
-    position: relative;
-    clear: both;
-}
-#create h3 {
-    margin-top: 30px;
-}
-
-#create input[type=text], #create textarea {
-    border: 0;
-    background: #FFFFFF;
-    padding: 4px;
-    margin: 8px 0px;
-}
-#create textarea {
-    width: 592px;
-    font-size: 12pt;
-}
-
-#create button {
-    background: #444444;
-    color: #FFFFFF;
-    border: 0;
-    padding: 5px;
-    margin: 0 10px 0 0;
-    font-weight: bold;
-}
-#create button[type=submit] {
-    background: #00CC00;
-}
-
-#bboxmap {
-    display: block;
-    position: relative;
-    width: 594px;
-    height: 420px;
-    border: 3px dashed #00CC00;
-    background: #DDDDDD;
-}
-
-span.step {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    border-radius: 20px;
-    color: #fff;
-    background: #00CC00;
-    font-size: 20px;
-    font-weight: bold;
-    vertical-align: middle;
-    line-height: 40px;
-    text-align: center;
-}
-
-p#done {
-    margin-top: 30px;
-    text-align: center;
-}
-p#done button {
-    padding: 6px 10px;
-    font-size: 20px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
-#preview {
-    background: #fff;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    width: 600px;
-    height: 425px;
-    height: 300px;
-    line-height: 30px;
-    text-align: center;
-}
-
-/* about page */
-
-#about {
-    margin: 40px;
 }

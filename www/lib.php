@@ -1,12 +1,19 @@
 <?php
 
+    require_once 'smarty/Smarty.class.php';
+
     class Context
     {
+        // Database connection
         var $db;
+
+        // Smarty instance
+        var $sm;
         
-        function Context(&$db_link)
+        function Context(&$db_link, &$smarty)
         {
             $this->db =& $db_link;
+            $this->sm =& $smarty;
         }
         
         function close()
@@ -14,7 +21,71 @@
             mysql_close($this->db);
         }
     }
+    
+    function &default_context()
+    {
+        $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
+        mysql_select_db(MYSQL_DATABASE, $db);
+        
+        $sm = new Smarty();
 
+        $sm->compile_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
+        $sm->cache_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
+
+        $sm->template_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
+        $sm->config_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
+        
+       /*
+        // later perhaps
+        $sm->assign('domain', get_domain_name());
+        $sm->assign('base_href', get_base_href());
+        */
+        $sm->assign('base_dir', get_base_dir());
+        $sm->register_modifier('nice_date', 'nice_date');
+
+        $sm->assign('constants', get_defined_constants());
+        $sm->assign('request', array('get' => $_GET, 'uri' => $_SERVER['REQUEST_URI']));
+        
+        $ctx = new Context($db, $sm);
+        
+        return $ctx;
+    }
+    
+   /*
+    // later perhaps
+    function get_domain_name()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_DOMAIN_NAME;
+        
+        return $_SERVER['SERVER_NAME'];
+    }
+    
+    function get_base_href()
+    {
+        if(php_sapi_name() == 'cli')
+            return '';
+        
+        $query_pos = strpos($_SERVER['REQUEST_URI'], '?');
+        
+        return ($query_pos === false) ? $_SERVER['REQUEST_URI']
+                                      : substr($_SERVER['REQUEST_URI'], 0, $query_pos);
+    }
+    */
+    
+    function get_base_dir()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_BASE_DIRECTORY;
+        
+        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
+    }
+    
+    function nice_date($ts)
+    {
+        return date('j M Y', $ts);
+    }
+    
    /**
     * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     * 
@@ -254,6 +325,9 @@
             
                 foreach($args['recipients'] as $r => $recipient)
                 {
+                    if(empty($recipient['name']) || empty($recipient['email']))
+                        continue;
+
                     $recipient['user_id'] = $user_id;
                     $recipient['map_id'] = $map_id;
                     $recipient_id = add_recipient($ctx, $recipient);
@@ -264,12 +338,44 @@
             }
         }
         
-        mysql_query($commit_ok ? 'COMMIT' : 'ROLLBACK');
-        return $commit_ok ? $map_id : null;
+        if(!$commit_ok)
+        {
+            mysql_query('ROLLBACK');
+            return null;
+        }
+
+        mysql_query('COMMIT');
+        return $map_id;
     }
     
    /**
-    * Convert a map row as from a database query to a GeoJSON feature array.
+    * Convert a list of map row as from a database query to a GeoJSON feature collection.
+    */
+    function map_rows2collection($map_rows)
+    {
+        $features = array();
+        $bbox = array(180, 90, -180, -90);
+    
+        foreach($map_rows as $row)
+        {
+            $feature = map_row2feature($row);
+            $features[] = $feature;
+            
+            $bbox[0] = min($bbox[0], $row['place_lon']);
+            $bbox[1] = min($bbox[1], $row['place_lat']);
+            $bbox[2] = max($bbox[2], $row['place_lon']);
+            $bbox[3] = max($bbox[3], $row['place_lat']);
+        }
+        
+        return array(
+            'type' => 'FeatureCollection',
+            'bbox' => count($features) ? $bbox : array(),
+            'features' => $features,
+        );
+    }
+    
+   /**
+    * Convert a map row as from a database query to a GeoJSON feature.
     */
     function map_row2feature($map_row)
     {
@@ -298,7 +404,7 @@
    /**
     * Get a map by ID, return a GeoJSON feature collection array.
     */
-    function get_map(&$ctx, $id, $collection=true)
+    function get_map(&$ctx, $id)
     {
         $_id = sprintf('%d', $id);
         
@@ -308,6 +414,7 @@
                      emergency, place_name,
                      note_full, note_short,
                      bbox_west, bbox_south, bbox_east, bbox_north,
+                     UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy
               FROM maps
               WHERE id = {$_id}";
@@ -318,15 +425,17 @@
             {
                 $row['user'] = get_user($ctx, $row['user_id']);
                 $row['recipients'] = get_recipients($ctx, array('map_id' => $row['id']));
+                
+                $row['place_lat'] = floatval($row['place_lat']);
+                $row['place_lon'] = floatval($row['place_lon']);
+                $row['bbox_west'] = floatval($row['bbox_west']);
+                $row['bbox_east'] = floatval($row['bbox_east']);
+                $row['bbox_south'] = floatval($row['bbox_south']);
+                $row['bbox_north'] = floatval($row['bbox_north']);
             
                 unset($row['user_id']);
                 
-                return $collection
-                    ? array(
-                        'type' => 'FeatureCollection',
-                        'features' => array(map_row2feature($row))
-                      )
-                    : map_row2feature($row);
+                return $row;
             }
         }
         
@@ -361,6 +470,7 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
+                     UNIX_TIMESTAMP(created) AS created_unixtime,
                      note_short, created
               FROM maps
               WHERE {$_where_clause}
@@ -369,30 +479,21 @@
 
         if($res = mysql_query($q, $ctx->db))
         {
-            $features = array();
-            $bbox = array(180, 90, -180, -90);
-        
+            $rows = array();
+            
             while($row = mysql_fetch_assoc($res))
             {
                 $row['user'] = get_user($ctx, $row['user_id']);
+                
+                $row['place_lat'] = floatval($row['place_lat']);
+                $row['place_lon'] = floatval($row['place_lon']);
+
                 unset($row['user_id']);
             
-                $feature = map_row2feature($row);
-                $features[] = $feature;
-                
-                list($lon, $lat) = $feature['geometry']['coordinates'];
-                
-                $bbox[0] = min($bbox[0], $lon);
-                $bbox[1] = min($bbox[1], $lat);
-                $bbox[2] = max($bbox[2], $lon);
-                $bbox[3] = max($bbox[3], $lat);
+                $rows[] = $row;
             }
             
-            return array(
-                'type' => 'FeatureCollection',
-                'bbox' => count($features) ? $bbox : array(),
-                'features' => $features,
-            );
+            return $rows;
         }
         
         return null;
@@ -401,11 +502,12 @@
    /**
     * Get a single user by ID, return a simple assoc. array.
     */
-    function get_user(&$ctx, $id)
+    function get_user(&$ctx, $id, $include_email=false)
     {
         $_id = sprintf('%d', $id);
+        $_columns = $include_email ? 'id, name, email' : 'id, name';
         
-        $q = "SELECT id, name
+        $q = "SELECT {$_columns}
               FROM users
               WHERE id = {$_id}";
 
@@ -441,6 +543,82 @@
         }
         
         return null;
+    }
+    
+   /**
+    * Get a single recipient, return a simple assoc. array.
+    */
+    function get_recipient(&$ctx, $id, $include_email=false)
+    {
+        $_id = sprintf('%d', $id);
+        $_columns = $include_email ? 'id, name, email, sent, map_id' : 'id, name, sent, map_id';
+        
+        $q = "SELECT {$_columns}
+              FROM recipients
+              WHERE id = {$_id}";
+
+        if($res = mysql_query($q, $ctx->db))
+            if($row = mysql_fetch_assoc($res))
+                return $row;
+        
+        return null;
+    }
+    
+   /**
+    * Save a PDF and return its complete local filename, or null in case of failure.
+    */
+    function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
+    {
+        $recipient = get_recipient($ctx, $recipient_id);
+        $map = get_map($ctx, $recipient['map_id']);
+        
+        $map_dirname = "{$dest_dirname}/{$map['id']}";
+        @mkdir($map_dirname);
+        @chmod($map_dirname, 0775);
+        
+        $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
+        @mkdir($pdf_dirname);
+        @chmod($pdf_dirname, 0775);
+        
+        $pdf_filename = "{$pdf_dirname}/{$map['paper']}-{$map['format']}.pdf";
+        $pdf_content = file_get_contents($src_filename);
+    
+        $fp = fopen($pdf_filename, 'w');
+        fwrite($fp, $pdf_content);
+        fclose($fp);
+        chmod($pdf_filename, 0664);
+        
+        return file_exists($pdf_filename) ? realpath($pdf_filename) : null;
+    }
+    
+   /**
+    * Send email to a recipient to notify them that a PDF file is available.
+    */
+    function send_mail(&$ctx, $recipient_id, $pdf_href)
+    {
+        $recipient = get_recipient($ctx, $recipient_id, true);
+        $map = get_map($ctx, $recipient['map_id']);
+        $user = get_user($ctx, $map['user']['id'], true);
+        
+        $mm = new Mail_mime("\n");
+    
+        $mm->setFrom("{$user['name']} <info@safety-maps.org>");
+        $mm->setSubject("Safety Maps Test");
+    
+        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$pdf_href}");
+        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$pdf_href}");
+    
+        $body = $mm->get();
+        $head = $mm->headers(array('To' => $recipient['email'],
+                                   'Reply-To' => $user['email']));
+    
+        $m =& Mail::factory('smtp', array('auth' => true,
+                                          'host' => SMTP_HOST,
+                                          'port' => SMTP_PORT,
+                                          'username' => SMTP_USER,
+                                          'password' => SMTP_PASS));
+        
+        return $m->send($recipient['email'], $head, $body);
     }
 
 ?>

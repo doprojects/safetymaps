@@ -1,14 +1,44 @@
 <?php
 
     ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'..');
+    require_once 'config.php';
     require_once 'lib.php';
 
-    $db = mysql_connect('localhost', 'safetymaps', 's4f3tym4ps');
-    mysql_select_db('safetymaps', $db);
-    $ctx = new Context($db);
+    require_once 'PEAR.php';
+    require_once 'Mail.php';
+    require_once 'Mail/mail.php';
+    require_once 'Mail/mime.php';
+
+    $ctx = default_context();
     
     $recipient_id = $_GET['id'];
     
+    $filesdir = dirname(dirname(__FILE__)).'/files';
+    $filename = save_pdf($ctx, $recipient_id, 'php://input', $filesdir);
+    
+    if(is_null($filename))
+    {
+        $ctx->close();
+
+        header('HTTP/1.1 500');
+        die("Failed to create PDF file.\n");
+    }
+    
+    $base_dirname = dirname(dirname(__FILE__));
+    $base_urlpath = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $file_relpath = substr($filename, strlen($base_dirname));
+    $href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.$file_relpath;
+
+    $sentmail = send_mail($ctx, $recipient_id, $href);
+    
+    if(PEAR::isError($sentmail))
+    {
+        $ctx->close();
+
+        header('HTTP/1.1 500');
+        die("{$sentmail->msg}\n");
+    }
+
     mysql_query('BEGIN', $ctx->db);
     
     $finished = finish_recipient($ctx, $recipient_id);
@@ -23,7 +53,5 @@
     }
 
     $ctx->close();
-
-    echo strlen(file_get_contents('php://input'));
 
 ?>
