@@ -23,6 +23,10 @@
         <div id="main">
             {if $map}
             
+                {if $map.waiting}
+                    <pre>[still generating this map]</pre>
+                {/if}
+            
                 <h2>
                     Safety Map
                     {if $recipient}

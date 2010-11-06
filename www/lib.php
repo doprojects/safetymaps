@@ -2,6 +2,11 @@
 
     require_once 'smarty/Smarty.class.php';
 
+    require_once 'PEAR.php';
+    require_once 'Mail.php';
+    require_once 'Mail/mail.php';
+    require_once 'Mail/mime.php';
+
     class Context
     {
         // Database connection
@@ -56,10 +61,10 @@
         
        /*
         // later perhaps
-        $sm->assign('domain', get_domain_name());
         $sm->assign('base_href', get_base_href());
         */
         $sm->assign('base_dir', get_base_dir());
+        $sm->assign('domain', get_domain_name());
         $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
@@ -72,14 +77,6 @@
     
    /*
     // later perhaps
-    function get_domain_name()
-    {
-        if(php_sapi_name() == 'cli')
-            return CLI_DOMAIN_NAME;
-        
-        return $_SERVER['SERVER_NAME'];
-    }
-    
     function get_base_href()
     {
         if(php_sapi_name() == 'cli')
@@ -92,12 +89,37 @@
     }
     */
     
-    function get_base_dir()
+     function get_domain_name()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_DOMAIN_NAME;
+        
+        return $_SERVER['SERVER_NAME'];
+    }
+    
+   function get_base_dir()
     {
         if(php_sapi_name() == 'cli')
             return CLI_BASE_DIRECTORY;
         
-        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
+        #
+        # Naive truth here.
+        #
+        $abs_root_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    
+        #
+        # Use __FILE__ and SCRIPT_FILENAME to figure out where we currently
+        # are in relation to the installed root of Dotspotting. We know lib.php
+        # is in www/, we know stuff is in www/, work from there.
+        #
+        # If this was Python we'd just us built-ins from os.path.
+        #
+        $root_dirname = dirname(dirname(__FILE__));
+        $script_dirname = dirname($_SERVER['SCRIPT_FILENAME']);
+        
+        $abs_root_url = substr($abs_root_url, 0, strlen($abs_root_url) - strlen(substr($script_dirname, strlen("{$root_dirname}/www"))));
+    
+        return $abs_root_url;
     }
     
     function nice_date($ts)
@@ -248,10 +270,13 @@
     }
     
    /**
+    * Each recipient must have a full complement of maps generated.
+    * This function notes the generation of a single map, eventually
+    * decrementing the waiting count on the recipient map.
     */
-    function advance_recipient(&$ctx, $id, $paper, $format)
+    function advance_recipient(&$ctx, $recipient_id, $paper, $format)
     {
-        $_recipient_id = sprintf('%d', $id);
+        $_recipient_id = sprintf('%d', $recipient_id);
     
         $q = "SELECT map_id, waiting
               FROM recipients
@@ -274,8 +299,10 @@
         $token = "{$paper}-{$format}";
         $tokens = preg_split('/\s+/', $row['waiting']);
         
+        // return null here, because this isn't
+        // quite a failure but maybe just a repeat
         if(!in_array($token, $tokens))
-            return false;
+            return null;
         
         $o = array_search($token, $tokens);
         array_splice($tokens, $o, 1);
@@ -311,6 +338,11 @@
             $r1 = mysql_query($q1, $ctx->db);
             
             if(!$r0 || !$r1)
+                return false;
+        
+            $sentmail = send_mail($ctx, $recipient_id);
+            
+            if(PEAR::isError($sentmail))
                 return false;
         }
         
@@ -468,7 +500,7 @@
                      note_full, note_short,
                      bbox_west, bbox_south, bbox_east, bbox_north,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
-                     created, privacy
+                     created, privacy, waiting
               FROM maps
               WHERE id = {$_id}";
 
@@ -523,8 +555,9 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
+                     note_full, note_short,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
-                     note_short, created
+                     created, privacy, waiting
               FROM maps
               WHERE {$_where_clause}
               ORDER BY created DESC
@@ -644,19 +677,23 @@
    /**
     * Send email to a recipient to notify them that a PDF file is available.
     */
-    function send_mail(&$ctx, $recipient_id, $pdf_href)
+    function send_mail(&$ctx, $recipient_id)
     {
         $recipient = get_recipient($ctx, $recipient_id, true);
         $map = get_map($ctx, $recipient['map_id']);
         $user = get_user($ctx, $map['user']['id'], true);
+        
+        $map_href = sprintf('http://%s%s/maps.php?id=%s/%s',
+                            get_domain_name(), get_base_dir(),
+                            urlencode($map['id']), urlencode($recipient['id']));
         
         $mm = new Mail_mime("\n");
     
         $mm->setFrom("{$user['name']} <info@safety-maps.org>");
         $mm->setSubject("Safety Maps Test");
     
-        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$pdf_href}");
-        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$pdf_href}");
+        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$map_href}");
+        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$map_href}");
     
         $body = $mm->get();
         $head = $mm->headers(array('To' => $recipient['email'],

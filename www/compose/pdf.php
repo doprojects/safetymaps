@@ -3,11 +3,6 @@
     ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'..');
     require_once 'config.php';
     require_once 'lib.php';
-
-    require_once 'PEAR.php';
-    require_once 'Mail.php';
-    require_once 'Mail/mail.php';
-    require_once 'Mail/mime.php';
     
     $headers = apache_request_headers();
 
@@ -43,33 +38,22 @@
         header('HTTP/1.1 500');
         die("Failed to create PDF file.\n");
     }
-    
-    $base_dirname = dirname(dirname(__FILE__));
-    $base_urlpath = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/');
-    $file_relpath = substr($filename, strlen($base_dirname));
-    $href = 'http://'.$_SERVER['SERVER_NAME'].$base_urlpath.$file_relpath;
-
-    $sentmail = send_mail($ctx, $recipient_id, $href);
-    
-    if(PEAR::isError($sentmail))
-    {
-        $ctx->close();
-
-        header('HTTP/1.1 500');
-        die("{$sentmail->msg}\n");
-    }
 
     mysql_query('BEGIN', $ctx->db);
     
     $advanced = advance_recipient($ctx, $recipient_id, $paper, $format);
     
-    if($advanced) {
-        header('HTTP/1.1 200');
-        mysql_query('COMMIT', $ctx->db);
-    
-    } else {
+    if($advanced === false) {
         header('HTTP/1.1 400');
         mysql_query('ROLLBACK', $ctx->db);
+    
+    } elseif(is_null($advanced)) {
+        header('HTTP/1.1 200');
+        mysql_query('ROLLBACK', $ctx->db);
+    
+    } else {
+        header('HTTP/1.1 201');
+        mysql_query('COMMIT', $ctx->db);
     }
 
     $ctx->close();
