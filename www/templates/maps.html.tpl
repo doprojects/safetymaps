@@ -23,6 +23,10 @@
         <div id="main">
             {if $map}
             
+                {if $map.waiting}
+                    <pre>[still generating this map]</pre>
+                {/if}
+            
                 <h2>
                     Safety Map
                     {if $recipient}
@@ -44,12 +48,19 @@
                 
                 {if $recipient}
                     <p>
-                        <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$map.paper|escape}-{$map.format|escape}.pdf"><code>[PDF download link]</code></a>
                     </p>
 
                     <p>
                         From <var>{$map.user.name|escape}</var>.
                     </p>
+                    
+                    <ul>
+                        {foreach item="paper_format" from=$paper_formats}
+                            <li>
+                                <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper_format|@join:"-"|escape}.pdf"><code>[{$paper_format|@join:" "|ucwords|escape} PDF]</code></a>
+                            </li>
+                        {/foreach}
+                    </ul>
                 {/if}
                 
                 <p>

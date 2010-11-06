@@ -42,6 +42,9 @@ CREATE TABLE maps (
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
 
+ALTER TABLE maps DROP COLUMN paper;
+ALTER TABLE maps DROP COLUMN format;
+
 
 
 DROP TABLE IF EXISTS recipients;
@@ -62,3 +65,5 @@ CREATE TABLE recipients (
     INDEX map (map_id)
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
+
+ALTER TABLE recipients ADD COLUMN waiting TEXT AFTER email;

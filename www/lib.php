@@ -2,6 +2,11 @@
 
     require_once 'smarty/Smarty.class.php';
 
+    require_once 'PEAR.php';
+    require_once 'Mail.php';
+    require_once 'Mail/mail.php';
+    require_once 'Mail/mime.php';
+
     class Context
     {
         // Database connection
@@ -10,15 +15,34 @@
         // Smarty instance
         var $sm;
         
+        // List of available print formats
+        var $formats = array('4up', '2up-fridge', 'poster');
+        
+        // List of available paper sizes
+        var $papers = array('a4', 'letter');
+        
         function Context(&$db_link, &$smarty)
         {
             $this->db =& $db_link;
             $this->sm =& $smarty;
+
+            $this->sm->assign('paper_formats', $this->paper_formats());
         }
         
         function close()
         {
             mysql_close($this->db);
+        }
+        
+        function paper_formats()
+        {
+            $pfs = array();
+            
+            foreach($this->papers as $paper)
+                foreach($this->formats as $format)
+                    $pfs[] = array($paper, $format);
+
+            return $pfs;
         }
     }
     
@@ -37,10 +61,10 @@
         
        /*
         // later perhaps
-        $sm->assign('domain', get_domain_name());
         $sm->assign('base_href', get_base_href());
         */
         $sm->assign('base_dir', get_base_dir());
+        $sm->assign('domain', get_domain_name());
         $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
@@ -53,14 +77,6 @@
     
    /*
     // later perhaps
-    function get_domain_name()
-    {
-        if(php_sapi_name() == 'cli')
-            return CLI_DOMAIN_NAME;
-        
-        return $_SERVER['SERVER_NAME'];
-    }
-    
     function get_base_href()
     {
         if(php_sapi_name() == 'cli')
@@ -73,12 +89,37 @@
     }
     */
     
-    function get_base_dir()
+     function get_domain_name()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_DOMAIN_NAME;
+        
+        return $_SERVER['SERVER_NAME'];
+    }
+    
+   function get_base_dir()
     {
         if(php_sapi_name() == 'cli')
             return CLI_BASE_DIRECTORY;
         
-        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
+        #
+        # Naive truth here.
+        #
+        $abs_root_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    
+        #
+        # Use __FILE__ and SCRIPT_FILENAME to figure out where we currently
+        # are in relation to the installed root of Dotspotting. We know lib.php
+        # is in www/, we know stuff is in www/, work from there.
+        #
+        # If this was Python we'd just us built-ins from os.path.
+        #
+        $root_dirname = dirname(dirname(__FILE__));
+        $script_dirname = dirname($_SERVER['SCRIPT_FILENAME']);
+        
+        $abs_root_url = substr($abs_root_url, 0, strlen($abs_root_url) - strlen(substr($script_dirname, strlen("{$root_dirname}/www"))));
+    
+        return $abs_root_url;
     }
     
     function nice_date($ts)
@@ -133,9 +174,6 @@
     * note_full   TEXT,
     * note_short  TEXT,
     * 
-    * paper       ENUM('a4', 'letter') DEFAULT 'letter',
-    * format      ENUM('4up', '2up-fridge', 'poster') DEFAULT '2up-fridge',
-    * 
     * bbox_north  DOUBLE,
     * bbox_south  DOUBLE,
     * bbox_east   DOUBLE,
@@ -156,9 +194,6 @@
         $_note_full = mysql_real_escape_string($args['note_full'], $ctx->db);
         $_note_short = mysql_real_escape_string($args['note_short'], $ctx->db);
 
-        $_paper = mysql_real_escape_string($args['paper'], $ctx->db);
-        $_format = mysql_real_escape_string($args['format'], $ctx->db);
-
         $_bbox_north = sprintf('%.6f', $args['bbox_north']);
         $_bbox_south = sprintf('%.6f', $args['bbox_south']);
         $_bbox_east = sprintf('%.6f', $args['bbox_east']);
@@ -174,8 +209,6 @@
                   emergency  = '{$_emergency}',
                   note_full  = '{$_note_full}',
                   note_short = '{$_note_short}',
-                  paper      = '{$_paper}',
-                  format     = '{$_format}',
                   bbox_north = {$_bbox_north},
                   bbox_south = {$_bbox_south},
                   bbox_east  = {$_bbox_east},
@@ -197,7 +230,9 @@
     * 
     * name    TINYTEXT,
     * email   TINYTEXT,
+    * waiting TEXT,
     * 
+    * queued  DATETIME,
     * sent    DATETIME,
     */
     function add_recipient(&$ctx, $args)
@@ -207,6 +242,13 @@
     
         $_name = mysql_real_escape_string($args['name'], $ctx->db);
         $_email = mysql_real_escape_string($args['email'], $ctx->db);
+        
+        $waiting = array();
+        
+        foreach($ctx->paper_formats() as $paper_format)
+            $waiting[] = join('-', $paper_format);
+        
+        $_waiting = mysql_real_escape_string(join(' ', $waiting), $ctx->db);
     
         $q0 = "UPDATE maps
                SET waiting = waiting + 1
@@ -217,6 +259,7 @@
                    map_id  = {$_map_id},
                    name    = '{$_name}',
                    email   = '{$_email}',
+                   waiting = '{$_waiting}',
                    queued  = NOW(),
                    sent    = NULL";
 
@@ -227,35 +270,83 @@
     }
     
    /**
+    * Each recipient must have a full complement of maps generated.
+    * This function notes the generation of a single map, eventually
+    * decrementing the waiting count on the recipient map.
     */
-    function finish_recipient(&$ctx, $id)
+    function advance_recipient(&$ctx, $recipient_id, $paper, $format)
     {
-        $_recipient_id = sprintf('%d', $id);
+        $_recipient_id = sprintf('%d', $recipient_id);
     
-        $q = "SELECT map_id
+        $q = "SELECT map_id, waiting
               FROM recipients
               WHERE id = {$_recipient_id}";
         
-        if($res = mysql_query($q, $ctx->db))
+        $res = mysql_query($q, $ctx->db);
+        
+        if(!$res)
+            return false;
+        
+        $row = mysql_fetch_assoc($res);
+        
+        if(!$row)
+            return false;
+        
+        $_map_id = sprintf('%d', $row['map_id']);
+        
+        // now we know it's a real recipient.
+        
+        $token = "{$paper}-{$format}";
+        $tokens = preg_split('/\s+/', $row['waiting']);
+        
+        // return null here, because this isn't
+        // quite a failure but maybe just a repeat
+        if(!in_array($token, $tokens))
+            return null;
+        
+        $o = array_search($token, $tokens);
+        array_splice($tokens, $o, 1);
+    
+        // found the right paper/format combination in recipient.waiting, removed it.
+        
+        $_waiting = mysql_real_escape_string(join(' ', $tokens), $ctx->db);
+        
+        $q = "UPDATE recipients
+              SET waiting = '{$_waiting}'
+              WHERE id = {$_recipient_id}";
+        
+        $res = mysql_query($q, $ctx->db);
+        
+        if(!$res)
+            return false;
+    
+        // updated recipient.waiting with the new list of paper/format combos.
+        
+        if(count($tokens) == 0)
         {
-            if($row = mysql_fetch_assoc($res))
-            {
-                $_map_id = sprintf('%d', $row['map_id']);
-                
-                $q0 = "UPDATE maps
-                       SET waiting = waiting - 1
-                       WHERE id = {$_map_id}";
-                
-                $q1 = "UPDATE recipients
-                       SET sent = NOW()
-                       WHERE id = {$_recipient_id}";
-                
-                if(mysql_query($q0, $ctx->db) && mysql_query($q1, $ctx->db))
-                    return true;
-            }
+            $q0 = "UPDATE maps
+                   SET waiting = waiting - 1
+                   WHERE id = {$_map_id}";
+            
+            $q1 = "UPDATE recipients
+                   SET waiting = NULL, sent = NOW()
+                   WHERE id = {$_recipient_id}";
+    
+            // decrementing maps.waiting because this recipient is all finished.
+            
+            $r0 = mysql_query($q0, $ctx->db);
+            $r1 = mysql_query($q1, $ctx->db);
+            
+            if(!$r0 || !$r1)
+                return false;
+        
+            $sentmail = send_mail($ctx, $recipient_id);
+            
+            if(PEAR::isError($sentmail))
+                return false;
         }
         
-        return false;
+        return true;
     }
     
    /**
@@ -274,9 +365,7 @@
     *   map:
     *   {
     *     privacy: ___,
-    *     bounds: [ ___, ___, ___, ___ ],
-    *     paper: ___,
-    *     format: ___
+    *     bounds: [ ___, ___, ___, ___ ]
     *   },
     *   recipients:
     *   [
@@ -305,9 +394,6 @@
                 'emergency' => $args['place']['emergency'],
                 'note_full' => $args['place']['full-note'],
                 'note_short' => $args['place']['short-note'],
-    
-                'paper' => $args['map']['paper'],
-                'format' => $args['map']['format'],
     
                 'bbox_north' => $args['map']['bounds'][0],
                 'bbox_south' => $args['map']['bounds'][2],
@@ -409,13 +495,12 @@
         $_id = sprintf('%d', $id);
         
         $q = "SELECT id, user_id,
-                     paper, format,
                      place_lat, place_lon,
                      emergency, place_name,
                      note_full, note_short,
                      bbox_west, bbox_south, bbox_east, bbox_north,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
-                     created, privacy
+                     created, privacy, waiting
               FROM maps
               WHERE id = {$_id}";
 
@@ -470,8 +555,9 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
+                     note_full, note_short,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
-                     note_short, created
+                     created, privacy, waiting
               FROM maps
               WHERE {$_where_clause}
               ORDER BY created DESC
@@ -567,20 +653,17 @@
    /**
     * Save a PDF and return its complete local filename, or null in case of failure.
     */
-    function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
+    function save_pdf($map_id, $recipient_id, $paper, $format, $src_filename, $dest_dirname)
     {
-        $recipient = get_recipient($ctx, $recipient_id);
-        $map = get_map($ctx, $recipient['map_id']);
-        
-        $map_dirname = "{$dest_dirname}/{$map['id']}";
+        $map_dirname = "{$dest_dirname}/{$map_id}";
         @mkdir($map_dirname);
         @chmod($map_dirname, 0775);
         
-        $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
+        $pdf_dirname = "{$map_dirname}/{$recipient_id}";
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
-        $pdf_filename = "{$pdf_dirname}/{$map['paper']}-{$map['format']}.pdf";
+        $pdf_filename = "{$pdf_dirname}/{$paper}-{$format}.pdf";
         $pdf_content = file_get_contents($src_filename);
     
         $fp = fopen($pdf_filename, 'w');
@@ -594,19 +677,23 @@
    /**
     * Send email to a recipient to notify them that a PDF file is available.
     */
-    function send_mail(&$ctx, $recipient_id, $pdf_href)
+    function send_mail(&$ctx, $recipient_id)
     {
         $recipient = get_recipient($ctx, $recipient_id, true);
         $map = get_map($ctx, $recipient['map_id']);
         $user = get_user($ctx, $map['user']['id'], true);
+        
+        $map_href = sprintf('http://%s%s/maps.php?id=%s/%s',
+                            get_domain_name(), get_base_dir(),
+                            urlencode($map['id']), urlencode($recipient['id']));
         
         $mm = new Mail_mime("\n");
     
         $mm->setFrom("{$user['name']} <info@safety-maps.org>");
         $mm->setSubject("Safety Maps Test");
     
-        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$pdf_href}");
-        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$pdf_href}");
+        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$map_href}");
+        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$map_href}");
     
         $body = $mm->get();
         $head = $mm->headers(array('To' => $recipient['email'],
