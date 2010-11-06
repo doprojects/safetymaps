@@ -16,10 +16,12 @@ com.modestmaps.CloudMadeProvider.prototype = {
     style: null,
     getTileUrl: function(coord) {
         coord = this.sourceCoordinate(coord);
-        var worldSize = Math.pow(2, coord.zoom);
-        var server = new Array('a.', 'b.', 'c.', '')[parseInt(worldSize * coord.row + coord.column) % 4];
-        var imgPath = new Array(this.key, this.style, this.tileWidth, coord.zoom, coord.column, coord.row).join('/');
-        return 'http://' + server + 'tile.cloudmade.com/' + imgPath + '.png';
+        if (coord) {
+            var worldSize = Math.pow(2, coord.zoom);
+            var server = new Array('a.', 'b.', 'c.', '')[parseInt(worldSize * coord.row + coord.column) % 4];
+            var imgPath = new Array(this.key, this.style, this.tileWidth, coord.zoom, coord.column, coord.row).join('/');
+            return 'http://' + server + 'tile.cloudmade.com/' + imgPath + '.png';
+        }
     }
 }
 

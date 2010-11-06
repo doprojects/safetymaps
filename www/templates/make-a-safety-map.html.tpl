@@ -12,6 +12,105 @@
         <script type="text/javascript" src="markerclip.js"></script>
         <script type="text/javascript" src="anyzoom.js"></script>
         <script type="text/javascript" src="make-a-safety-map.js"></script>
+        <script type="text/javascript" src="h5f.js"></script>
+        <script type="text/javascript">{literal}
+
+$(document).ready(function() {
+
+    // deal with "Other (please specify)"
+    $('#emergencyplace').bind('change', function() {
+        if($('#otherplace').attr('selected')) {
+            if ($('#otherinput').length == 0) {
+                $('<input id="otherinput" type="text"></input>')
+                    .bind('change', function() {
+	                $('#otherplace').attr('value', $(this).attr('value'));
+                    })
+                    .insertAfter($('#emergencyplace'));
+            }
+        }
+        else {
+            $('#otherinput').remove();
+        }
+    });
+
+    var autoSummary = true;
+    $('#fullnote').bind('change', function() {
+       if (autoSummary) {
+           var summary = $('#fullnote').attr('value');
+           if (summary.length > 64) { // TODO: check this summary length
+               summary = summary.substring(0,64);
+           }
+           var sentenceEnd = Math.max(summary.lastIndexOf('.'), summary.lastIndexOf('!'), summary.lastIndexOf('?'));
+           if (sentenceEnd > 0) {
+               summary = summary.substring(0,sentenceEnd+1);
+           }
+           $('#shortnote').attr('value', summary);
+       } 
+    });
+    $('#fullnote').bind('keyup', function() { $('#fullnote').trigger('change') });
+    $('#shortnote').bind('change', function() {
+       console.log('disabling autoSummary');
+       autoSummary = false;
+    });
+
+    // deal with additional recipients
+    $('a.addrecipient').live('click', function() {
+        // TODO: can we clone a node and find/replace instead?
+        // or use jquery templates?
+        try {
+            var index = $('#recipients p').length;
+            $('#recipients').append($('<p class="field full">'+nth(index+1)+' recipient:<br>'
+                + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients['+index+'][name]" size="15">'
+                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="text" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
+                + '<\/p>'));
+            $(document.body).trigger('search-needs-adjusting');
+        }
+        catch(e) {
+            console.log(e);
+        }
+        return false;
+    });
+
+    // undo additional recipients
+    $('a.removerecipient').live('click', function() {
+        try {
+            $(this).parent('p').remove();
+            $('#recipients p').each(function(index) {
+                var html = $(this).html();
+                html = html.replace(/(\d+[a-z][a-z])/g, function() {
+                    return nth(index+1);
+                });
+                html = html.replace(/(\[\d+\])/g, function() {
+                    return '['+index.toString()+']';
+                });
+                $(this).html(html)
+            });
+            $(document.body).trigger('search-needs-adjusting');
+        }
+        catch(e) {
+            console.log(e);
+        }
+        return false;
+    });
+
+    // number (1,2,3,4,5) to string (1st,2nd,3rd,4th,5th)
+    function nth(n) {
+        var s = n.toString();        if (n == 11 || n == 12 || n == 13) {            return s+'th';        }
+        var last = s.charAt(s.length-1);
+        if (last == '1') {
+            return s+'st';
+        }
+        else if (last == '2') {
+            return s+'nd';
+        }
+        else if (last == '3') {
+            return s+'rd';
+        }
+        return s+'th';
+    }
+
+}); 
+        {/literal}</script>
     </head>
     <body>
 
@@ -51,7 +150,6 @@
                     <p>Drag the map to change the area that will be printed. <!-- TODO Drag the green marker to move it to the precise meeting point.--></p>
                     <!-- TODO: better copy? -->
                     <!-- TODO: editable center point -->
-                    <!-- TODO: buttons for zooming -->                    
                     <input type="hidden" id="loc0" name="place[location][0]">
                     <input type="hidden" id="loc1" name="place[location][1]">
                     <br>
@@ -59,11 +157,7 @@
                     <input type="hidden" id="bbox1" name="map[bounds][1]">
                     <input type="hidden" id="bbox2" name="map[bounds][2]">
                     <input type="hidden" id="bbox3" name="map[bounds][3]">
-                    <div id="bboxmap">
-                        <img src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; position:absolute; left: 50%; top: 50%; z-index:1000;">
-                        <p id="zoom" style="position:absolute; margin: 5px; padding: 0; left: 0; top: 0; z-index:2000;"><a href="#" id="zoomin" style="background:#fff; padding: 0px 3px; text-decoration: none;">zoom in</a> <a href="#" id="zoomout" style="background:#fff; padding: 0px 3px; text-decoration: none;">zoom out</a></p>
-                        <p id="search" style="position:absolute; margin: 5px; padding: 0; left: 0; bottom: 0; z-index:2000;"><input type="text" name="search"></p>
-                    </div>
+                    <div id="bboxmap"></div>
 
                     <h3><span class="step">3</span> Describe your map</h3>
                     
@@ -88,13 +182,13 @@
                                         
                     <p class="field">
                         <label for="place[full-note]">Include a personal note for your recipients:</label><br>
-                        <textarea type="text" name="place[full-note]" rows="6"></textarea>
+                        <textarea type="text" name="place[full-note]" id="fullnote" rows="6"></textarea>
                         (Please note that everyone you send this map to will get the same note.)
                     </p>
                     
                     <p class="field">
                         <label for="place[short-note]">Here's a summary of your note, please edit it if it doesn't make sense:</label><br>
-                        <input type="text" name="place[short-note]" value="" size="50">
+                        <input type="text" name="place[short-note]" id="shortnote" value="" size="50">
                         <!-- derive from full note, optionally? -->
                     </p>
                     
@@ -106,24 +200,7 @@
                         <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked> This note is private.</label><br>
                     </p>
                     
-                    <h3><span class="step">4</span> Just two more questions...</h3>
-
-                    <p class="field split">
-                        <label for="map[paper]">What size will you print this out at?</label>
-                        <select name="map[paper]">
-                            <option value="letter">Letter</option>
-                            <option value="a4">A4</option>
-                        </select>
-                    </p>
-                    
-                    <p class="field formats">                        
-                        What format would you like?<br>
-                        <label for="4up"><img src="4up.gif"><input type="radio" name="map[format]" checked id="4up" value="4up">Four cards</label>
-                        <label for="2up-fridge"><img src="2up-fridge.gif"><input type="radio" name="map[format]" id="2up-fridge" value="2up-fridge">Two cards, fridge poster</label>
-                        <label for="poster"><img src="poster.gif"><input type="radio" name="map[format]" id="poster" value="poster">Single-page poster</label>
-                    </p>                    
-                    
-                    <h3><span class="step">5</span> That's it! You're done.</h3>                    
+                    <h3><span class="step">4</span> That's it! You're done.</h3>                    
                     
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print a wallet-sized card to share with your friends and loved ones.</p>
                     

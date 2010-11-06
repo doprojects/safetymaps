@@ -41,13 +41,13 @@
                     'full-note' => $map['note_full'],
                     'short-note' => $map['note_short']
                 ),
+                'formats' => $ctx->formats,
+                'papers' => $ctx->papers,
                 'map' => array(
                     'bounds' => array(
                         $map['bbox_north'], $map['bbox_east'],
                         $map['bbox_south'], $map['bbox_west']
-                    ),
-                    'paper' => $map['paper'],
-                    'format' => $map['format']
+                    )
                 ),
                 'recipient' => array('name' => $recipient_name),
 
