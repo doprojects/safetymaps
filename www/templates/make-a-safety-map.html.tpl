@@ -33,6 +33,26 @@ $(document).ready(function() {
         }
     });
 
+    var autoSummary = true;
+    $('#fullnote').bind('change', function() {
+       if (autoSummary) {
+           var summary = $('#fullnote').attr('value');
+           if (summary.length > 64) { // TODO: check this summary length
+               summary = summary.substring(0,64);
+           }
+           var sentenceEnd = Math.max(summary.lastIndexOf('.'), summary.lastIndexOf('!'), summary.lastIndexOf('?'));
+           if (sentenceEnd > 0) {
+               summary = summary.substring(0,sentenceEnd+1);
+           }
+           $('#shortnote').attr('value', summary);
+       } 
+    });
+    $('#fullnote').bind('keyup', function() { $('#fullnote').trigger('change') });
+    $('#shortnote').bind('change', function() {
+       console.log('disabling autoSummary');
+       autoSummary = false;
+    });
+
     // deal with additional recipients
     $('a.addrecipient').live('click', function() {
         // TODO: can we clone a node and find/replace instead?
@@ -130,7 +150,6 @@ $(document).ready(function() {
                     <p>Drag the map to change the area that will be printed. <!-- TODO Drag the green marker to move it to the precise meeting point.--></p>
                     <!-- TODO: better copy? -->
                     <!-- TODO: editable center point -->
-                    <!-- TODO: buttons for zooming -->                    
                     <input type="hidden" id="loc0" name="place[location][0]">
                     <input type="hidden" id="loc1" name="place[location][1]">
                     <br>
@@ -163,13 +182,13 @@ $(document).ready(function() {
                                         
                     <p class="field">
                         <label for="place[full-note]">Include a personal note for your recipients:</label><br>
-                        <textarea type="text" name="place[full-note]" rows="6"></textarea>
+                        <textarea type="text" name="place[full-note]" id="fullnote" rows="6"></textarea>
                         (Please note that everyone you send this map to will get the same note.)
                     </p>
                     
                     <p class="field">
                         <label for="place[short-note]">Here's a summary of your note, please edit it if it doesn't make sense:</label><br>
-                        <input type="text" name="place[short-note]" value="" size="50">
+                        <input type="text" name="place[short-note]" id="shortnote" value="" size="50">
                         <!-- derive from full note, optionally? -->
                     </p>
                     

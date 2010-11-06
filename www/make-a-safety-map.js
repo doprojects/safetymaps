@@ -24,9 +24,9 @@ $(document).ready(function() {
 
     // TODO template?
     var $mark = $('<img src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; position:absolute; left: 50%; top: 50%; z-index:1000;">');
-    var $zoom = $('<p id="zoom" style="position:absolute; margin: 5px; padding: 0; right: 0; top: 0; z-index:2000;"></p>')
-                    .append('<a href="#" id="zoomin" style="background:#fff; padding: 0px; text-decoration: none;"><img src=""></a><br>')
-                    .append('<a href="#" id="zoomout" style="background:#fff; padding: 0px; text-decoration: none;"><img src=""></a>');
+    var $zoom = $('<p id="zoom" style="position:absolute; margin: 10px; padding: 0; right: 0; top: 0; z-index:2000;"></p>')
+                    .append('<a href="#" id="zoomin" style="padding: 0px; margin-bottom: 5px; text-decoration: none;"><img border="0" src="images/zoom_in_25px_recent.png"></a><br>')
+                    .append('<a href="#" id="zoomout" style="padding: 0px; text-decoration: none;"><img border="0" src="images/zoom_out_25px_short.png"></a>');
 
     $('#bboxmap').append($mark);
     $('#bboxmap').append($zoom);
@@ -40,8 +40,8 @@ $(document).ready(function() {
     
     $(document.body).bind('search-needs-adjusting', function() {
         var mapOffset = $('#bboxmap').offset();
-        mapOffset.left += 5;
-        mapOffset.top += 5;
+        mapOffset.left += 10;
+        mapOffset.top += 10;
         $search.offset(mapOffset);
     });
     $(window).load(function() {
