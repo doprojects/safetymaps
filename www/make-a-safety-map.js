@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
-    // make a map!
     var mm = com.modestmaps;
 
     var provider = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+    // make a map!
     var bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
     bboxmap.setCenterZoom(new mm.Location(0,0), 1);
 
@@ -25,7 +25,6 @@ $(document).ready(function() {
     bboxmap.addCallback('drawn', onMapChange);
     onMapChange();
 
-    // TODO template?
     var $mark = $('<img id="mark" src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; cursor: move; position:absolute; left: 50%; top: 50%; z-index:1000;">');
     $mark.bind('mousedown', function(mde) {
       var mousePosition = $mark.offset();
