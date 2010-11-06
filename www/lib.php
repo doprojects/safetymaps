@@ -38,9 +38,10 @@
        /*
         // later perhaps
         $sm->assign('domain', get_domain_name());
-        $sm->assign('base_dir', get_base_dir());
         $sm->assign('base_href', get_base_href());
         */
+        $sm->assign('base_dir', get_base_dir());
+        $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
         $sm->assign('request', array('get' => $_GET, 'uri' => $_SERVER['REQUEST_URI']));
@@ -60,14 +61,6 @@
         return $_SERVER['SERVER_NAME'];
     }
     
-    function get_base_dir()
-    {
-        if(php_sapi_name() == 'cli')
-            return CLI_BASE_DIRECTORY;
-        
-        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
-    }
-    
     function get_base_href()
     {
         if(php_sapi_name() == 'cli')
@@ -79,7 +72,20 @@
                                       : substr($_SERVER['REQUEST_URI'], 0, $query_pos);
     }
     */
-
+    
+    function get_base_dir()
+    {
+        if(php_sapi_name() == 'cli')
+            return CLI_BASE_DIRECTORY;
+        
+        return rtrim(str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), DIRECTORY_SEPARATOR);
+    }
+    
+    function nice_date($ts)
+    {
+        return date('j M Y', $ts);
+    }
+    
    /**
     * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     * 
@@ -408,6 +414,7 @@
                      emergency, place_name,
                      note_full, note_short,
                      bbox_west, bbox_south, bbox_east, bbox_north,
+                     UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy
               FROM maps
               WHERE id = {$_id}";
@@ -463,6 +470,7 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
+                     UNIX_TIMESTAMP(created) AS created_unixtime,
                      note_short, created
               FROM maps
               WHERE {$_where_clause}

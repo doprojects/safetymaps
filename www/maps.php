@@ -14,7 +14,13 @@
                 ? array_map('floatval', explode(',', substr($_GET['where'], 5)))
                 : null;
     
-    $map_id = is_numeric($_GET['id']) ? intval($_GET['id']) : false;
+    $map_id = false;
+
+    if(preg_match('#^(\w+)(/(\w+))?$#', $_GET['id'], $m))
+    {
+        $map_id = $m[1];
+        $recipient_id = $m[3];
+    }
     
     if($_SERVER['REQUEST_METHOD'] == 'POST')
     {
@@ -57,8 +63,14 @@
     } else {
         $map = get_map($ctx, $map_id);
         $ctx->sm->assign('map', $map);
-
+        
         $maps = array($map);
+    }
+    
+    if($recipient_id)
+    {
+        $recipient = get_recipient($ctx, $recipient_id);
+        $ctx->sm->assign('recipient', $recipient);
     }
 
     $ctx->sm->assign('maps', $maps);
