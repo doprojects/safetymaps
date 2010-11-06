@@ -10,15 +10,34 @@
         // Smarty instance
         var $sm;
         
+        // List of available print formats
+        var $formats = array('4up', '2up-fridge', 'poster');
+        
+        // List of available paper sizes
+        var $papers = array('a4', 'letter');
+        
         function Context(&$db_link, &$smarty)
         {
             $this->db =& $db_link;
             $this->sm =& $smarty;
+
+            $this->sm->assign('paper_formats', $this->paper_formats());
         }
         
         function close()
         {
             mysql_close($this->db);
+        }
+        
+        function paper_formats()
+        {
+            $pfs = array();
+            
+            foreach($this->papers as $paper)
+                foreach($this->formats as $format)
+                    $pfs[] = array($paper, $format);
+
+            return $pfs;
         }
     }
     
@@ -197,7 +216,9 @@
     * 
     * name    TINYTEXT,
     * email   TINYTEXT,
+    * waiting TEXT,
     * 
+    * queued  DATETIME,
     * sent    DATETIME,
     */
     function add_recipient(&$ctx, $args)
@@ -207,6 +228,13 @@
     
         $_name = mysql_real_escape_string($args['name'], $ctx->db);
         $_email = mysql_real_escape_string($args['email'], $ctx->db);
+        
+        $waiting = array();
+        
+        foreach($ctx->paper_formats() as $paper_format)
+            $waiting[] = join('-', $paper_format);
+        
+        $_waiting = mysql_real_escape_string(join(' ', $waiting), $ctx->db);
     
         $q0 = "UPDATE maps
                SET waiting = waiting + 1
@@ -217,6 +245,7 @@
                    map_id  = {$_map_id},
                    name    = '{$_name}',
                    email   = '{$_email}',
+                   waiting = '{$_waiting}',
                    queued  = NOW(),
                    sent    = NULL";
 
@@ -228,34 +257,72 @@
     
    /**
     */
-    function finish_recipient(&$ctx, $id)
+    function advance_recipient(&$ctx, $id, $paper, $format)
     {
         $_recipient_id = sprintf('%d', $id);
     
-        $q = "SELECT map_id
+        $q = "SELECT map_id, waiting
               FROM recipients
               WHERE id = {$_recipient_id}";
         
-        if($res = mysql_query($q, $ctx->db))
+        $res = mysql_query($q, $ctx->db);
+        
+        if(!$res)
+            return false;
+        
+        $row = mysql_fetch_assoc($res);
+        
+        if(!$row)
+            return false;
+        
+        $_map_id = sprintf('%d', $row['map_id']);
+        
+        // now we know it's a real recipient.
+        
+        $token = "{$paper}-{$format}";
+        $tokens = preg_split('/\s+/', $row['waiting']);
+        
+        if(!in_array($token, $tokens))
+            return false;
+        
+        $o = array_search($token, $tokens);
+        array_splice($tokens, $o, 1);
+    
+        // found the right paper/format combination in recipient.waiting, removed it.
+        
+        $_waiting = mysql_real_escape_string(join(' ', $tokens), $ctx->db);
+        
+        $q = "UPDATE recipients
+              SET waiting = '{$_waiting}'
+              WHERE id = {$_recipient_id}";
+        
+        $res = mysql_query($q, $ctx->db);
+        
+        if(!$res)
+            return false;
+    
+        // updated recipient.waiting with the new list of paper/format combos.
+        
+        if(count($tokens) == 0)
         {
-            if($row = mysql_fetch_assoc($res))
-            {
-                $_map_id = sprintf('%d', $row['map_id']);
-                
-                $q0 = "UPDATE maps
-                       SET waiting = waiting - 1
-                       WHERE id = {$_map_id}";
-                
-                $q1 = "UPDATE recipients
-                       SET sent = NOW()
-                       WHERE id = {$_recipient_id}";
-                
-                if(mysql_query($q0, $ctx->db) && mysql_query($q1, $ctx->db))
-                    return true;
-            }
+            $q0 = "UPDATE maps
+                   SET waiting = waiting - 1
+                   WHERE id = {$_map_id}";
+            
+            $q1 = "UPDATE recipients
+                   SET waiting = NULL, sent = NOW()
+                   WHERE id = {$_recipient_id}";
+    
+            // decrementing maps.waiting because this recipient is all finished.
+            
+            $r0 = mysql_query($q0, $ctx->db);
+            $r1 = mysql_query($q1, $ctx->db);
+            
+            if(!$r0 || !$r1)
+                return false;
         }
         
-        return false;
+        return true;
     }
     
    /**
@@ -567,20 +634,17 @@
    /**
     * Save a PDF and return its complete local filename, or null in case of failure.
     */
-    function save_pdf(&$ctx, $recipient_id, $src_filename, $dest_dirname)
+    function save_pdf($map_id, $recipient_id, $paper, $format, $src_filename, $dest_dirname)
     {
-        $recipient = get_recipient($ctx, $recipient_id);
-        $map = get_map($ctx, $recipient['map_id']);
-        
-        $map_dirname = "{$dest_dirname}/{$map['id']}";
+        $map_dirname = "{$dest_dirname}/{$map_id}";
         @mkdir($map_dirname);
         @chmod($map_dirname, 0775);
         
-        $pdf_dirname = "{$map_dirname}/{$recipient['id']}";
+        $pdf_dirname = "{$map_dirname}/{$recipient_id}";
         @mkdir($pdf_dirname);
         @chmod($pdf_dirname, 0775);
         
-        $pdf_filename = "{$pdf_dirname}/{$map['paper']}-{$map['format']}.pdf";
+        $pdf_filename = "{$pdf_dirname}/{$paper}-{$format}.pdf";
         $pdf_content = file_get_contents($src_filename);
     
         $fp = fopen($pdf_filename, 'w');

@@ -62,3 +62,5 @@ CREATE TABLE recipients (
     INDEX map (map_id)
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
+
+ALTER TABLE recipients ADD COLUMN waiting TEXT AFTER email;
