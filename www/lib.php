@@ -152,9 +152,6 @@
     * note_full   TEXT,
     * note_short  TEXT,
     * 
-    * paper       ENUM('a4', 'letter') DEFAULT 'letter',
-    * format      ENUM('4up', '2up-fridge', 'poster') DEFAULT '2up-fridge',
-    * 
     * bbox_north  DOUBLE,
     * bbox_south  DOUBLE,
     * bbox_east   DOUBLE,
@@ -175,9 +172,6 @@
         $_note_full = mysql_real_escape_string($args['note_full'], $ctx->db);
         $_note_short = mysql_real_escape_string($args['note_short'], $ctx->db);
 
-        $_paper = mysql_real_escape_string($args['paper'], $ctx->db);
-        $_format = mysql_real_escape_string($args['format'], $ctx->db);
-
         $_bbox_north = sprintf('%.6f', $args['bbox_north']);
         $_bbox_south = sprintf('%.6f', $args['bbox_south']);
         $_bbox_east = sprintf('%.6f', $args['bbox_east']);
@@ -193,8 +187,6 @@
                   emergency  = '{$_emergency}',
                   note_full  = '{$_note_full}',
                   note_short = '{$_note_short}',
-                  paper      = '{$_paper}',
-                  format     = '{$_format}',
                   bbox_north = {$_bbox_north},
                   bbox_south = {$_bbox_south},
                   bbox_east  = {$_bbox_east},
@@ -341,9 +333,7 @@
     *   map:
     *   {
     *     privacy: ___,
-    *     bounds: [ ___, ___, ___, ___ ],
-    *     paper: ___,
-    *     format: ___
+    *     bounds: [ ___, ___, ___, ___ ]
     *   },
     *   recipients:
     *   [
@@ -372,9 +362,6 @@
                 'emergency' => $args['place']['emergency'],
                 'note_full' => $args['place']['full-note'],
                 'note_short' => $args['place']['short-note'],
-    
-                'paper' => $args['map']['paper'],
-                'format' => $args['map']['format'],
     
                 'bbox_north' => $args['map']['bounds'][0],
                 'bbox_south' => $args['map']['bounds'][2],
@@ -476,7 +463,6 @@
         $_id = sprintf('%d', $id);
         
         $q = "SELECT id, user_id,
-                     paper, format,
                      place_lat, place_lon,
                      emergency, place_name,
                      note_full, note_short,
