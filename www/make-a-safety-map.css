@@ -1,3 +1,7 @@
+body {
+  position: relative;
+}
+
 select#emergencyplace,
 input#otherinput
 {
