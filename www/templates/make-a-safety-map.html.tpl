@@ -17,6 +17,25 @@
 
 $(document).ready(function() {
 
+    H5F.setup(document.getElementById('mapform'));
+
+    $('label[for=rdpublic]').mouseover(function(e) {
+        $('#publictip').fadeIn().offset({ left: e.pageX+20, top: e.pageY+20 });
+    });
+    $('label[for=rdpublic]').mouseout(function() {
+        $('#publictip').hide();
+    });
+    $('label[for=rdprivate]').mouseover(function(e) {
+        $('#privatetip').fadeIn().offset({ left: e.pageX+20, top: e.pageY+20 });
+    });
+    $('label[for=rdprivate]').mouseout(function() {
+        $('#privatetip').hide();
+    });
+    $('#privacy').mousemove(function(e) {
+        $('#privatetip').offset({ left: e.pageX+20, top: e.pageY+20 });
+        $('#publictip').offset({ left: e.pageX+20, top: e.pageY+20 });
+    });
+
     // deal with "Other (please specify)"
     $('#emergencyplace').bind('change', function() {
         if($('#otherplace').attr('selected')) {
@@ -61,7 +80,7 @@ $(document).ready(function() {
             var index = $('#recipients p').length;
             $('#recipients').append($('<p class="field full">'+nth(index+1)+' recipient:<br>'
                 + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients['+index+'][name]" size="15">'
-                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="text" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
+                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="email" placeholder="e.g. them@there.com" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
                 + '<\/p>'));
             $(document.body).trigger('search-needs-adjusting');
         }
@@ -131,8 +150,8 @@ $(document).ready(function() {
                 <form id="mapform" method="POST" action="maps.php">
                 
                     <p class="field split">
-                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value=""><br><!-- TODO: required or optional? -->
-                        <label for="sender[email]">What's your email address?</label><input type="text" name="sender[email]" value=""><!-- TODO: required or optional? -->
+                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="" placeholder="e.g. Your Name" required><br>
+                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="" placeholder="e.g. you@example.com" size="35" required>
                     </p>
 
                     <h3><span class="step">1</span> Who's this map for?</h3>
@@ -141,29 +160,15 @@ $(document).ready(function() {
                     </p>
                     <div id="recipients">
                         <p class="field full">1st recipient:<br>
-                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15"> <label for="recipients[0][email]">email:</label><input type="text" name="recipients[0][email]" value="" size="35"> <a class="addrecipient" href="">Add another...</a>
+                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15" required> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35" required> <a class="addrecipient" href="">Add another...</a>
                         </p>
                     </div>
                         
                     <h3><span class="step">2</span> Where will you meet?</h3>
                     
-                    <p>Drag the map to change the area that will be printed. <!-- TODO Drag the green marker to move it to the precise meeting point.--></p>
-                    <!-- TODO: better copy? -->
-                    <!-- TODO: editable center point -->
-                    <input type="hidden" id="loc0" name="place[location][0]">
-                    <input type="hidden" id="loc1" name="place[location][1]">
-                    <br>
-                    <input type="hidden" id="bbox0" name="map[bounds][0]">
-                    <input type="hidden" id="bbox1" name="map[bounds][1]">
-                    <input type="hidden" id="bbox2" name="map[bounds][2]">
-                    <input type="hidden" id="bbox3" name="map[bounds][3]">
-                    <div id="bboxmap"></div>
-
-                    <h3><span class="step">3</span> Describe your map</h3>
-                    
                     <p class="field split">
                         <label for="place[emergency]">What kind of emergency is this map for?</label><br>
-                        <select id="emergencyplace" name="place[emergency]">
+                        <select id="emergencyplace" name="place[emergency]" required>
                             <option>an emergency</option>
                             <option>an earthquake</option>
                             <option>a blackout</option>
@@ -176,9 +181,21 @@ $(document).ready(function() {
 
                     <p class="field">
                         <label for="place[name]">What would you like to call this meeting place?</label><br>
-                        <input type="text" name="place[name]" size="50" value=""><br>
+                        <input type="text" name="place[name]" size="50" value="" required><br>
                         (You can call it anything you like.)
                     </p>                                        
+
+                    <p>Drag the map to change the area that will be printed. Drag the green marker to move it to the precise meeting point. Be sure to zoom close enough to see nearby streets!</p>
+                    <input type="hidden" id="loc0" name="place[location][0]">
+                    <input type="hidden" id="loc1" name="place[location][1]">
+                    <br>
+                    <input type="hidden" id="bbox0" name="map[bounds][0]">
+                    <input type="hidden" id="bbox1" name="map[bounds][1]">
+                    <input type="hidden" id="bbox2" name="map[bounds][2]">
+                    <input type="hidden" id="bbox3" name="map[bounds][3]">
+                    <div id="bboxmap"></div>
+
+                    <h3><span class="step">3</span> Describe your map</h3>
                                         
                     <p class="field">
                         <label for="place[full-note]">Include a personal note for your recipients:</label><br>
@@ -192,12 +209,12 @@ $(document).ready(function() {
                         <!-- derive from full note, optionally? -->
                     </p>
                     
-                    <p class="field full">
+                    <p class="field full" id="privacy">
                         Personal note privacy:<br>
-                        <span class="note"><strong>"Public" definition:</strong> this note will be displayed alongside the place you selected on the <a href="maps.php">collective map</a>. Anybody who visits the site will be able to read it.</span>
-                        <span class="note"><strong>"Private" definition:</strong> this note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.</span>
-                        <label for="rdpublic"><input type="radio" id="rdpublic" name="map[privacy]" value="public"> Make this note public?</label><br>
-                        <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked> This note is private.</label><br>
+                        <label for="rdpublic"><input type="radio" id="rdpublic" name="map[privacy]" value="public">Make this note public? (what?)</label><br>
+                        <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked>This note is private. (what?)</label><br>
+<span id="publictip" class="note"><strong>"Public" definition:</strong> this note will be displayed alongside the place you selected on the <a href="maps.php">collective map</a>. Anybody who visits the site will be able to read it.</span>
+<span id="privatetip" class="note"><strong>"Private" definition:</strong> this note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.</span>
                     </p>
                     
                     <h3><span class="step">4</span> That's it! You're done.</h3>                    
@@ -206,21 +223,16 @@ $(document).ready(function() {
                     
                     <!-- TODO: build a preview here, and add a checkbox that you have to select to say you've proof-read the preview -->
 
-                    <div id="preview">
+                    <!-- div id="preview">
                         [ preview goes here ]
                     </div>
                     
                     <p class="full">
                         Does everything look OK?<br>
                         <label for="verify"><input type="checkbox" name="verify">Yes, that looks right.</label>
-                    </p>
+                    </p -->
                     
                     <p id="done"><button type="submit">Go!</button></p>
-                    
-                    <!--p><button>Print</button></p-->
-                    <!-- TODO: what next? -->
-                    <!--p><button>Answer a few more questions</button></p>
-                    <p><button>Make another</button></p-->
                 </form>
                                     
             </div>
