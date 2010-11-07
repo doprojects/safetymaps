@@ -36,7 +36,7 @@ $(document).ready(function()
             map.parent.appendChild(anc);
         }
         
-        img.src = 'cross_sm.png';
+        img.src = 'cross_round.png';
     }
 
     function indexmap(id, locations)

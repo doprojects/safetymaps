@@ -18,6 +18,22 @@
 
         <div id="main">
         
+            <div id="about">
+                <h2>What is a Safety Map?</h2>
+                
+                <p>
+                    A Safety Map is a map that shows your family, friends and
+                    loved ones where to meet in the event of a disaster or
+                    other emergency.
+                </p>
+                    
+                <p>
+                    You can use the tools on this site to make custom Safety
+                    Maps for free, share them with friends, and print them out
+                    in a variety of convenient sizes.
+                </p>
+            </div>
+            
             <div id="map">
                 <ul id="maps">
                     {foreach item="map" from=$maps}
