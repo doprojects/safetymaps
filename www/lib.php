@@ -425,6 +425,8 @@
    /**
     * Add a new map and return its ID if everything worked out.
     *
+    * Return false if an error occured, requiring a rollback.
+    *
     * {
     *   sender: { name: ___, email: ___ }
     *   place:
@@ -450,81 +452,66 @@
     */
     function add_map($ctx, $args)
     {
-        $commit_ok = false;
-        mysql_query('BEGIN', $ctx->db);
-
         $user_id = getset_user($ctx, $args['sender']);
         $sender = $args['sender'];
         
-        if($user_id)
-        {
-            $map_args = array(
-                'user_id' => $user_id,
-    
-                'place_name' => $args['place']['name'],
-                'place_lat' => $args['place']['location'][0],
-                'place_lon' => $args['place']['location'][1],
-    
-                'emergency' => $args['place']['emergency'],
-                'note_full' => $args['place']['full-note'],
-                'note_short' => $args['place']['short-note'],
-    
-                'bbox_north' => $args['map']['bounds'][0],
-                'bbox_south' => $args['map']['bounds'][2],
-                'bbox_east' => $args['map']['bounds'][1],
-                'bbox_west' => $args['map']['bounds'][3],
-    
-                'privacy' => $args['map']['privacy']
-            );
-            
-            $map_id = set_map($ctx, $map_args);
-            
-            if($map_id)
-            {
-                $commit_ok = true;
-                $recipient_emails = array();
-            
-                foreach($args['recipients'] as $r => $recipient)
-                {
-                    if(empty($recipient['name']) || empty($recipient['email']))
-                        continue;
+        if(!$user_id)
+            return false;
+        
+        $map_args = array(
+            'user_id' => $user_id,
 
-                    $recipient['user_id'] = $user_id;
-                    $recipient['map_id'] = $map_id;
-                    $recipient_id = add_recipient($ctx, $recipient);
-                    
-                    if(!$recipient_id)
-                        $commit_ok = false;
-                    
-                    $recipient_emails[] = $recipient['email'];
-                }
-                
-                error_log(str_replace('\n', ' ', print_r($recipient_emails, 1)));
-                error_log(str_replace('\n', ' ', print_r($sender, 1)));
+            'place_name' => $args['place']['name'],
+            'place_lat' => $args['place']['location'][0],
+            'place_lon' => $args['place']['location'][1],
+
+            'emergency' => $args['place']['emergency'],
+            'note_full' => $args['place']['full-note'],
+            'note_short' => $args['place']['short-note'],
+
+            'bbox_north' => $args['map']['bounds'][0],
+            'bbox_south' => $args['map']['bounds'][2],
+            'bbox_east' => $args['map']['bounds'][1],
+            'bbox_west' => $args['map']['bounds'][3],
+
+            'privacy' => $args['map']['privacy']
+        );
+        
+        $map_id = set_map($ctx, $map_args);
+        
+        if(!$map_id)
+            return false;
+        
+        $send_to_sender = true;
+    
+        foreach($args['recipients'] as $r => $recipient)
+        {
+            if(empty($recipient['name']) || empty($recipient['email']))
+                continue;
+
+            $recipient['user_id'] = $user_id;
+            $recipient['map_id'] = $map_id;
+            $recipient_id = add_recipient($ctx, $recipient);
             
-                if(!in_array($sender['email'], $recipient_emails))
-                {
-                    error_log('yes.');
-                
-                    $sender['user_id'] = $user_id;
-                    $sender['map_id'] = $map_id;
-                
-                    // not just the president of the hair club for men
-                    $recipient_id = add_recipient($ctx, $sender);
-                    
-                    if(!$recipient_id)
-                        $commit_ok = false;
-                }
-            }
+            if(!$recipient_id)
+                return false;
+            
+            if($recipient['email'] == $sender['email'])
+                $send_to_sender = false;
+        }
+
+        if($send_to_sender)
+        {
+            $sender['user_id'] = $user_id;
+            $sender['map_id'] = $map_id;
+        
+            // not just the president of the hair club for men
+            $recipient_id = add_recipient($ctx, $sender);
+            
+            if(!$recipient_id)
+                return false;
         }
         
-        if(!$commit_ok)
-        {
-            mysql_query('ROLLBACK');
-            return null;
-        }
-
-        mysql_query('COMMIT');
         return $map_id;
     }
     

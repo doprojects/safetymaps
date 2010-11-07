@@ -31,18 +31,23 @@
         
         if($sender && $place && $map && $recipients)
         {
+            mysql_query('BEGIN', $ctx->db);
+
             $add_args = compact('sender', 'place', 'map', 'recipients');
             $map_id = add_map($ctx, $add_args);
             
-            if($map_id) {
-                header('HTTP/1.1 303');
-                header("Location: {$_SERVER['SCRIPT_NAME']}?id={$map_id}&format={$format}");
-                echo "Made you a map.\n";
-
-            } else {
+            if($map_id === false) {
                 header('HTTP/1.1 500');
                 header('Content-Type: text/plain');
+                mysql_query('ROLLBACK', $ctx->db);
                 echo "Couldn't make your map, not sure why.\n";
+
+            } else {
+                header('HTTP/1.1 303');
+                header('Content-Type: text/plain');
+                header("Location: {$_SERVER['SCRIPT_NAME']}?id={$map_id}&format={$format}");
+                mysql_query('COMMIT', $ctx->db);
+                echo "Made you a map.\n";
             }
 
             $ctx->close();
