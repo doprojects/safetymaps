@@ -21,14 +21,6 @@ body {
     padding: 0 0 0 0;
 }
 
-#header h1 {
-  display: none;
-}
-
-#header h2 {
-  display: none;
-}
-
 #header #nav {
     background: #333333;
     /* I'm ashamed of myself, but this takes the edge off the html crispiness a bit */
