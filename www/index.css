@@ -1,0 +1,32 @@
+#main
+{
+    padding: 0;
+}
+
+div#map
+{
+    position: relative;
+    width: 700px;
+    height: 400px;
+}
+
+div#map a.map-link
+{
+    display: block;
+    position: absolute;
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+div#about
+{
+    position: absolute;
+    left: 700px;
+}
+
+div#about h2,
+div#about p
+{
+    margin: 20px 40px 20px 20px;
+}
