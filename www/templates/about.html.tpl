@@ -13,7 +13,7 @@
 
         <div id="main">
 
-            <h2>Do 1004. Safety Maps.</h2>
+            <h2>About Safety Maps.</h2>
             
             <p>
             Safety Maps is an online application you can use to make and share
