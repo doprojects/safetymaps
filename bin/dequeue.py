@@ -49,28 +49,43 @@ if __name__ == '__main__':
         sender = job['sender']['name']
         text = job['place']['full-note']
         
+        pdf_href = job['post-back']['pdf']
+        error_href = job['post-back']['error']
+        
         print 'Maps for', recipient, '...'
         
         for (paper, format) in product(job['papers'], job['formats']):
-            filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text)
+            try:
+                filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text)
+    
+                print filename,
+        
+                base_url = urlunparse(url)
+                post_url = urljoin(base_url, pdf_href)
+                post_url = urlparse(post_url)
+                
+                conn = HTTPConnection(post_url.netloc)
+                head = {'X-Print-Paper': paper, 'X-Print-Format': format}
+                conn.request('POST', path(post_url), open(filename, 'r'), head)
+                resp = conn.getresponse()
+                
+                print resp.status, resp.read()
+                
+                unlink(filename)
 
-            print filename,
-    
-            base_url = urlunparse(url)
-            post_url = urljoin(base_url, job['post-back']['pdf'])
-    
-            print post_url,
-            
-            post_url = urlparse(post_url)
-            
-            conn = HTTPConnection(post_url.netloc)
-            head = {'X-Print-Paper': paper, 'X-Print-Format': format}
-            conn.request('POST', path(post_url), open(filename, 'r'), head)
-            resp = conn.getresponse()
-            
-            print resp.status, resp.read()
-            
-            unlink(filename)
+            except ValueError, error:
+                base_url = urlunparse(url)
+                error_url = urljoin(base_url, error_href)
+                error_url = urlparse(error_url)
+        
+                print 'Uh-oh:', error
+                
+                conn = HTTPConnection(error_url.netloc)
+                head = {'X-Print-Paper': paper, 'X-Print-Format': format}
+                conn.request('POST', path(error_url), str(error), head)
+                resp = conn.getresponse()
+                
+                print resp.status, resp.read()
         
         if time() > due:
             break

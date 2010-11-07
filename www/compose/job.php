@@ -25,7 +25,7 @@
             $recipient_id = $row['id'];
         
             $q = "UPDATE recipients
-                  SET queued = NOW() + INTERVAL 30 SECOND
+                  SET queued = NOW() + INTERVAL 20 SECOND
                   WHERE id = {$_id}";
 
             $res = mysql_query($q, $ctx->db);
@@ -52,7 +52,8 @@
                 'recipient' => array('name' => $recipient_name),
 
                 'post-back' => array(
-                    'pdf' => sprintf('%s/pdf.php?id=%s', str_replace(' ', '%20', dirname($_SERVER['SCRIPT_NAME'])), urlencode($recipient_id))
+                    'pdf' => sprintf('%s/compose/pdf.php?id=%s', get_base_dir(), urlencode($recipient_id)),
+                    'error' => sprintf('%s/compose/error.php?id=%s', get_base_dir(), urlencode($recipient_id))
                 )
             );
             
