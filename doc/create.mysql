@@ -26,9 +26,6 @@ CREATE TABLE maps (
     note_full   TEXT,
     note_short  TEXT,
 
-    paper       ENUM('a4', 'letter') DEFAULT 'letter',
-    format      ENUM('4up', '2up-fridge', 'poster') DEFAULT '2up-fridge',
-    
     bbox_north  DOUBLE,
     bbox_south  DOUBLE,
     bbox_east   DOUBLE,
@@ -41,9 +38,6 @@ CREATE TABLE maps (
     INDEX user (user_id)
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
-
-ALTER TABLE maps DROP COLUMN paper;
-ALTER TABLE maps DROP COLUMN format;
 
 
 
@@ -58,6 +52,7 @@ CREATE TABLE recipients (
     name    TINYTEXT,
     email   TINYTEXT,
     
+    waiting TEXT,
     queued  DATETIME,
     sent    DATETIME,
     
@@ -66,4 +61,5 @@ CREATE TABLE recipients (
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
 
-ALTER TABLE recipients ADD COLUMN waiting TEXT AFTER email;
+ALTER TABLE recipients ADD COLUMN errors INT UNSIGNED DEFAULT 0 AFTER waiting;
+ALTER TABLE recipients ADD COLUMN failed DATETIME AFTER sent;
