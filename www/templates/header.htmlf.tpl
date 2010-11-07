@@ -1,7 +1,5 @@
 <div id="header">
-    <img src="images/header.png" width="1254" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency">
-    <!--h1>Safety Maps</h1>
-    <h2>Make and share maps of safe places to<br> meet in the event of an emergency.</h2-->
+    <a href="{$base_dir}"><img src="images/header.png" border="0" width="1254" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency"></a>
     <div id="nav">
         <ul>
             <li><a class="{if $current == 'home'}current{/if}" href="./">Home</a></li>
