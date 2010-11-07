@@ -1,16 +1,19 @@
 $(document).ready(function() {
 
-    // make a map!
     var mm = com.modestmaps;
 
     var provider = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+    // make a map!
     var bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
     bboxmap.setCenterZoom(new mm.Location(0,0), 1);
 
     function onMapChange() {
         var extent = bboxmap.getExtent();
         if (extent[0].lat-extent[1].lat > 0.001 && extent[1].lon-extent[0].lon > 0.001) {
-            var loc = mm.Location.interpolate(extent[0], extent[1], 0.5);
+            var pos = $('#mark').position();
+            var loc;
+            if (pos) loc  = bboxmap.pointLocation(new mm.Point(pos.left, pos.top));
+            else loc = mm.Location.interpolate(extent[0], extent[1], 0.5);
             $("input#loc0").attr('value', loc.lat.toFixed(6));
             $("input#loc1").attr('value', loc.lon.toFixed(6));
             $("input#bbox0").attr('value', extent[0].lat.toFixed(6));
@@ -22,8 +25,27 @@ $(document).ready(function() {
     bboxmap.addCallback('drawn', onMapChange);
     onMapChange();
 
-    // TODO template?
-    var $mark = $('<img src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; position:absolute; left: 50%; top: 50%; z-index:1000;">');
+    var $mark = $('<img id="mark" src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; cursor: move; position:absolute; left: 50%; top: 50%; z-index:1000;">');
+    $mark.bind('mousedown', function(mde) {
+      var mousePosition = $mark.offset();
+      var mouseOffset = { left: mde.pageX - mousePosition.left, top: mde.pageY - mousePosition.top }
+      function onMarkMouseMove(mme) {
+          var newPos = { left: mme.pageX - mouseOffset.left, top: mme.pageY - mouseOffset.top };
+          $mark.offset(newPos);
+          var pos = $mark.position();
+          var loc = bboxmap.pointLocation(new mm.Point(pos.left, pos.top));
+          $("input#loc0").attr('value', loc.lat.toFixed(6));
+          $("input#loc1").attr('value', loc.lon.toFixed(6));
+          return false;
+      }
+      $(document.body).bind('mousemove', onMarkMouseMove);
+      $(document.body).one('mouseup', function() {
+          $(document.body).unbind('mousemove', onMarkMouseMove);
+          return false;
+      });
+      return false;
+    });
+
     var $zoom = $('<p id="zoom" style="position:absolute; margin: 10px; padding: 0; right: 0; top: 0; z-index:2000;"></p>')
                     .append('<a href="#" id="zoomin" style="padding: 0px; margin-bottom: 5px; text-decoration: none;"><img border="0" src="images/zoom_in_25px_recent.png"></a><br>')
                     .append('<a href="#" id="zoomout" style="padding: 0px; text-decoration: none;"><img border="0" src="images/zoom_out_25px_short.png"></a>');
