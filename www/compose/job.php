@@ -11,6 +11,7 @@
     $q = "SELECT id, map_id, user_id, name
           FROM recipients
           WHERE sent IS NULL
+            AND failed IS NULL
             AND queued < NOW()
           ORDER BY queued ASC
           LIMIT 1";

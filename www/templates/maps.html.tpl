@@ -23,8 +23,18 @@
         <div id="main">
             {if $map}
             
-                {if $map.waiting}
-                    <pre>[still generating this map]</pre>
+                {if $recipient}
+                    {if $recipient.failed}
+                        <pre>[failed to generate this map for you {$recipient.failed}]</pre>
+                    {elseif $recipient.waiting}
+                        <pre>[still generating this map for you]</pre>
+                    {elseif $recipient.sent}
+                        <pre>[sent you this map {$recipient.sent}]</pre>
+                    {/if}
+                {else}
+                    {if $map.waiting}
+                        <pre>[still generating this map {$map.waiting}]</pre>
+                    {/if}
                 {/if}
             
                 <h2>

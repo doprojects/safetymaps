@@ -36,9 +36,25 @@
     
     error_log($message);
     
+    mysql_query('BEGIN', $ctx->db);
+    
+    $errored = error_recipient($ctx, $recipient_id, $paper, $format);
+    
+    if($errored === false) {
+        header('HTTP/1.1 500');
+        mysql_query('ROLLBACK', $ctx->db);
+    
+    } elseif(is_null($errored)) {
+        header('HTTP/1.1 200');
+        mysql_query('COMMIT', $ctx->db);
+    
+    } else {
+        header('HTTP/1.1 201');
+        mysql_query('COMMIT', $ctx->db);
+    }
+
     $ctx->close();
 
-    header('HTTP/1.1 500');
     echo "{$message}\n";
-
+    
 ?>

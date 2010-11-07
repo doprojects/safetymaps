@@ -273,6 +273,8 @@
     * Each recipient must have a full complement of maps generated.
     * This function notes the generation of a single map, eventually
     * decrementing the waiting count on the recipient map.
+    *
+    * Return true if the recipient was advanced, null if not, and false on error.
     */
     function advance_recipient(&$ctx, $recipient_id, $paper, $format)
     {
@@ -325,7 +327,7 @@
         if(count($tokens) == 0)
         {
             $q0 = "UPDATE maps
-                   SET waiting = waiting - 1
+                   SET waiting = IF(waiting > 0, waiting - 1, 0)
                    WHERE id = {$_map_id}";
             
             $q1 = "UPDATE recipients
@@ -345,6 +347,77 @@
             if(PEAR::isError($sentmail))
                 return false;
         }
+        
+        return true;
+    }
+    
+   /**
+    * Each recipient is given a certain amount of time and a certain number of
+    * errors before they're given up on. This function is called after an error
+    * has occured, and if it finds that the recipient has seen too many errors
+    * for too long, it'll give up on the recipient permanently.
+    *
+    * Return true if we gave up on the recipient, null if not, and false on error.
+    */
+    function error_recipient(&$ctx, $recipient_id, $paper, $format)
+    {
+        $_recipient_id = sprintf('%d', $recipient_id);
+    
+        $q = "SELECT map_id, errors,
+                     UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created) AS seconds_old
+              FROM recipients
+              WHERE id = {$_recipient_id}";
+        
+        $res = mysql_query($q, $ctx->db);
+        
+        if(!$res)
+            return false;
+        
+        $row = mysql_fetch_assoc($res);
+        
+        if(!$row)
+            return false;
+        
+        $map_id = $row['map_id'];
+        $errors = $row['errors'];
+        $minutes_old = $row['seconds_old'] / 60;
+
+        $_map_id = sprintf('%d', $map_id);
+        
+        // now we know it's a real recipient.
+        
+        $q = "UPDATE recipients
+              SET errors = errors + 1
+              WHERE id = {$_recipient_id}";
+
+        if(!mysql_query($q, $ctx->db))
+            return false;
+
+        if($minutes_old <= 10 && $errors <= count($ctx->paper_formats()) * 3)
+        {
+            // not enough to errors to fail this participant just yet.
+            return null;
+        }
+
+        error_log(sprintf('Giving up on recipient %s, map %s: %d errors, %d minutes old',
+                          $recipient_id, $map_id,
+                          $errors, $minutes_old));
+        
+        $q0 = "UPDATE maps
+               SET waiting = IF(waiting > 0, waiting - 1, 0)
+               WHERE id = {$_map_id}";
+        
+        $q1 = "UPDATE recipients
+               SET failed = NOW()
+               WHERE id = {$_recipient_id}";
+
+        // decrementing maps.waiting because this recipient won't happen.
+        
+        $r0 = mysql_query($q0, $ctx->db);
+        $r1 = mysql_query($q1, $ctx->db);
+        
+        if(!$r0 || !$r1)
+            return false;
         
         return true;
     }
@@ -642,8 +715,8 @@
         $_id = sprintf('%d', $id);
 
         $_columns = $expose_email
-            ? 'id, name, email, sent, map_id'
-            : 'id, name, SHA1(email) AS email, sent, map_id';
+            ? 'id, map_id, name, waiting, sent, failed, email'
+            : 'id, map_id, name, waiting, sent, failed, SHA1(email) AS email';
         
         $q = "SELECT {$_columns}
               FROM recipients
