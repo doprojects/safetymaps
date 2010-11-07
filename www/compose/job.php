@@ -17,20 +17,17 @@
     
     if($res = mysql_query($q, $ctx->db))
     {
-        if($row = mysql_fetch_assoc($res))
+        if($recipient = mysql_fetch_assoc($res))
         {
-            $_id = sprintf('%d', $row['id']);
-
-            $recipient_name = $row['name'];
-            $recipient_id = $row['id'];
+            $_recipient_id = sprintf('%d', $recipient['id']);
         
             $q = "UPDATE recipients
                   SET queued = NOW() + INTERVAL 20 SECOND
-                  WHERE id = {$_id}";
+                  WHERE id = {$_recipient_id}";
 
             $res = mysql_query($q, $ctx->db);
             
-            $map = get_map($ctx, $row['map_id']);
+            $map = get_map($ctx, $recipient['map_id']);
             
             $job = array(
                 'sender' => array('name' => $map['user']['name']),
@@ -49,11 +46,12 @@
                         $map['bbox_south'], $map['bbox_west']
                     )
                 ),
-                'recipient' => array('name' => $recipient_name),
+                'recipient' => array('name' => $recipient['name']),
+                'sender-is-recipient' => ($sender['email'] == $recipient['email']),
 
                 'post-back' => array(
-                    'pdf' => sprintf('%s/compose/pdf.php?id=%s', get_base_dir(), urlencode($recipient_id)),
-                    'error' => sprintf('%s/compose/error.php?id=%s', get_base_dir(), urlencode($recipient_id))
+                    'pdf' => sprintf('%s/compose/pdf.php?id=%s', get_base_dir(), urlencode($recipient['id'])),
+                    'error' => sprintf('%s/compose/error.php?id=%s', get_base_dir(), urlencode($recipient['id']))
                 )
             );
             

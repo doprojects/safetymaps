@@ -588,10 +588,13 @@
    /**
     * Get a single user by ID, return a simple assoc. array.
     */
-    function get_user(&$ctx, $id, $include_email=false)
+    function get_user(&$ctx, $id, $expose_email=false)
     {
         $_id = sprintf('%d', $id);
-        $_columns = $include_email ? 'id, name, email' : 'id, name';
+
+        $_columns = $expose_email
+            ? 'id, name, email'
+            : 'id, name, SHA1(email) AS email';
         
         $q = "SELECT {$_columns}
               FROM users
@@ -634,10 +637,13 @@
    /**
     * Get a single recipient, return a simple assoc. array.
     */
-    function get_recipient(&$ctx, $id, $include_email=false)
+    function get_recipient(&$ctx, $id, $expose_email=false)
     {
         $_id = sprintf('%d', $id);
-        $_columns = $include_email ? 'id, name, email, sent, map_id' : 'id, name, sent, map_id';
+
+        $_columns = $expose_email
+            ? 'id, name, email, sent, map_id'
+            : 'id, name, SHA1(email) AS email, sent, map_id';
         
         $q = "SELECT {$_columns}
               FROM recipients
