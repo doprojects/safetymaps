@@ -1,5 +1,29 @@
 $(document).ready(function()
 {
+    function add_mapmarker(map, location)
+    {
+        var img = new Image();
+        
+        img.onload = function()
+        {
+            var pos = map.locationPoint(location);
+            var anc = document.createElement('a');
+
+            anc.className = 'map-link';
+            anc.style.width = this.width.toFixed(0) + 'px';
+            anc.style.height = this.height.toFixed(0) + 'px';
+            anc.style.left = (pos.x - this.width/2).toFixed(0) + 'px';
+            anc.style.top = (pos.y - this.height/2).toFixed(0) + 'px';
+            anc.title = location.name;
+            anc.href = location.href;
+
+            anc.appendChild(img);
+            map.parent.appendChild(anc);
+        }
+        
+        img.src = 'cross_round.png';
+    }
+
     function cluster(max_diameter)
     {
         var locations = [];
@@ -32,22 +56,72 @@ $(document).ready(function()
                 }
             }
             
-            locations.push(location);
+            // unshift to keep everything in reverse-chronological order.
+            locations.unshift(location);
             return true;
         }
         
-        return {add: add};
+        function extent()
+        {
+            var minlat = locations[0].lat,
+                minlon = locations[0].lon,
+                maxlat = locations[0].lat,
+                maxlon = locations[0].lon;
+            
+            for(var i = 1; i < locations.length; i++)
+            {
+                minlat = Math.min(minlat, locations[i].lat);
+                minlon = Math.min(minlon, locations[i].lon);
+                maxlat = Math.max(maxlat, locations[i].lat);
+                maxlon = Math.max(maxlon, locations[i].lon);
+            }
+            
+            var latspan = (maxlat - minlat),
+                lonspan = (maxlon - minlon);
+            
+            if(latspan < 0.04 && lonspan < 0.04) {
+                var south = minlat - 0.02,
+                    north = maxlat + 0.02,
+                    west  = minlon - 0.02,
+                    east  = maxlon + 0.02;
+            
+            } else {
+                var south = minlat - latspan * 0.1,
+                    north = maxlat + latspan * 0.1,
+                    west  = minlon - lonspan * 0.1,
+                    east  = maxlon + lonspan * 0.1;
+            }
+
+            return [{lat: south, lon: west}, {lat: north, lon: east}];
+        }
+        
+        function make_map(element)
+        {
+            var mm = com.modestmaps;
+            var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
+            var map = new mm.Map(element, cm, {x: 600, y: 400}, []);
+
+            map.setExtent(extent());
+            
+            for(var i = 0; i < locations.length; i++)
+            {
+                add_mapmarker(map, locations[i]);
+            }
+        }
+        
+        return {add: add, make_map: make_map};
     }
     
     var clusters = [cluster(10000)];
     
-    $('#maps .map').each(function()
+    $('#maps .map-info').each(function()
     {
         var lat = parseFloat($(this).find('.geo .latitude').text());
         var lon = parseFloat($(this).find('.geo .longitude').text());
+        var href = $(this).find('a.link').attr('href');
         var name = $(this).find('a.link').text();
 
-        var location = {lat: lat, lon: lon, name: name};
+        var location = {lat: lat, lon: lon, href: href, name: name};
         
         for(var i = 0; i < clusters.length; i++)
         {
@@ -61,77 +135,13 @@ $(document).ready(function()
         clusters.push(c);
     });
     
-    var locations = [];
+    $('#maps').empty();
     
-    $('#maps .map').each(function()
+    for(var i = 0; i < Math.min(3, clusters.length); i++)
     {
-        var lat = parseFloat($(this).find('.geo .latitude').text());
-        var lon = parseFloat($(this).find('.geo .longitude').text());
-        var href = $(this).find('a.link').attr('href');
-        var name = $(this).find('a.link').text();
-        
-        // unshift so that the newest location ends up on top
-        locations.unshift({lat: lat, lon: lon, href: href, name: name});
-    });
-    
-    function mapmarker(map, location)
-    {
-        var img = new Image();
-        
-        img.onload = function()
-        {
-            var pos = map.locationPoint(location);
-            var anc = document.createElement('a');
-
-            anc.className = 'map-link';
-            anc.style.width = this.width.toFixed(0) + 'px';
-            anc.style.height = this.height.toFixed(0) + 'px';
-            anc.style.left = (pos.x - this.width/2).toFixed(0) + 'px';
-            anc.style.top = (pos.y - this.height/2).toFixed(0) + 'px';
-            anc.title = location.name;
-            anc.href = location.href;
-
-            anc.appendChild(img);
-            map.parent.appendChild(anc);
-        }
-        
-        img.src = 'cross_round.png';
+        var el = document.createElement('div');
+        el.className = 'cluster-map';
+        $('#maps').append(el);
+        clusters[i].make_map(el);
     }
-
-    function indexmap(id, locations)
-    {
-        $('#'+id).empty();
-    
-        var mm = com.modestmaps;
-        var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
-        var map = new mm.Map(id, cm, {x: 700, y: 400}, []);
-        
-        var minlat = locations[0].lat,
-            minlon = locations[0].lon,
-            maxlat = locations[0].lat,
-            maxlon = locations[0].lon;
-        
-        for(var i = 1; i < locations.length; i++)
-        {
-            minlat = Math.min(minlat, locations[i].lat);
-            minlon = Math.min(minlon, locations[i].lon);
-            maxlat = Math.max(maxlat, locations[i].lat);
-            maxlon = Math.max(maxlon, locations[i].lon);
-        }
-        
-        var south = minlat - (maxlat - minlat) * .1,
-            north = maxlat + (maxlat - minlat) * .1,
-            west  = minlon - (maxlon - minlon) * .1,
-            east  = maxlon + (maxlon - minlon) * .1;
-        
-        map.setExtent([{lat: south, lon: west}, {lat: north, lon: east}]);
-        
-        for(var i = 0; i < locations.length; i++)
-        {
-            mapmarker(map, locations[i]);
-        }
-    }
-    
-    var map = indexmap('map', locations);
-
 });

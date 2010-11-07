@@ -34,10 +34,10 @@
                 </p>
             </div>
             
-            <div id="map">
-                <ul id="maps">
+            <div id="maps">
+                <ul>
                     {foreach item="map" from=$maps}
-                        <li class="map">
+                        <li class="map-info">
                             <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
                             from <span class="user-name">{$map.user.name|escape}</span>
 

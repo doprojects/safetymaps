@@ -1,16 +1,14 @@
-#main
+.cluster-map
 {
-    padding: 0;
+	position: relative;
+	background-color: #ccc;
+	border: 1px solid #bbb;
+	margin: 0 0 20px 0;
+	width: 600px;
+	height: 400px;
 }
 
-div#map
-{
-    position: relative;
-    width: 700px;
-    height: 400px;
-}
-
-div#map a.map-link
+.cluster-map a.map-link
 {
     display: block;
     position: absolute;
@@ -18,22 +16,22 @@ div#map a.map-link
     padding: 0;
 }
 
-div#map a.map-link,
-div#map a.map-link img
+.cluster-map a.map-link,
+.cluster-map a.map-link img
 {
     border: none;
 }
 
-div#about
+#about
 {
     position: absolute;
-    left: 700px;
+    left: 660px;
     margin: 0;
     padding: 0;
 }
 
-div#about h2,
-div#about p
+#about h2,
+#about p
 {
-    margin: 20px 40px 20px 20px;
+    margin: 0 40px 20px 0;
 }
