@@ -454,6 +454,7 @@
         mysql_query('BEGIN', $ctx->db);
 
         $user_id = getset_user($ctx, $args['sender']);
+        $sender = $args['sender'];
         
         if($user_id)
         {
@@ -481,6 +482,7 @@
             if($map_id)
             {
                 $commit_ok = true;
+                $recipient_emails = array();
             
                 foreach($args['recipients'] as $r => $recipient)
                 {
@@ -490,6 +492,25 @@
                     $recipient['user_id'] = $user_id;
                     $recipient['map_id'] = $map_id;
                     $recipient_id = add_recipient($ctx, $recipient);
+                    
+                    if(!$recipient_id)
+                        $commit_ok = false;
+                    
+                    $recipient_emails[] = $recipient['email'];
+                }
+                
+                error_log(str_replace('\n', ' ', print_r($recipient_emails, 1)));
+                error_log(str_replace('\n', ' ', print_r($sender, 1)));
+            
+                if(!in_array($sender['email'], $recipient_emails))
+                {
+                    error_log('yes.');
+                
+                    $sender['user_id'] = $user_id;
+                    $sender['map_id'] = $map_id;
+                
+                    // not just the president of the hair club for men
+                    $recipient_id = add_recipient($ctx, $sender);
                     
                     if(!$recipient_id)
                         $commit_ok = false;

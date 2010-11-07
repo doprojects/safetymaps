@@ -8,7 +8,7 @@
     
     mysql_query('BEGIN', $ctx->db);
     
-    $q = "SELECT id, map_id, user_id, name
+    $q = "SELECT id
           FROM recipients
           WHERE sent IS NULL
             AND failed IS NULL
@@ -18,8 +18,9 @@
     
     if($res = mysql_query($q, $ctx->db))
     {
-        if($recipient = mysql_fetch_assoc($res))
+        if($row = mysql_fetch_assoc($res))
         {
+            $recipient = get_recipient($ctx, $row['id']);
             $_recipient_id = sprintf('%d', $recipient['id']);
         
             $q = "UPDATE recipients
@@ -29,9 +30,10 @@
             $res = mysql_query($q, $ctx->db);
             
             $map = get_map($ctx, $recipient['map_id']);
+            $sender = $map['user'];
             
             $job = array(
-                'sender' => array('name' => $map['user']['name']),
+                'sender' => array('name' => $sender['name']),
                 'place' => array(
                     'name' => $map['place_name'],
                     'location' => array($map['place_lat'], $map['place_lon']),
