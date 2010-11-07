@@ -15,14 +15,21 @@ div#map a.map-link
     display: block;
     position: absolute;
     margin: 0;
-    border: none;
     padding: 0;
+}
+
+div#map a.map-link,
+div#map a.map-link img
+{
+    border: none;
 }
 
 div#about
 {
     position: absolute;
     left: 700px;
+    margin: 0;
+    padding: 0;
 }
 
 div#about h2,
