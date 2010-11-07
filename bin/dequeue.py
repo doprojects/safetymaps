@@ -69,7 +69,7 @@ if __name__ == '__main__':
                 conn.request('POST', path(post_url), open(filename, 'r'), head)
                 resp = conn.getresponse()
                 
-                print resp.status, resp.read()
+                print resp.status, resp.read().strip()
                 
                 unlink(filename)
 
@@ -81,11 +81,11 @@ if __name__ == '__main__':
                 print 'Uh-oh:', error
                 
                 conn = HTTPConnection(error_url.netloc)
-                head = {'X-Print-Paper': paper, 'X-Print-Format': format}
+                head = {'X-Print-Paper': paper, 'X-Print-Format': format, 'Referer': path(url)}
                 conn.request('POST', path(error_url), str(error), head)
                 resp = conn.getresponse()
                 
-                print resp.status, resp.read()
+                print resp.status, resp.read().strip()
         
         if time() > due:
             break

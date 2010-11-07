@@ -246,7 +246,7 @@ def get_map_image(bbox, width, height, marker, target_dpi=100):
     diff, mmap = sorted(differences)[0]
     
     if (mmap.dimensions.x * mmap.dimensions.y) > (4000 * 4000):
-        raise ValueError('Requested map is too large, possibly an error: %s' % mmap.dimensions)
+        raise ValueError('Requested map is too large: %d x %d' % (mmap.dimensions.x, mmap.dimensions.y))
 
     handle, filename = mkstemp(suffix='.png')
     close(handle)
