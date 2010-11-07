@@ -1,5 +1,5 @@
 <div id="header">
-    <img src="images/header.png" width="1254" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency">
+    <img src="images/header.png" width="860" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency">
     <!--h1>Safety Maps</h1>
     <h2>Make and share maps of safe places to<br> meet in the event of an emergency.</h2-->
     <div id="nav">
