@@ -1,5 +1,66 @@
 $(document).ready(function()
 {
+    function cluster(max_diameter)
+    {
+        var locations = [];
+
+       /**
+        * Adapted from http://www.johndcook.com/python_longitude_latitude.html
+        */
+        function distance(loc1, loc2)
+        {
+            var deg2rad = Math.PI/180;
+    
+            var p1 = (90 - loc1.lat) * deg2rad;
+            var p2 = (90 - loc2.lat) * deg2rad;
+    
+            var t1 = loc1.lon * deg2rad;
+            var t2 = loc2.lon * deg2rad;
+    
+            var cos = Math.sin(p1) * Math.sin(p2) * Math.cos(t1 - t2) + Math.cos(p1) * Math.cos(p2);
+            var arc = Math.acos(cos);
+    
+            return arc * 6378100;
+        }
+        
+        function add(location)
+        {
+            for(var i = 0; i < locations.length; i++)
+            {
+                if(distance(location, locations[i]) > max_diameter) {
+                    return false;
+                }
+            }
+            
+            locations.push(location);
+            return true;
+        }
+        
+        return {add: add};
+    }
+    
+    var clusters = [cluster(10000)];
+    
+    $('#maps .map').each(function()
+    {
+        var lat = parseFloat($(this).find('.geo .latitude').text());
+        var lon = parseFloat($(this).find('.geo .longitude').text());
+        var name = $(this).find('a.link').text();
+
+        var location = {lat: lat, lon: lon, name: name};
+        
+        for(var i = 0; i < clusters.length; i++)
+        {
+            if(clusters[i].add(location)) {
+                return;
+            }
+        }
+        
+        var c = cluster(10000);
+        c.add(location);
+        clusters.push(c);
+    });
+    
     var locations = [];
     
     $('#maps .map').each(function()
@@ -15,8 +76,6 @@ $(document).ready(function()
     
     function mapmarker(map, location)
     {
-        console.log(location.href);
-        
         var img = new Image();
         
         img.onload = function()
@@ -72,8 +131,6 @@ $(document).ready(function()
             mapmarker(map, locations[i]);
         }
     }
-    
-    console.log(locations);
     
     var map = indexmap('map', locations);
 
