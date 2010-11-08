@@ -39,6 +39,17 @@ CREATE TABLE maps (
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
 
+# alter the maps.id column to a varchar, keeping it as the primary key.
+ALTER TABLE maps ADD COLUMN _id VARCHAR(16) AFTER id;
+UPDATE maps SET _id = id;
+ALTER TABLE maps CHANGE COLUMN id id INT UNSIGNED;
+ALTER TABLE maps DROP PRIMARY KEY;
+ALTER TABLE maps DROP COLUMN id;
+ALTER TABLE maps ADD COLUMN id VARCHAR(16) NOT NULL;
+UPDATE maps SET id = _id;
+ALTER TABLE maps DROP COLUMN _id;
+ALTER TABLE maps ADD PRIMARY KEY (id);
+
 
 
 DROP TABLE IF EXISTS recipients;
@@ -53,15 +64,15 @@ CREATE TABLE recipients (
     email   TINYTEXT,
     
     waiting TEXT,
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    errors  INT UNSIGNED DEFAULT 0,
     queued  DATETIME,
     sent    DATETIME,
+    failed  DATETIME,
     
     INDEX user (user_id),
     INDEX map (map_id)
 
 ) ENGINE=InnoDB, CHARACTER SET utf8;
 
-ALTER TABLE recipients ADD COLUMN errors INT UNSIGNED DEFAULT 0 AFTER waiting;
-ALTER TABLE recipients ADD COLUMN failed DATETIME AFTER sent;
-
-ALTER TABLE recipients ADD COLUMN created TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER waiting;
+ALTER TABLE recipients CHANGE COLUMN map_id map_id VARCHAR(16) NOT NULL;

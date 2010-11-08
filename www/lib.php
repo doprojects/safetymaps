@@ -6,6 +6,8 @@
     require_once 'Mail.php';
     require_once 'Mail/mail.php';
     require_once 'Mail/mime.php';
+    
+    define('MYSQL_ER_DUP_ENTRY', 1062);
 
     class Context
     {
@@ -162,6 +164,17 @@
         return null;
     }
     
+    function generate_id($len)
+    {
+        $chars = 'qwrtpsdfghklzxcvbnm23456789';
+        $id = '';
+        
+        while(strlen($id) < $len)
+            $id .= substr($chars, rand(0, strlen($chars) - 1), 1);
+
+        return $id;
+    }
+    
    /**
     * id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     * user_id     INT UNSIGNED NOT NULL,
@@ -201,24 +214,40 @@
 
         $_privacy = mysql_real_escape_string($args['privacy'], $ctx->db);
         
-        $q = "INSERT INTO maps
-              SET user_id    = {$_user_id},
-                  place_name = '{$_place_name}',
-                  place_lat  = {$_place_lat},
-                  place_lon  = {$_place_lon},
-                  emergency  = '{$_emergency}',
-                  note_full  = '{$_note_full}',
-                  note_short = '{$_note_short}',
-                  bbox_north = {$_bbox_north},
-                  bbox_south = {$_bbox_south},
-                  bbox_east  = {$_bbox_east},
-                  bbox_west  = {$_bbox_west},
-                  waiting    = 0,
-                  created    = NOW(),
-                  privacy    = '{$_privacy}'";
+        // try a bunch of possible ids varying in length from 3 to 8 chars
+        foreach(range(3*4, 9*4-1) as $len)
+        {
+            $map_id = generate_id(floor($len / 4));
+            $_map_id = mysql_real_escape_string($map_id, $ctx->db);
+            
+            $q = "INSERT INTO maps
+                  SET id         = '{$_map_id}',
+                      user_id    = {$_user_id},
+                      place_name = '{$_place_name}',
+                      place_lat  = {$_place_lat},
+                      place_lon  = {$_place_lon},
+                      emergency  = '{$_emergency}',
+                      note_full  = '{$_note_full}',
+                      note_short = '{$_note_short}',
+                      bbox_north = {$_bbox_north},
+                      bbox_south = {$_bbox_south},
+                      bbox_east  = {$_bbox_east},
+                      bbox_west  = {$_bbox_west},
+                      waiting    = 0,
+                      created    = NOW(),
+                      privacy    = '{$_privacy}'";
+    
+            // did it work?
+            if($res = mysql_query($q, $ctx->db))
+                return $map_id;
+            
+            // did it not work because of a duplicate map_id?
+            if(mysql_errno($ctx->db) == MYSQL_ER_DUP_ENTRY)
+                continue;
 
-        if($res = mysql_query($q, $ctx->db))
-            return mysql_insert_id($ctx->db);
+            // yikes, why didn't it work?
+            break;
+        }
 
         return null;
     }
@@ -226,7 +255,7 @@
    /**
     * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     * user_id INT UNSIGNED NOT NULL,
-    * map_id  INT UNSIGNED NOT NULL,
+    * map_id  VARCHAR(16) NOT NULL,
     * 
     * name    TINYTEXT,
     * email   TINYTEXT,
@@ -238,7 +267,7 @@
     function add_recipient(&$ctx, $args)
     {
         $_user_id = sprintf('%d', $args['user_id']);
-        $_map_id = sprintf('%d', $args['map_id']);
+        $_map_id = mysql_real_escape_string($args['map_id'], $ctx->db);
     
         $_name = mysql_real_escape_string($args['name'], $ctx->db);
         $_email = mysql_real_escape_string($args['email'], $ctx->db);
@@ -252,11 +281,11 @@
     
         $q0 = "UPDATE maps
                SET waiting = waiting + 1
-               WHERE id = {$_map_id}";
+               WHERE id = '{$_map_id}'";
         
         $q1 = "INSERT INTO recipients
                SET user_id = {$_user_id},
-                   map_id  = {$_map_id},
+                   map_id  = '{$_map_id}',
                    name    = '{$_name}',
                    email   = '{$_email}',
                    waiting = '{$_waiting}',
@@ -294,7 +323,7 @@
         if(!$row)
             return false;
         
-        $_map_id = sprintf('%d', $row['map_id']);
+        $_map_id = mysql_real_escape_string($row['map_id'], $ctx->db);
         
         // now we know it's a real recipient.
         
@@ -328,7 +357,7 @@
         {
             $q0 = "UPDATE maps
                    SET waiting = IF(waiting > 0, waiting - 1, 0)
-                   WHERE id = {$_map_id}";
+                   WHERE id = '{$_map_id}'";
             
             $q1 = "UPDATE recipients
                    SET waiting = NULL, sent = NOW()
@@ -382,7 +411,7 @@
         $errors = $row['errors'];
         $minutes_old = $row['seconds_old'] / 60;
 
-        $_map_id = sprintf('%d', $map_id);
+        $_map_id = mysql_real_escape_string($map_id, $ctx->db);
         
         // now we know it's a real recipient.
         
@@ -405,7 +434,7 @@
         
         $q0 = "UPDATE maps
                SET waiting = IF(waiting > 0, waiting - 1, 0)
-               WHERE id = {$_map_id}";
+               WHERE id = '{$_map_id}'";
         
         $q1 = "UPDATE recipients
                SET failed = NOW()
@@ -573,7 +602,7 @@
     */
     function get_map(&$ctx, $id)
     {
-        $_id = sprintf('%d', $id);
+        $_id = mysql_real_escape_string($id, $ctx->db);
         
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
@@ -583,14 +612,14 @@
                      UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy, waiting
               FROM maps
-              WHERE id = {$_id}";
+              WHERE id = '{$_id}'";
 
         if($res = mysql_query($q, $ctx->db))
         {
             if($row = mysql_fetch_assoc($res))
             {
                 $row['user'] = get_user($ctx, $row['user_id']);
-                $row['recipients'] = get_recipients($ctx, array('map_id' => $row['id']));
+                $row['recipients'] = get_recipients($ctx, $row['id']);
                 
                 $row['place_lat'] = floatval($row['place_lat']);
                 $row['place_lon'] = floatval($row['place_lon']);
@@ -693,13 +722,13 @@
    /**
     * Get a list of recipients, return a simple array.
     */
-    function get_recipients(&$ctx, $args)
+    function get_recipients(&$ctx, $map_id)
     {
-        $_map_id = $args['map_id'] ? sprintf('%d', $args['map_id']) : null;
+        $_map_id = mysql_real_escape_string($map_id, $ctx->db);
 
         $q = "SELECT id, name, sent
               FROM recipients
-              WHERE map_id = {$_map_id}
+              WHERE map_id = '{$_map_id}'
               ORDER BY id";
 
         if($res = mysql_query($q, $ctx->db))

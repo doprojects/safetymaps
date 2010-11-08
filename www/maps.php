@@ -43,9 +43,12 @@
                 echo "Couldn't make your map, not sure why.\n";
 
             } else {
+                $href = 'http://'.get_domain_name().get_base_dir().'/maps.php?id='.urlencode($map_id);
+                $href .= ($format != 'html' ? "&format={$format}" : '');
+            
                 header('HTTP/1.1 303');
+                header("Location: {$href}");
                 header('Content-Type: text/plain');
-                header("Location: {$_SERVER['SCRIPT_NAME']}?id={$map_id}&format={$format}");
                 mysql_query('COMMIT', $ctx->db);
                 echo "Made you a map.\n";
             }
