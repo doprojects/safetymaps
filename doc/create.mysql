@@ -76,3 +76,14 @@ CREATE TABLE recipients (
 ) ENGINE=InnoDB, CHARACTER SET utf8;
 
 ALTER TABLE recipients CHANGE COLUMN map_id map_id VARCHAR(16) NOT NULL;
+
+# alter the recipients.id column to a varchar, keeping it as the primary key.
+ALTER TABLE recipients ADD COLUMN _id VARCHAR(16) AFTER id;
+UPDATE recipients SET _id = id;
+ALTER TABLE recipients CHANGE COLUMN id id INT UNSIGNED;
+ALTER TABLE recipients DROP PRIMARY KEY;
+ALTER TABLE recipients DROP COLUMN id;
+ALTER TABLE recipients ADD COLUMN id VARCHAR(16) NOT NULL;
+UPDATE recipients SET id = _id;
+ALTER TABLE recipients DROP COLUMN _id;
+ALTER TABLE recipients ADD PRIMARY KEY (id);

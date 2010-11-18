@@ -176,7 +176,7 @@
     }
     
    /**
-    * id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    * id          VARCHAR(16) PRIMARY KEY,
     * user_id     INT UNSIGNED NOT NULL,
     * 
     * place_name  TINYTEXT,
@@ -253,7 +253,7 @@
     }
 
    /**
-    * id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    * id      VARCHAR(16) PRIMARY KEY,
     * user_id INT UNSIGNED NOT NULL,
     * map_id  VARCHAR(16) NOT NULL,
     * 
@@ -278,22 +278,45 @@
             $waiting[] = join('-', $paper_format);
         
         $_waiting = mysql_real_escape_string(join(' ', $waiting), $ctx->db);
-    
-        $q0 = "UPDATE maps
-               SET waiting = waiting + 1
-               WHERE id = '{$_map_id}'";
         
-        $q1 = "INSERT INTO recipients
-               SET user_id = {$_user_id},
-                   map_id  = '{$_map_id}',
-                   name    = '{$_name}',
-                   email   = '{$_email}',
-                   waiting = '{$_waiting}',
-                   queued  = NOW(),
-                   sent    = NULL";
+        // try a bunch of possible ids varying in length from 3 to 8 chars
+        foreach(range(3*4, 9*4-1) as $len)
+        {
+            $recipient_id = generate_id(floor($len / 4));
+            $_recipient_id = mysql_real_escape_string($recipient_id, $ctx->db);
+            
+            $q = "INSERT INTO recipients
+                  SET id      = '{$_recipient_id}',
+                      user_id = {$_user_id},
+                      map_id  = '{$_map_id}',
+                      name    = '{$_name}',
+                      email   = '{$_email}',
+                      waiting = '{$_waiting}',
+                      queued  = NOW(),
+                      sent    = NULL";
+    
+            // did it work?
+            if($res = mysql_query($q, $ctx->db))
+            {
+                $q = "UPDATE maps
+                      SET waiting = waiting + 1
+                      WHERE id = '{$_map_id}'";
+                
+                // okay how about this one?
+                if(mysql_query($q, $ctx->db))
+                    return $recipient_id;
 
-        if(mysql_query($q0, $ctx->db) && mysql_query($q1, $ctx->db))
-            return mysql_insert_id($ctx->db);
+                // yikes, why didn't it work?
+                break;
+            }
+            
+            // did it not work because of a duplicate recipient_id?
+            if(mysql_errno($ctx->db) == MYSQL_ER_DUP_ENTRY)
+                continue;
+
+            // yikes, why didn't it work?
+            break;
+        }
         
         return null;
     }
@@ -307,11 +330,11 @@
     */
     function advance_recipient(&$ctx, $recipient_id, $paper, $format)
     {
-        $_recipient_id = sprintf('%d', $recipient_id);
+        $_recipient_id = mysql_real_escape_string($recipient_id, $ctx->db);
     
         $q = "SELECT map_id, waiting
               FROM recipients
-              WHERE id = {$_recipient_id}";
+              WHERE id = '{$_recipient_id}'";
         
         $res = mysql_query($q, $ctx->db);
         
@@ -344,7 +367,7 @@
         
         $q = "UPDATE recipients
               SET waiting = '{$_waiting}'
-              WHERE id = {$_recipient_id}";
+              WHERE id = '{$_recipient_id}'";
         
         $res = mysql_query($q, $ctx->db);
         
@@ -361,7 +384,7 @@
             
             $q1 = "UPDATE recipients
                    SET waiting = NULL, sent = NOW()
-                   WHERE id = {$_recipient_id}";
+                   WHERE id = '{$_recipient_id}'";
     
             // decrementing maps.waiting because this recipient is all finished.
             
@@ -390,12 +413,12 @@
     */
     function error_recipient(&$ctx, $recipient_id, $paper, $format)
     {
-        $_recipient_id = sprintf('%d', $recipient_id);
+        $_recipient_id = mysql_real_escape_string($recipient_id, $ctx->db);
     
         $q = "SELECT map_id, errors,
                      UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created) AS seconds_old
               FROM recipients
-              WHERE id = {$_recipient_id}";
+              WHERE id = '{$_recipient_id}'";
         
         $res = mysql_query($q, $ctx->db);
         
@@ -417,7 +440,7 @@
         
         $q = "UPDATE recipients
               SET errors = errors + 1
-              WHERE id = {$_recipient_id}";
+              WHERE id = '{$_recipient_id}'";
 
         if(!mysql_query($q, $ctx->db))
             return false;
@@ -438,7 +461,7 @@
         
         $q1 = "UPDATE recipients
                SET failed = NOW()
-               WHERE id = {$_recipient_id}";
+               WHERE id = '{$_recipient_id}'";
 
         // decrementing maps.waiting because this recipient won't happen.
         
@@ -749,7 +772,7 @@
     */
     function get_recipient(&$ctx, $id, $expose_email=false)
     {
-        $_id = sprintf('%d', $id);
+        $_id = mysql_real_escape_string($id, $ctx->db);
 
         $_columns = $expose_email
             ? 'id, map_id, name, waiting, sent, failed, email'
@@ -757,7 +780,7 @@
         
         $q = "SELECT {$_columns}
               FROM recipients
-              WHERE id = {$_id}";
+              WHERE id = '{$_id}'";
 
         if($res = mysql_query($q, $ctx->db))
             if($row = mysql_fetch_assoc($res))
