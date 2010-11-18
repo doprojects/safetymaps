@@ -226,7 +226,7 @@ def draw_rounded_box(ctx, x, y, width, height):
     
     ctx.restore()
 
-def get_map_image(bbox, width, height, marker, target_dpi=100):
+def get_map_image(bbox, width, height, marker, target_dpi=150):
     """ Get a cairo ImageSurface for a given bounding box, plus the (x, y) point of a marker.
     
         Try to match a target DPI. Width and height are given in millimeters!
