@@ -3,15 +3,16 @@
 
 from sys import stderr, stdin
 from os import close, unlink, chmod
-from os.path import dirname, join as pathjoin
+from os.path import exists, dirname, join as pathjoin
 from re import compile, DOTALL
 from math import pi
+from hashlib import sha1
 from time import strftime
-from tempfile import mkstemp
+from tempfile import mkstemp, gettempdir
 from optparse import OptionParser
 from ModestMaps import mapByExtentZoom, mapByCenterZoom
 from ModestMaps.Geo import Location
-from ModestMaps.Core import Point
+from ModestMaps.Core import Point, Coordinate
 from ModestMaps.Providers import TemplatedMercatorProvider
 from cairo import PDFSurface, ImageSurface, Context, FORMAT_A8
 import rsvg
@@ -226,17 +227,35 @@ def draw_rounded_box(ctx, x, y, width, height):
     
     ctx.restore()
 
+def get_map_cache_path(mmap):
+    """ Get an absolute file system path for a cached image of a Map object.
+    """
+    hash_parts = list(mmap.provider.getTileUrls(Coordinate(0, 0, 0)))
+
+    hash_parts += mmap.dimensions.x, mmap.dimensions.y, \
+                  mmap.coordinate.row, mmap.coordinate.column, mmap.coordinate.zoom, \
+                  mmap.offset.x, mmap.offset.y
+    
+    hash_parts[1:] = [str(int(part)) for part in hash_parts[1:]]
+    
+    base_name = 'safetymap-composed-%s.png' % sha1(' '.join(hash_parts)).hexdigest()
+    cache_path = pathjoin(gettempdir(), base_name)
+    
+    return cache_path
+
 def get_map_image(bbox, width, height, marker, target_dpi=150):
     """ Get a cairo ImageSurface for a given bounding box, plus the (x, y) point of a marker.
     
         Try to match a target DPI. Width and height are given in millimeters!
     """
-    prov = TemplatedMercatorProvider('http://a.tile.cloudmade.com/1a914755a77758e49e19a26e799268b7/22677/256/{Z}/{X}/{Y}.png')
+    template = 'http://a.tile.cloudmade.com/1a914755a77758e49e19a26e799268b7/22677/256/{Z}/{X}/{Y}.png'
+    provider = TemplatedMercatorProvider(template)
+
     locA, locB = Location(bbox[0], bbox[1]), Location(bbox[2], bbox[3])
     
     aspect = float(width) / float(height)
     
-    mmaps = [mapByExtentZoomAspect(prov, locA, locB, zoom, aspect)
+    mmaps = [mapByExtentZoomAspect(provider, locA, locB, zoom, aspect)
              for zoom in range(10, 19)]
 
     inches_wide = width * ptpmm * inppt
@@ -248,16 +267,17 @@ def get_map_image(bbox, width, height, marker, target_dpi=150):
     if (mmap.dimensions.x * mmap.dimensions.y) > (4000 * 4000):
         raise ValueError('Requested map is too large: %d x %d' % (mmap.dimensions.x, mmap.dimensions.y))
 
-    handle, filename = mkstemp(suffix='.png')
-    close(handle)
+    image_path = get_map_cache_path(mmap)
+    
+    if not exists(image_path):
+        print 'no', image_path
+        mmap.draw().save(image_path)
+    
+    img = ImageSurface.create_from_png(image_path)
     
     point = mmap.locationPoint(marker)
     x = width * point.x / mmap.dimensions.x
     y = height * point.y / mmap.dimensions.y
-    
-    mmap.draw().save(filename)
-    img = ImageSurface.create_from_png(filename)
-    unlink(filename)
     
     return img, (x, y)
 
