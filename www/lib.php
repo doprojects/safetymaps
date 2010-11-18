@@ -623,7 +623,7 @@
    /**
     * Get a map by ID, return a GeoJSON feature collection array.
     */
-    function get_map(&$ctx, $id)
+    function get_map(&$ctx, $id, $expose_email=false)
     {
         $_id = mysql_real_escape_string($id, $ctx->db);
         
@@ -641,8 +641,8 @@
         {
             if($row = mysql_fetch_assoc($res))
             {
-                $row['user'] = get_user($ctx, $row['user_id']);
-                $row['recipients'] = get_recipients($ctx, $row['id']);
+                $row['user'] = get_user($ctx, $row['user_id'], $expose_email);
+                $row['recipients'] = get_recipients($ctx, $row['id'], $expose_email);
                 
                 $row['place_lat'] = floatval($row['place_lat']);
                 $row['place_lon'] = floatval($row['place_lon']);
@@ -745,11 +745,15 @@
    /**
     * Get a list of recipients, return a simple array.
     */
-    function get_recipients(&$ctx, $map_id)
+    function get_recipients(&$ctx, $map_id, $expose_email=false)
     {
         $_map_id = mysql_real_escape_string($map_id, $ctx->db);
 
-        $q = "SELECT id, name, sent
+        $_columns = $expose_email
+            ? 'id, name, sent, failed, email'
+            : 'id, name, sent, failed, SHA1(email) AS email';
+        
+        $q = "SELECT {$_columns}
               FROM recipients
               WHERE map_id = '{$_map_id}'
               ORDER BY id";
@@ -819,29 +823,53 @@
     function send_mail(&$ctx, $recipient_id)
     {
         $recipient = get_recipient($ctx, $recipient_id, true);
-        $map = get_map($ctx, $recipient['map_id']);
+        $map = get_map($ctx, $recipient['map_id'], true);
         $user = get_user($ctx, $map['user']['id'], true);
+        
+        $sent_to_self = ($user['email'] == $recipient['email']);
         
         $map_href = sprintf('http://%s%s/maps.php?id=%s/%s',
                             get_domain_name(), get_base_dir(),
                             urlencode($map['id']), urlencode($recipient['id']));
         
         $mm = new Mail_mime("\n");
-    
-        $mm->setFrom("{$user['name']} <info@safety-maps.org>");
-        $mm->setSubject("Safety Maps Test");
+        $mm->setFrom("Safety Maps <info@safety-maps.org>");
         
         $ctx->sm->assign('map', $map);
         $ctx->sm->assign('sender', $user);
         $ctx->sm->assign('recipient', $recipient);
         $ctx->sm->assign('map_href', $map_href);
+        
+        if($sent_to_self)
+        {
+            $recipient_names = array();
+            
+            foreach($map['recipients'] as $recp)
+                if($recp['email'] != $user['email'])
+                    $recipient_names[] = $recp['name'];
+            
+            $end = array_splice($recipient_names, -2);
+            $recipient_names[] = join(' and ', $end);
+            $recipient_names = join(', ', $recipient_names);
+            
+            $ctx->sm->assign('recipient_names', $recipient_names);
+        }
+        
+        $template_name = $sent_to_self ? 'sender-mail' : 'recipient-mail';
+        
+        $headers = $sent_to_self
+            ? array('To' => $recipient['email'])
+            : array('To' => $recipient['email'], 'Reply-To' => $user['email']);
+        
+        $mm->setSubject($sent_to_self
+            ? "Your Safety Map is ready"
+            : "{$user['name']} made you a Safety Map");
     
-        $mm->setTXTBody($ctx->sm->fetch('recipient-mail.text.tpl'));
-        $mm->setHTMLBody($ctx->sm->fetch('recipient-mail.html.tpl'));
+        $mm->setTXTBody($ctx->sm->fetch("{$template_name}.text.tpl"));
+        $mm->setHTMLBody($ctx->sm->fetch("{$template_name}.html.tpl"));
     
         $body = $mm->get();
-        $head = $mm->headers(array('To' => $recipient['email'],
-                                   'Reply-To' => $user['email']));
+        $head = $mm->headers($headers);
     
         $m =& Mail::factory('smtp', array('auth' => true,
                                           'host' => SMTP_HOST,
