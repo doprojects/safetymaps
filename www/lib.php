@@ -3,9 +3,8 @@
     require_once 'smarty/Smarty.class.php';
 
     require_once 'PEAR.php';
-    require_once 'Mail.php';
-    require_once 'Mail/mail.php';
     require_once 'Mail/mime.php';
+    require_once 'Net/SMTP.php';
     
     define('MYSQL_ER_DUP_ENTRY', 1062);
 
@@ -822,6 +821,11 @@
     */
     function send_mail(&$ctx, $recipient_id)
     {
+        $smtp = new Net_SMTP(SMTP_HOST, SMTP_PORT, 'dev.safety-maps.org');
+        
+        if(PEAR::isError($smtp))
+            return $smtp;
+    
         $recipient = get_recipient($ctx, $recipient_id, true);
         $map = get_map($ctx, $recipient['map_id'], true);
         $user = get_user($ctx, $map['user']['id'], true);
@@ -870,14 +874,34 @@
     
         $body = $mm->get();
         $head = $mm->headers($headers);
-    
-        $m =& Mail::factory('smtp', array('auth' => true,
-                                          'host' => SMTP_HOST,
-                                          'port' => SMTP_PORT,
-                                          'username' => SMTP_USER,
-                                          'password' => SMTP_PASS));
         
-        return $m->send($recipient['email'], $head, $body);
+        $data = 'X-The-City-Is-Here: For You To Use.';
+        
+        foreach($head as $k => $v)
+            $data .= "\r\n{$k}: {$v}";
+    
+        $data .= "\r\n\r\n{$body}";
+        
+        $calls = array(array('connect', array(5)),
+                       array('auth', array(SMTP_USER, SMTP_PASS, false, false)),
+                       array('mailFrom', array('info@safety-maps.org')),
+                       array('rcptTo', array($recipient['email'])),
+                       array('data', array($data)),
+                       array('disconnect', array()));
+    
+        foreach($calls as $method_args)
+        {
+            list($method, $args) = $method_args;
+            $result = call_user_func_array(array(&$smtp, $method), $args);
+
+            list($code, $explanation) = $smtp->getResponse();
+            error_log("Mail map {$map['id']}/{$recipient['id']}, {$method}: {$code}, {$explanation}");
+            
+            if(PEAR::isError($result))
+                break;
+        }
+        
+        return $result;
     }
 
 ?>
