@@ -830,9 +830,14 @@
     
         $mm->setFrom("{$user['name']} <info@safety-maps.org>");
         $mm->setSubject("Safety Maps Test");
+        
+        $ctx->sm->assign('map', $map);
+        $ctx->sm->assign('sender', $user);
+        $ctx->sm->assign('recipient', $recipient);
+        $ctx->sm->assign('map_href', $map_href);
     
-        $mm->setTXTBody("Made new map for {$recipient['name']} <{$recipient['email']}>: {$map_href}");
-        $mm->setHTMLBody("Made new map for {$recipient['name']} ({$recipient['email']}): {$map_href}");
+        $mm->setTXTBody($ctx->sm->fetch('recipient-mail.text.tpl'));
+        $mm->setHTMLBody($ctx->sm->fetch('recipient-mail.html.tpl'));
     
         $body = $mm->get();
         $head = $mm->headers(array('To' => $recipient['email'],
