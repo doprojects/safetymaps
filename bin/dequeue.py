@@ -14,7 +14,7 @@ def path(url):
     """
     return url.path + (url.query and '?'+url.query or '')
 
-parser = OptionParser()
+parser = OptionParser(usage="%prog [options] <API URL>")
 
 parser.set_defaults(time_limit=0)
 
