@@ -871,7 +871,7 @@
         $body = $mm->get();
         $head = $mm->headers($headers);
     
-        $m =& Mail::factory('smtp', array('auth' => false,
+        $m =& Mail::factory('smtp', array('auth' => true,
                                           'host' => SMTP_HOST,
                                           'port' => SMTP_PORT,
                                           'username' => SMTP_USER,
