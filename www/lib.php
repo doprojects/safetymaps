@@ -836,7 +836,7 @@
                             get_domain_name(), get_base_dir(),
                             urlencode($map['id']), urlencode($recipient['id']));
         
-        $mm = new Mail_mime("\n");
+        $mm = new Mail_mime(array('text_charset' => 'UTF-8', 'html_charset' => 'UTF-8', 'eol' => "\n"));
         $mm->setFrom("Safety Maps <info@safety-maps.org>");
         
         $ctx->sm->assign('map', $map);
