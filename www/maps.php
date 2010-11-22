@@ -1,5 +1,7 @@
 <?php
 
+    die();
+
     require_once 'config.php';
     require_once 'lib.php';
     header('Access-Control-Allow-Origin: *');
