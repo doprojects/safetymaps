@@ -2,7 +2,11 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Safety Maps: Meeting Points</title>
+        <title>{strip}
+            Safety Map
+            {if $map and $recipient and $recipient.email != $map.user.email} for {$recipient.name|escape}{/if}
+            {if $map} by {$map.user.name|escape}{/if}
+        {/strip}</title>
         <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="style.css" />
         {if $map}
