@@ -28,6 +28,8 @@
             $this->sm =& $smarty;
 
             $this->sm->assign('paper_formats', $this->paper_formats());
+            $this->sm->assign('formats', $this->formats);
+            $this->sm->assign('papers', $this->papers);
         }
         
         function close()

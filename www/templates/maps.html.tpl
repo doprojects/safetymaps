@@ -7,14 +7,15 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
         {if $map}
             <link rel="stylesheet" type="text/css" href="map.css" />
+            <script type="text/javascript" src="map.js"></script>
         {else}
             <link rel="stylesheet" type="text/css" href="maps.css" />
+            <script type="text/javascript" src="maps.js"></script>
         {/if}
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
         <script type="text/javascript" src="markerclip.js"></script>
-        <script type="text/javascript" src="maps.js"></script>
     </head>
     <body>
 
@@ -29,7 +30,7 @@
                     {elseif $recipient.waiting}
                         <pre>[still generating this map for you]</pre>
                     {elseif $recipient.sent}
-                        <pre>[sent you this map {$recipient.sent}]</pre>
+                        <!-- sent you this map {$recipient.sent} -->
                     {/if}
                 {else}
                     {if $map.waiting}
@@ -52,59 +53,19 @@
                     I’ve marked the spot on this map:
                 </p>
                 
-                <script type="text/javascript">
-                <!--{literal}
-                
-                    function add_mapmarker(map, location)
-                    {
-                        var img = new Image();
-                        
-                        img.onload = function()
-                        {
-                            var pos = map.locationPoint(location);
-                            var anc = document.createElement('a');
-                
-                            anc.className = 'map-link';
-                            anc.style.width = this.width.toFixed(0) + 'px';
-                            anc.style.height = this.height.toFixed(0) + 'px';
-                            anc.style.left = (pos.x - this.width/2).toFixed(0) + 'px';
-                            anc.style.top = (pos.y - this.height/2).toFixed(0) + 'px';
-                
-                            anc.appendChild(img);
-                            map.parent.appendChild(anc);
-                        }
-                        
-                        img.src = 'cross_round.png';
-                    }
-                
-                    function do_a_map(element, lat, lon, south, west, north, east)
-                    {
-                        var mm = com.modestmaps;
-                        var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
-                        
-                        var map = new mm.Map(element, cm, {x: 600, y: 400}, []);
-                        var ext = [{lat: north, lon: west}, {lat: south, lon: east}];
-                        map.setExtent(ext);
-                        
-                        add_mapmarker(map, {lat: lat, lon: lon});
-                    }
-                
-                //{/literal}-->
-                </script>
-                
                 <div id="preview-map"></div>
                 
                 <script type="text/javascript">
                 <!--
                     {strip}
                 
-                    do_a_map(document.getElementById('preview-map'),
-                             {$map.place_lat|escape:javascript},
-                             {$map.place_lon|escape:javascript},
-                             {$map.bbox_south|escape:javascript},
-                             {$map.bbox_west|escape:javascript},
-                             {$map.bbox_north|escape:javascript},
-                             {$map.bbox_east|escape:javascript});
+                    show_preview_map(document.getElementById('preview-map'),
+                                     {$map.place_lat|escape:javascript},
+                                     {$map.place_lon|escape:javascript},
+                                     {$map.bbox_south|escape:javascript},
+                                     {$map.bbox_west|escape:javascript},
+                                     {$map.bbox_north|escape:javascript},
+                                     {$map.bbox_east|escape:javascript});
                 
                     {/strip}
                 //-->
@@ -114,24 +75,32 @@
                 
                 {if $recipient}
                     <p>
-                    </p>
-
-                    <p>
                         From <var>{$map.user.name|escape}</var>.
                     </p>
-                    
-                    <ul>
-                        {foreach item="paper_format" from=$paper_formats}
-                            <li>
-                                <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper_format|@join:"-"|escape}.pdf"><code>[{$paper_format|@join:" "|ucwords|escape} PDF]</code></a>
-                            </li>
-                        {/foreach}
-                    </ul>
                 {/if}
                 
                 <p>
                     This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
                 </p>
+                
+                {if $recipient}
+                    <p>
+                        Download a printable version as a PDF file:
+                    </p>
+                    
+                    <ul class="formats">
+                        {foreach item="format" from=$formats}
+                            <li class="format">
+                                <img src="{$base_dir}/images/hands-{$format}.png">
+                                <br>
+                                {foreach item="paper" from=$papers name="papers"}
+                                    <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper|escape}-{$format|escape}.pdf">
+                                        {if $smarty.foreach.papers.first}{$format|ucwords}{/if} {$paper|ucwords|escape}</a>{if !$smarty.foreach.papers.last},{/if}
+                                {/foreach}
+                            </li>
+                        {/foreach}
+                    </ul>
+                {/if}
 
             {elseif $maps}
             
