@@ -1,7 +1,5 @@
 <?php
 
-    die();
-
     require_once 'config.php';
     require_once 'lib.php';
     header('Access-Control-Allow-Origin: *');
@@ -96,7 +94,6 @@
         print_r($maps);
     
     } elseif($format == 'html') {
-
         header("Content-Type: text/html; charset=UTF-8");
         print $ctx->sm->fetch('maps.html.tpl');
     
