@@ -1,10 +1,14 @@
-$(document).ready(function() {
+$(document).ready(function()
+{
+    return;
+
     // make a map!
     var mm = com.modestmaps;
     //var template = 'http://{S}tile.openstreetmap.org/{Z}/{X}/{Y}.png';
     //var domains = [ '', 'a.', 'b.', 'c.' ];
     //var osm = new mm.TemplatedMapProvider(template, domains);
     var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+
     var map = new mm.Map('map', cm);
     var firstLocation = null;
     

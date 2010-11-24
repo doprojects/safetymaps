@@ -3,3 +3,24 @@ var
 	color: #0c0;
 	font-style: normal;
 }
+
+#preview-map
+{
+    width: 600px;
+    height: 400px;
+    border: 1px solid #bbb;
+}
+
+#preview-map a.map-link
+{
+    display: block;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
+#preview-map a.map-link,
+#preview-map a.map-link img
+{
+    border: none;
+}
