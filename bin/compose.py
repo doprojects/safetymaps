@@ -431,7 +431,7 @@ def draw_card_right(ctx, img, point, emergency, place):
     ctx.move_to(3.8, 58.8)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(4 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
@@ -514,7 +514,7 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
     ctx.move_to(6.8, 167.6)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(7.1 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
@@ -598,7 +598,7 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
     ctx.move_to(10, 236)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(10.8 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
@@ -620,7 +620,7 @@ def draw_a4_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(21, 22)
-    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 192, 11, format)
@@ -663,7 +663,7 @@ def draw_letter_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(22, 16)
-    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 193, 6, format)
