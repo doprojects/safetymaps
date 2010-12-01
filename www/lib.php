@@ -186,7 +186,6 @@
     * 
     * emergency   TINYTEXT,
     * note_full   TEXT,
-    * note_short  TEXT,
     * 
     * bbox_north  DOUBLE,
     * bbox_south  DOUBLE,
@@ -206,7 +205,6 @@
 
         $_emergency = mysql_real_escape_string($args['emergency'], $ctx->db);
         $_note_full = mysql_real_escape_string($args['note_full'], $ctx->db);
-        $_note_short = mysql_real_escape_string($args['note_short'], $ctx->db);
 
         $_bbox_north = sprintf('%.6f', $args['bbox_north']);
         $_bbox_south = sprintf('%.6f', $args['bbox_south']);
@@ -229,7 +227,6 @@
                       place_lon  = {$_place_lon},
                       emergency  = '{$_emergency}',
                       note_full  = '{$_note_full}',
-                      note_short = '{$_note_short}',
                       bbox_north = {$_bbox_north},
                       bbox_south = {$_bbox_south},
                       bbox_east  = {$_bbox_east},
@@ -520,7 +517,6 @@
 
             'emergency' => $args['place']['emergency'],
             'note_full' => $args['place']['full-note'],
-            'note_short' => $args['place']['short-note'],
 
             'bbox_north' => $args['map']['bounds'][0],
             'bbox_south' => $args['map']['bounds'][2],
@@ -631,7 +627,7 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
-                     note_full, note_short,
+                     note_full,
                      bbox_west, bbox_south, bbox_east, bbox_north,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy, waiting
@@ -689,7 +685,7 @@
         $q = "SELECT id, user_id,
                      place_lat, place_lon,
                      emergency, place_name,
-                     note_full, note_short,
+                     note_full,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy, waiting
               FROM maps
