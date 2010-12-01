@@ -380,14 +380,14 @@ def draw_card_left(ctx, recipient, sender, text):
     ctx.set_source_rgb(*md_gray)
     
     ctx.move_to(5.5, 17)
-    ctx.set_font_size(8 * mmppt)
     
-    ctx.show_text('(Leave a personal note here)')
-    
-    ctx.move_to(5.5, 24.5)
-    ctx.set_font_size(10 * mmppt)
-    
-    continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt, text)
+    if text:
+        ctx.set_font_size(10 * mmppt)
+        continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt, text)
+
+    else:
+        ctx.set_font_size(8 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
     
     ctx.restore()
 
@@ -498,12 +498,17 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
                   justify_right=True)
 
     # body text
-    ctx.move_to(10.6, 120.5)
+    ctx.move_to(10.6, 115.5)
     
     ctx.set_source_rgb(*md_gray)
-    ctx.set_font_size(10 * mmppt)
     
-    continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt, text)
+    if text:
+        ctx.set_font_size(10 * mmppt)
+        continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt, text)
+    
+    else:
+        ctx.set_font_size(8 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
 
     # text on the bottom
     ctx.move_to(6.8, 167.6)
@@ -576,12 +581,18 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
                   justify_right=True)
 
     # body text
-    ctx.move_to(15, 170)
+    ctx.move_to(15, 160)
     
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(14 * mmppt)
     
-    continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt, text)
+    if text:
+        ctx.set_font_size(14 * mmppt)
+        continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt, text)
+    
+    else:
+        ctx.set_font_size(11 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
 
     # text on the bottom
     ctx.move_to(10, 236)
