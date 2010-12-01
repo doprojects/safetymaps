@@ -37,6 +37,11 @@ blockquote:before
     color: #ddd;
 }
 
+p.download-info
+{
+    margin-top: 40px;
+}
+
 #preview-map
 {
     width: 600px;
@@ -72,4 +77,9 @@ ul.formats li.format
     width: 200px;
     text-align: center;
     float: left;
+}
+
+ul.formats li.format a img
+{
+    border: none;
 }

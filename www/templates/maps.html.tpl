@@ -94,19 +94,33 @@
                 {/if}
                 
                 {if $recipient}
-                    <p>
+                    <p class="download-info">
                         Download a printable version as a PDF file:
                     </p>
                     
                     <ul class="formats">
                         {foreach item="format" from=$formats}
                             <li class="format">
-                                <img src="{$base_dir}/images/hands-{$format}.png">
+                                <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/letter-{$format|escape}.pdf">
+                                    <img src="{$base_dir}/images/hands-{$format}.png"></a>
                                 <br>
                                 {foreach item="paper" from=$papers name="papers"}
                                     <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper|escape}-{$format|escape}.pdf">
                                         {if $smarty.foreach.papers.first}{$format|ucwords}{/if} {$paper|ucwords|escape}</a>{if !$smarty.foreach.papers.last},{/if}
                                 {/foreach}
+                            </li>
+                        {/foreach}
+                    </ul>
+                {else}
+                    <p class="download-info">
+                        PDF downloads are emailed to the sender and recipients of each Safety Map.
+                        <a href="{$base_dir}/make-a-safety-map.php">Make your own!</a>
+                    </p>
+                    
+                    <ul class="formats">
+                        {foreach item="format" from=$formats}
+                            <li class="format">
+                                <img src="{$base_dir}/images/hands-gray-{$format}.png">
                             </li>
                         {/foreach}
                     </ul>
