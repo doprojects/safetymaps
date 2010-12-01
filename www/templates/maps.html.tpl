@@ -30,15 +30,21 @@
             
                 {if $recipient}
                     {if $recipient.failed}
-                        <pre>[failed to generate this map for you {$recipient.failed}]</pre>
+                        <p class="status-message">
+                            [failed to generate this map for you {$recipient.failed}]
+                        </p>
                     {elseif $recipient.waiting}
-                        <pre>[still generating this map for you]</pre>
+                        <p class="status-message">
+                            [still generating this map for you]
+                        </p>
                     {elseif $recipient.sent}
                         <!-- sent you this map {$recipient.sent} -->
                     {/if}
                 {else}
                     {if $map.waiting}
-                        <pre>[still generating this map {$map.waiting}]</pre>
+                        <p class="status-message">
+                            [still generating this map {$map.waiting}]
+                        </p>
                     {/if}
                 {/if}
             
@@ -75,6 +81,10 @@
                 //-->
                 </script>
 
+                <p class="map-date">
+                    This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
+                </p>
+                
                 <blockquote>{$map.note_full|escape}</blockquote>
                 
                 {if $recipient}
@@ -82,10 +92,6 @@
                         From <var>{$map.user.name|escape}</var>.
                     </p>
                 {/if}
-                
-                <p>
-                    This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
-                </p>
                 
                 {if $recipient}
                     <p>
