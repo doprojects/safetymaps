@@ -47,10 +47,10 @@
                         </p>
                     {/if}
                 {/if}
-            
+                
                 <h2>
                     Safety Map
-                    {if $recipient}
+                    {if $recipient and $recipient.email != $map.user.email}
                         for <var>{$recipient.name|escape}</var>
                     {else}
                         by <var>{$map.user.name|escape}</var>
@@ -87,7 +87,7 @@
                 
                 <blockquote>{$map.note_full|escape}</blockquote>
                 
-                {if $recipient}
+                {if $recipient and $recipient.email != $map.user.email}
                     <p>
                         From <var>{$map.user.name|escape}</var>.
                     </p>
