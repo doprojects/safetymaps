@@ -85,7 +85,9 @@
                     This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
                 </p>
                 
-                <blockquote>{$map.note_full|escape}</blockquote>
+                {if $map.note_full}
+                    <blockquote>{$map.note_full|escape}</blockquote>
+                {/if}
                 
                 {if $recipient and $recipient.email != $map.user.email}
                     <p>
