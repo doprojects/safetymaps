@@ -830,7 +830,7 @@
         
         $sent_to_self = ($user['email'] == $recipient['email']);
         
-        $map_href = sprintf('http://%s%s/maps.php?id=%s/%s',
+        $map_href = sprintf('http://%s%s/maps.php/%s/%s',
                             get_domain_name(), get_base_dir(),
                             urlencode($map['id']), urlencode($recipient['id']));
         

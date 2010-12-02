@@ -3,14 +3,14 @@
     <head>
         <meta charset="utf-8" />
         <title>Safety Maps: A Do Project</title>
-        <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <link rel="stylesheet" type="text/css" href="index.css" />
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="modestmaps.js"></script>
-        <script type="text/javascript" src="cloudmade.js"></script>
-        <script type="text/javascript" src="markerclip.js"></script>
-        <script type="text/javascript" src="index.js"></script>
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/index.css" />
+        <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
+        <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>
+        <script type="text/javascript" src="{$base_dir}/cloudmade.js"></script>
+        <script type="text/javascript" src="{$base_dir}/markerclip.js"></script>
+        <script type="text/javascript" src="{$base_dir}/index.js"></script>
     </head>
     <body>
 
@@ -38,7 +38,7 @@
                 <ul>
                     {foreach item="map" from=$maps}
                         <li class="map-info">
-                            <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
+                            <a class="link place-name" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.place_name|escape}</a>
                             from <span class="user-name">{$map.user.name|escape}</span>
 
                             <span class="geo">

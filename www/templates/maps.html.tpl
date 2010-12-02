@@ -138,7 +138,7 @@
                 <ul id="maps">
                     {foreach item="map" from=$maps}
                         <li class="map">
-                            <a class="link place-name" href="{$base_dir}/maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
+                            <a class="link place-name" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.place_name|escape}</a>
                             from <span class="user-name">{$map.user.name|escape}</span>
 
                             <span class="geo">

@@ -48,7 +48,7 @@
                 echo "Couldn't make your map, not sure why.\n";
 
             } else {
-                $href = 'http://'.get_domain_name().get_base_dir().'/maps.php?id='.urlencode($map_id);
+                $href = 'http://'.get_domain_name().get_base_dir().'/maps.php/'.urlencode($map_id);
                 $href .= ($format != 'html' ? "&format={$format}" : '');
             
                 header('HTTP/1.1 303');
