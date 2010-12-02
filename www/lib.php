@@ -56,11 +56,11 @@
         
         $sm = new Smarty();
 
-        $sm->compile_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
-        $sm->cache_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates', 'cache'));
+        $sm->compile_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', 'templates', 'cache'));
+        $sm->cache_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', 'templates', 'cache'));
 
-        $sm->template_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
-        $sm->config_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'templates'));
+        $sm->template_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', 'templates'));
+        $sm->config_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', 'templates'));
         
        /*
         // later perhaps
