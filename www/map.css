@@ -1,7 +1,49 @@
-var
+var, blockquote
 {
-	color: #0c0;
+	color: #090;
 	font-style: normal;
+}
+
+p.status-message
+{
+	color: white;
+	background-color: #0C0;
+	border: 1px solid #090;
+	border-radius: 2px;
+	padding: 1em 35px;
+    width: 530px;
+	background-image: url(images/white-bouncy-ball.gif);
+	background-repeat: no-repeat;
+	background-position: 14px 1em;
+}
+
+p.map-date
+{
+    width: 600px;
+    text-align: right;
+    font-size: small;
+}
+
+blockquote
+{
+    position: relative;
+    width: 560px;
+}
+
+blockquote:before
+{
+    content: '“';
+    font-size: 600%;
+    line-height: 18px;
+    position: absolute;
+    left: -40px;
+    top: 18px;
+    color: #bfb;
+}
+
+div.download-area
+{
+    margin-top: 40px;
 }
 
 #preview-map
@@ -39,4 +81,9 @@ ul.formats li.format
     width: 200px;
     text-align: center;
     float: left;
+}
+
+ul.formats li.format a img
+{
+    border: none;
 }

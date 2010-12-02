@@ -57,7 +57,7 @@ if __name__ == '__main__':
         
         for (paper, format) in product(job['papers'], job['formats']):
             try:
-                filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text)
+                filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text, sender_is_recipient)
     
                 print filename,
         

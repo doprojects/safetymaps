@@ -28,23 +28,9 @@
         <div id="main">
             {if $map}
             
-                {if $recipient}
-                    {if $recipient.failed}
-                        <pre>[failed to generate this map for you {$recipient.failed}]</pre>
-                    {elseif $recipient.waiting}
-                        <pre>[still generating this map for you]</pre>
-                    {elseif $recipient.sent}
-                        <!-- sent you this map {$recipient.sent} -->
-                    {/if}
-                {else}
-                    {if $map.waiting}
-                        <pre>[still generating this map {$map.waiting}]</pre>
-                    {/if}
-                {/if}
-            
                 <h2>
                     Safety Map
-                    {if $recipient}
+                    {if $recipient and $recipient.email != $map.user.email}
                         for <var>{$recipient.name|escape}</var>
                     {else}
                         by <var>{$map.user.name|escape}</var>
@@ -75,36 +61,74 @@
                 //-->
                 </script>
 
-                <blockquote>{$map.note_full|escape}</blockquote>
+                <p class="map-date">
+                    This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
+                </p>
                 
-                {if $recipient}
+                {if $map.note_full}
+                    <blockquote>{$map.note_full|escape}</blockquote>
+                {/if}
+                
+                {if $recipient and $recipient.email != $map.user.email}
                     <p>
                         From <var>{$map.user.name|escape}</var>.
                     </p>
                 {/if}
                 
-                <p>
-                    This Safety Map was made on <var>{$map.created_unixtime|nice_date|escape}</var>.
-                </p>
-                
-                {if $recipient}
-                    <p>
-                        Download a printable version as a PDF file:
-                    </p>
-                    
-                    <ul class="formats">
-                        {foreach item="format" from=$formats}
-                            <li class="format">
-                                <img src="{$base_dir}/images/hands-{$format}.png">
-                                <br>
-                                {foreach item="paper" from=$papers name="papers"}
-                                    <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper|escape}-{$format|escape}.pdf">
-                                        {if $smarty.foreach.papers.first}{$format|ucwords}{/if} {$paper|ucwords|escape}</a>{if !$smarty.foreach.papers.last},{/if}
+                <div class="download-area">
+                    {if $recipient}
+                        {if $recipient.failed}
+                            <p class="status-message">
+                                [failed to generate this map for you {$recipient.failed}]
+                            </p>
+
+                        {elseif $recipient.waiting}
+                            <p class="status-message">
+                                [still generating this map for you]
+                            </p>
+
+                        {else}
+                            <p>
+                                Download a printable version as a PDF file:
+                            </p>
+                            
+                            <ul class="formats">
+                                {foreach item="format" from=$formats}
+                                    <li class="format">
+                                        <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/letter-{$format|escape}.pdf">
+                                            <img src="{$base_dir}/images/hands-{$format}.png"></a>
+                                        <br>
+                                        {foreach item="paper" from=$papers name="papers"}
+                                            <a href="{$base_dir}/files/{$map.id|escape}/{$recipient.id|escape}/{$paper|escape}-{$format|escape}.pdf">
+                                                {if $smarty.foreach.papers.first}{$format|ucwords}{/if} {$paper|ucwords|escape}</a>{if !$smarty.foreach.papers.last},{/if}
+                                        {/foreach}
+                                    </li>
                                 {/foreach}
-                            </li>
-                        {/foreach}
-                    </ul>
-                {/if}
+                            </ul>
+                        {/if}
+
+                    {else}
+                        {if $map.waiting}
+                            <p class="status-message">
+                                Generating {$map.waiting} copies of this map…
+                            </p>
+
+                        {else}
+                            <p>
+                                PDF downloads are emailed to the sender and recipients of each Safety Map.
+                                <a href="{$base_dir}/make-a-safety-map.php">Make your own!</a>
+                            </p>
+                            
+                            <ul class="formats">
+                                {foreach item="format" from=$formats}
+                                    <li class="format">
+                                        <img src="{$base_dir}/images/hands-gray-{$format}.png">
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        {/if}
+                    {/if}
+                </div>
 
             {elseif $maps}
             

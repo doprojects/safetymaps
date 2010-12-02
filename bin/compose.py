@@ -349,7 +349,7 @@ def write_phrases(ctx, phrases, justify_right=False):
         if justify_right:
             ctx.rel_move_to(-w, 0)
 
-def draw_card_left(ctx, recipient, sender, text):
+def draw_card_left(ctx, recipient, sender, text, sender_is_recipient):
     """ Draw out the left-hand side of a card.
     
         Modify and restore the matrix stack.
@@ -366,28 +366,32 @@ def draw_card_left(ctx, recipient, sender, text):
     set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(11 * mmppt)
 
-    write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
+    if sender_is_recipient:
+        write_phrases(ctx, [(dk_gray, 'Safety Map by '), (green, sender)])
 
-    # "from" text
-    ctx.move_to(81.4, 56)
+    else:
+        write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
 
-    write_phrases(ctx,
-                  [(dk_gray, 'from '), (green, sender)],
-                  justify_right=True)
+        # "from" text
+        ctx.move_to(81.4, 56)
+    
+        write_phrases(ctx,
+                      [(dk_gray, 'from '), (green, sender)],
+                      justify_right=True)
 
     # body text
     set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     ctx.set_source_rgb(*md_gray)
     
     ctx.move_to(5.5, 17)
-    ctx.set_font_size(8 * mmppt)
     
-    ctx.show_text('(Leave a personal note here)')
-    
-    ctx.move_to(5.5, 24.5)
-    ctx.set_font_size(10 * mmppt)
-    
-    continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt, text)
+    if text:
+        ctx.set_font_size(10 * mmppt)
+        continue_text_box(ctx, 5.5, 5.5 + 77, 12 * mmppt, text)
+
+    else:
+        ctx.set_font_size(8 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
     
     ctx.restore()
 
@@ -431,11 +435,11 @@ def draw_card_right(ctx, img, point, emergency, place):
     ctx.move_to(3.8, 58.8)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(4 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
-def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text):
+def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text, sender_is_recipient):
     """ Draw a small version of the poster.
     
         Modify and restore the matrix stack.
@@ -461,17 +465,21 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
     set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(14 * mmppt)
 
-    write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
+    if sender_is_recipient:
+        write_phrases(ctx, [(dk_gray, 'Safety Map by '), (green, sender)])
     
-    # "from" text
-    ctx.move_to(115.8, 159)
-
-    ctx.set_font_size(10 * mmppt)
-
-    write_phrases(ctx,
-                  [(dk_gray, 'from '),
-                   (green,   sender)],
-                  justify_right=True)
+    else:
+        write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
+        
+        # "from" text
+        ctx.move_to(115.8, 159)
+    
+        ctx.set_font_size(10 * mmppt)
+    
+        write_phrases(ctx,
+                      [(dk_gray, 'from '),
+                       (green,   sender)],
+                      justify_right=True)
 
     # explanation text
     ctx.move_to(18.8, 17.7)
@@ -498,22 +506,27 @@ def draw_small_poster(ctx, img, point, emergency, place, recipient, sender, text
                   justify_right=True)
 
     # body text
-    ctx.move_to(10.6, 120.5)
+    ctx.move_to(10.6, 115.5)
     
     ctx.set_source_rgb(*md_gray)
-    ctx.set_font_size(10 * mmppt)
     
-    continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt, text)
+    if text:
+        ctx.set_font_size(10 * mmppt)
+        continue_text_box(ctx, 10.6, 10.6 + 101, 12 * mmppt, text)
+    
+    else:
+        ctx.set_font_size(8 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
 
     # text on the bottom
     ctx.move_to(6.8, 167.6)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(7.1 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
-def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text):
+def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text, sender_is_recipient):
     """ Draw a large version of the poster.
     
         Modify and restore the matrix stack.
@@ -539,17 +552,20 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
     set_font_face_from_file(ctx, 'assets/VAGRoundedStd-Bold.otf')
     ctx.set_font_size(19.6 * mmppt)
 
-    write_phrases(ctx,
-                  [(dk_gray, 'Safety Map for '), (green, recipient)])
+    if sender_is_recipient:
+        write_phrases(ctx, [(dk_gray, 'Safety Map by '), (green, sender)])
     
-    # "from" text
-    ctx.move_to(163, 224)
-
-    ctx.set_font_size(14 * mmppt)
-
-    write_phrases(ctx,
-                  [(dk_gray, 'from '), (green, sender)],
-                  justify_right=True)
+    else:
+        write_phrases(ctx, [(dk_gray, 'Safety Map for '), (green, recipient)])
+        
+        # "from" text
+        ctx.move_to(163, 224)
+        
+        ctx.set_font_size(14 * mmppt)
+        
+        write_phrases(ctx,
+                      [(dk_gray, 'from '), (green, sender)],
+                      justify_right=True)
 
     # explanation text
     ctx.move_to(26.8, 26)
@@ -576,18 +592,24 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
                   justify_right=True)
 
     # body text
-    ctx.move_to(15, 170)
+    ctx.move_to(15, 160)
     
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(14 * mmppt)
     
-    continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt, text)
+    if text:
+        ctx.set_font_size(14 * mmppt)
+        continue_text_box(ctx, 15, 15 + 143, 16.8 * mmppt, text)
+    
+    else:
+        ctx.set_font_size(11 * mmppt)
+        ctx.show_text('(Leave a personal note here)')
 
     # text on the bottom
     ctx.move_to(10, 236)
     ctx.set_source_rgb(*md_gray)
     ctx.set_font_size(10.8 * mmppt)
-    ctx.show_text('This map came from safetymaps.org. You can visit and make your own Safety Maps for free!')
+    ctx.show_text('This map came from safety-maps.org. Visit and make your own Safety Maps for free!')
 
     ctx.restore()
 
@@ -609,7 +631,7 @@ def draw_a4_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(21, 22)
-    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 192, 11, format)
@@ -652,7 +674,7 @@ def draw_letter_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(22, 16)
-    ctx.show_text('Unique URL for this map: www.safetymaps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 193, 6, format)
@@ -677,9 +699,9 @@ def draw_letter_master(ctx, format):
 
 parser = OptionParser()
 
-parser.set_defaults(recipient='Fred', sender='Wilma', emergency='earthquake',
-                    place='Dolores Park playground', point=(37.75883, -122.42689),
-                    bbox=(37.7669, -122.4177, 37.7565, -122.4302),
+parser.set_defaults(recipient='Fred', sender='Wilma', sender_is_recipient=False,
+                    emergency='earthquake', place='Dolores Park playground',
+                    point=(37.75883, -122.42689), bbox=(37.7669, -122.4177, 37.7565, -122.4302),
                     text='Sed ut perspiciatis, unde omnis iste natus error sit ' \
                     + 'voluptatem accusantium doloremque laudantium, totam rem ' \
                     + 'aperiam eaque ipsa, quae ab illo invent ore veritatis et ' \
@@ -721,7 +743,10 @@ parser.add_option('-n', '--place-name', dest='place',
 parser.add_option('-t', '--text', dest='text',
                   help='Message text, "-" to use stdin.')
 
-def main(marker, paper, format, bbox, emergency, place, recipient, sender, text):
+parser.add_option('--sender-is-recipient', dest='sender_is_recipient',
+                  action='store_true', help='Flag if the sender and recipient are the same.')
+
+def main(marker, paper, format, bbox, emergency, place, recipient, sender, text, sender_is_recipient):
     """
     """
     mark = Location(*marker)
@@ -770,7 +795,7 @@ def main(marker, paper, format, bbox, emergency, place, recipient, sender, text)
         ctx.stroke()
     
         # two card sides and contents
-        draw_card_left(ctx, recipient, sender, text)
+        draw_card_left(ctx, recipient, sender, text, sender_is_recipient)
         ctx.translate(86.5, 0)
 
         draw_card_right(ctx, card_img, mark_point, emergency, place)
@@ -791,14 +816,14 @@ def main(marker, paper, format, bbox, emergency, place, recipient, sender, text)
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 109, 77, mark)
-        draw_small_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text)
+        draw_small_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text, sender_is_recipient)
 
     elif format == 'poster':
         ctx.rectangle(0, 0, 173, 245)
         ctx.stroke()
 
         poster_img, mark_point = get_map_image(bbox, 153, 108, mark)
-        draw_large_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text)
+        draw_large_poster(ctx, poster_img, mark_point, emergency, place, recipient, sender, text, sender_is_recipient)
 
     surf.finish()
     chmod(filename, 0644)
@@ -810,4 +835,4 @@ if __name__ == '__main__':
     text = (opts.text == '-') and stdin.read().strip() or opts.text
 
     print main(opts.point, opts.paper, opts.format, opts.bbox, opts.emergency,
-               opts.place, opts.recipient, opts.sender, text)
+               opts.place, opts.recipient, opts.sender, text, opts.sender_is_recipient)
