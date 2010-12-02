@@ -102,10 +102,10 @@ body {
 /* markers! */
 
 .marker {
-    background-image: url(cross_sm.png);
+    background-image: url(images/cross_sm.png);
     background-repeat: no-repeat;
     background-position:center;
 }
 .marker.hover {
-    background-image: url(cross_big.png);
+    background-image: url(images/cross_big.png);
 }

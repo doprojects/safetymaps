@@ -21,7 +21,7 @@ $(document).ready(function()
             map.parent.appendChild(anc);
         }
         
-        img.src = 'cross_round_lg.png';
+        img.src = 'images/cross_round_lg.png';
     }
 
     function cluster(max_diameter)

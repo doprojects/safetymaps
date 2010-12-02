@@ -24,5 +24,5 @@ function show_preview_map(element, lat, lon, south, west, north, east, base_dir)
         map.parent.appendChild(anc);
     }
     
-    img.src = base_dir + '/cross_round_lg.png';
+    img.src = base_dir + '/images/cross_round_lg.png';
 }

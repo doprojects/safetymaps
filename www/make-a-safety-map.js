@@ -25,7 +25,7 @@ $(document).ready(function() {
     bboxmap.addCallback('drawn', onMapChange);
     onMapChange();
 
-    var $mark = $('<img id="mark" src="cross_sm.png" style="margin-left:-25px; margin-top:-25px; cursor: move; position:absolute; left: 50%; top: 50%; z-index:1000;">');
+    var $mark = $('<img id="mark" src="images/cross_sm.png" style="margin-left:-25px; margin-top:-25px; cursor: move; position:absolute; left: 50%; top: 50%; z-index:1000;">');
     $mark.bind('mousedown', function(mde) {
       var mousePosition = $mark.offset();
       var mouseOffset = { left: mde.pageX - mousePosition.left, top: mde.pageY - mousePosition.top }
