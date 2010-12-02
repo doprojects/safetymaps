@@ -1154,7 +1154,7 @@ if (!com) {
             var hZoomDiff = Math.log(hFactor) / Math.log(2);
                 
             // possible horizontal zoom to fit geographical extent in map width
-            var hPossibleZoom = TL.zoom - hZoomDiff; //Math.ceil(hZoomDiff);
+            var hPossibleZoom = TL.zoom - Math.ceil(hZoomDiff);
                 
             // multiplication factor between vertical span and map height
             var vFactor = (BR.row - TL.row) / (height / this.provider.tileHeight);
@@ -1163,7 +1163,7 @@ if (!com) {
             var vZoomDiff = Math.log(vFactor) / Math.log(2);
                 
             // possible vertical zoom to fit geographical extent in map height
-            var vPossibleZoom = TL.zoom - vZoomDiff; //Math.ceil(vZoomDiff);
+            var vPossibleZoom = TL.zoom - Math.ceil(vZoomDiff);
                 
             // initial zoom to fit extent vertically and horizontally
             var initZoom = Math.min(hPossibleZoom, vPossibleZoom);
