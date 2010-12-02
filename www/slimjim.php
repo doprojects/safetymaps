@@ -1,7 +1,5 @@
 <?php
 
-    ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'/usr/share/pear');
-
     require_once 'PEAR.php';
     require_once 'Net/URL.php';
     require_once 'HTTP/Request.php';

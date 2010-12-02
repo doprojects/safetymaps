@@ -3,7 +3,7 @@
 apt-get install python-cairo python-imaging python-rsvg python-setuptools
 apt-get install apache2-mpm-prefork php5-mysql mysql-server php-pear smarty
 easy_install ModestMaps
-pear install --alldeps Mail Mail_mime
+pear install --alldeps Mail Mail_mime HTTP_Request
 
 ---- Safety Maps ----
 
@@ -17,9 +17,8 @@ pear install --alldeps Mail Mail_mime
     >   USE safetymaps_example;
     >   SOURCE doc/create.mysql;
     >   FLUSH PRIVILEGES;
-3.  Populate www/config.php with MySQL & SMTP details
+3.  Populate lib/config.php with MySQL & SMTP details
 4.  Post-installation tasks:
-    %   cd www
     %   make
 5.  Add to crontab something like:
     * * * * *	cd bin && python http://example.com/path/to/www/compose/job.php

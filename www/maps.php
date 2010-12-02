@@ -1,7 +1,10 @@
 <?php
 
+    ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'../lib');
+
     require_once 'config.php';
     require_once 'lib.php';
+
     header('Access-Control-Allow-Origin: *');
 
     $ctx = default_context();
