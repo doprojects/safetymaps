@@ -1,4 +1,4 @@
-function show_preview_map(element, lat, lon, south, west, north, east)
+function show_preview_map(element, lat, lon, south, west, north, east, base_dir)
 {
     var mm = com.modestmaps;
     var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
@@ -24,5 +24,5 @@ function show_preview_map(element, lat, lon, south, west, north, east)
         map.parent.appendChild(anc);
     }
     
-    img.src = 'cross_round_lg.png';
+    img.src = base_dir + '/cross_round_lg.png';
 }

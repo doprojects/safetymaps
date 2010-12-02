@@ -15,7 +15,12 @@
                 : null;
     
     $map_id = false;
-
+    
+    if(preg_match('#^/#', $_SERVER['PATH_INFO']))
+    {
+        $_GET['id'] = substr($_SERVER['PATH_INFO'], 1);
+    }
+    
     if(preg_match('#^(\w+)(/(\w+))?$#', $_GET['id'], $m))
     {
         $map_id = $m[1];

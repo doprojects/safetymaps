@@ -7,19 +7,19 @@
             {if $map and $recipient and $recipient.email != $map.user.email} for {$recipient.name|escape}{/if}
             {if $map} by {$map.user.name|escape}{/if}
         {/strip}</title>
-        <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="style.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
         {if $map}
-            <link rel="stylesheet" type="text/css" href="map.css" />
-            <script type="text/javascript" src="map.js"></script>
+            <link rel="stylesheet" type="text/css" href="{$base_dir}/map.css" />
+            <script type="text/javascript" src="{$base_dir}/map.js"></script>
         {else}
-            <link rel="stylesheet" type="text/css" href="maps.css" />
-            <script type="text/javascript" src="maps.js"></script>
+            <link rel="stylesheet" type="text/css" href="{$base_dir}/maps.css" />
+            <script type="text/javascript" src="{$base_dir}/maps.js"></script>
         {/if}
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="modestmaps.js"></script>
-        <script type="text/javascript" src="cloudmade.js"></script>
-        <script type="text/javascript" src="markerclip.js"></script>
+        <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
+        <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>
+        <script type="text/javascript" src="{$base_dir}/cloudmade.js"></script>
+        <script type="text/javascript" src="{$base_dir}/markerclip.js"></script>
     </head>
     <body>
 
@@ -55,7 +55,8 @@
                                      {$map.bbox_south|escape:javascript},
                                      {$map.bbox_west|escape:javascript},
                                      {$map.bbox_north|escape:javascript},
-                                     {$map.bbox_east|escape:javascript});
+                                     {$map.bbox_east|escape:javascript},
+                                     '{$base_dir|escape:"javascript"}');
                 
                     {/strip}
                 //-->
@@ -137,7 +138,7 @@
                 <ul id="maps">
                     {foreach item="map" from=$maps}
                         <li class="map">
-                            <a class="link place-name" href="maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
+                            <a class="link place-name" href="{$base_dir}/maps.php?id={$map.id|escape}">{$map.place_name|escape}</a>
                             from <span class="user-name">{$map.user.name|escape}</span>
 
                             <span class="geo">
