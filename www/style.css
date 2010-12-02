@@ -80,14 +80,17 @@ body {
 #footer {
     background: #A6A6A6;
     margin: 0;
-    padding: 20px;
+    padding: 40px;
     color: #FFFFFF;
     border-top: 1px solid #EEEEEE;
 }
 
 #footer p {
-    margin: 0;
+    margin: 10px 0;
     padding: 0;
+}
+#footer a {
+    color: #fff;
 }
 
 /* microformats! */

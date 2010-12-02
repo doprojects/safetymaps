@@ -2,69 +2,93 @@ body {
   position: relative;
 }
 
-select#emergencyplace,
-input#otherinput
+#main select#emergencyplace,
+#main input#otherinput
 {
     margin: 6px 6px 6px 0px;
 }
 
-#make {
-    width: 600px;
-    border-radius: 20px;
-    -moz-border-radius: 20px;
-    -webkit-border-radius: 20px;
+#main p {
+  width: 580px;
+}
+#main table p {
+  width: auto;
 }
 
-#make {
-    background: #CCCCCC;
-    padding: 30px 40px;
+#main table {
+    border-collapse: collapse;
 }
 
-#make form p.field {
+#main tr.first td.inputs {
+-webkit-border-top-left-radius: 20px;
+-webkit-border-top-right-radius: 20px;
+-moz-border-radius-topleft: 20px;
+-moz-border-radius-topright: 20px;
+border-top-left-radius: 20px;
+border-top-right-radius: 20px;
+    border-left: 3px solid #ccc;
+    border-right: 3px solid #ccc;
+    border-top: 3px solid #ccc;
+    padding-top: 40px;
+}
+#main tr.last td.inputs {
+-webkit-border-bottom-right-radius: 20px;
+-webkit-border-bottom-left-radius: 20px;
+-moz-border-radius-bottomright: 20px;
+-moz-border-radius-bottomleft: 20px;
+border-bottom-right-radius: 20px;
+border-bottom-left-radius: 20px;
+    border-left: 3px solid #ccc;
+    border-right: 3px solid #ccc;
+    border-bottom: 3px solid #ccc;
+    padding-bottom: 40px;
+}
+
+#main td.inputs {
+    width: 500px;
+    padding: 0px 40px 0px 40px;
+    border-left: 3px solid #ccc;
+    border-right: 3px solid #ccc;
+    background: #fff;
+}
+
+#main td.help {
+    vertical-align: top;
+    width: 200px;
+    padding: 0px 40px 0px 40px;
+    background: #fff;
+}
+
+#main form p.field {
     color: #444444;
     font-size: 80%;
 }
 
-#make a {
+#main a {
     color: #000000;
 }
 
-#make label {
+#main label {
     color: #444444;
     margin-right: 8px;
     font-size: 125%;
 }
-#make p.split label {
+#main p.split label {
     display: inline-block;
     /*width: 50%;*/
     text-align: right;
 }
-#make form p.full {
+#main form p.full {
     font-size: 100%;
     line-height: 1.5;
 }
-#make p.full label {
+#main p.full label {
     font-size: 100%;
     /*width: 50%;*/
     text-align: left;
 }
-#make form p.formats {
-    font-size: 100%;
-}
-#make p.formats label {
-    display: inline-block;
-    font-size: 100%;
-    text-align: left;
-    line-height: 50px;
-    margin-top: 5px;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-#make p.formats input, #make p.formats img {
-    vertical-align: middle;
-}
 
-span.note {
+#main span.note {
     background: #ffe;
     border-radius: 3px;
     -webkit-border-radius: 3px;
@@ -80,32 +104,32 @@ span.note {
           box-shadow: 2px 2px 4px #000; /* Opera 10.5, IE 9 */
 }
 
-#make p,
-#make h1,
-#make h2,
-#make h3,
-#make h4 {
+#main p,
+#main h1,
+#main h2,
+#main h3,
+#main h4 {
     position: relative;
     clear: both;
 }
-#make h3 {
+#main h3 {
     margin-top: 30px;
 }
 
-#make input[type=text],
-#make input[type=email],
-#make textarea {
-    border: 0;
+#main input[type=text],
+#main input[type=email],
+#main textarea {
+    border: 1px solid #00CC00;
     background: #FFFFFF;
     padding: 4px;
     margin: 8px 0px;
 }
-#make textarea {
-    width: 592px;
+#main textarea {
+    width: 492px;
     font-size: 12pt;
 }
 
-#make button {
+button {
     background: #444444;
     color: #FFFFFF;
     border: 0;
@@ -113,33 +137,22 @@ span.note {
     margin: 0 10px 0 0;
     font-weight: bold;
 }
-#make button[type=submit] {
+button[type=submit] {
     background: #00CC00;
+}
+
+#searchform button {
+  margin-left: 4px;
+  padding: 2px 5px;
 }
 
 #bboxmap {
     display: block;
     position: relative;
-    width: 594px;
-    height: 420px;
+    width: 494px;
+    height: 320px;
     border: 3px dashed #00CC00;
     background: #DDDDDD;
-}
-
-span.step {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    border-radius: 20px;
-    color: #fff;
-    background: #00CC00;
-    font-size: 20px;
-    font-weight: bold;
-    vertical-align: middle;
-    line-height: 40px;
-    text-align: center;
 }
 
 p#done {
@@ -154,14 +167,3 @@ p#done button {
     border-radius: 3px;
 }
 
-#preview {
-    background: #fff;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    width: 600px;
-    height: 425px;
-    height: 300px;
-    line-height: 30px;
-    text-align: center;
-}

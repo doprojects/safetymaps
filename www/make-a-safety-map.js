@@ -57,7 +57,7 @@ $(document).ready(function() {
     $('#zoomout').bind('click', function() { bboxmap.zoomOut(); return false; });
 
     var $search = $('<p style="position:absolute; margin: 0px; padding: 0px; z-index:2000;"></p>')
-                      .append('<form id="searchform"><input type="text" id="search" name="search"></form>');
+                      .append('<form id="searchform"><input type="text" id="search" name="search"><button type="submit">Search</button></form>');
     $(document.body).append($search);
     
     $(document.body).bind('search-needs-adjusting', function() {
@@ -75,14 +75,16 @@ $(document).ready(function() {
 
     $('#searchform').bind('submit', function() {
         var q = $('#search').attr('value');
+        var key = 'nbHkmO_V34FNW1fULoqJl3Ito52VgOmgeN_dFHoEM7vRb65sl3tpVWA4pvzI5mWDGw--';
+        var flags = 'JXG';
+        var realURL = 'http://where.yahooapis.com/geocode?'+
+                      'q='+encodeURIComponent(q)+
+                      '&flags='+encodeURIComponent(flags)+
+                      '&appid='+encodeURIComponent(key);
         $('#search').attr('disabled', 'disabled');
         $.ajax({
             dataType: 'jsonp',
-            url: 'http://www.mapquestapi.com/geocoding/v1/address' +
-                 '?inFormat=kvp&outFormat=json' +
-                 '&key=' + escape('Dmjtd|lu612007nq,20=o5-50zah') +
-                 '&location=' + escape(q) +
-                 '&callback=?',
+            url: 'slimjim.php?url='+encodeURIComponent(realURL)+'&callback=?',
             success: onPlaceSearch
         });
         return false;
@@ -90,11 +92,14 @@ $(document).ready(function() {
 
     function onPlaceSearch(rsp) {
         $('#search').attr('disabled', '');
-        if (rsp && rsp.results && rsp.results.length) {
-            var result = rsp.results[0];
-            if (result.locations && result.locations.length) {
-                var loc = result.locations[0].displayLatLng;
-                bboxmap.setCenterZoom(new mm.Location(loc.lat, loc.lng), 10);
+        if (rsp && rsp.ResultSet && rsp.ResultSet.Results && rsp.ResultSet.Results.length) {
+            var result = rsp.ResultSet.Results[0];
+            if (result.boundingbox) {
+              bboxmap.setExtent([new mm.Location(result.boundingbox.north, result.boundingbox.west), 
+                              new mm.Location(result.boundingbox.south, result.boundingbox.east)]);
+            }
+            else {
+              bboxmap.setCenterZoom(new mm.Location(result.latitude, result.longitude), 12);
             }
         }
     }
