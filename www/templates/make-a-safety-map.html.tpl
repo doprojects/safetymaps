@@ -57,11 +57,11 @@ $(document).ready(function() {
         // TODO: can we clone a node and find/replace instead?
         // or use jquery templates?
         try {
-            var index = $('#recipients p').length;
-            $('#recipients').append($('<p class="field full">'+nth(index+1)+' recipient:<br>'
+            var index = $('#recipients li').length;
+            $('#recipients').append($('<li>'
                 + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients['+index+'][name]" size="15">'
-                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="email" placeholder="e.g. them@there.com" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another...<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
-                + '<\/p>'));
+                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="email" placeholder="e.g. them@there.com" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
+                + '<\/li>'));
             $(document.body).trigger('search-needs-adjusting');
         }
         catch(e) {
@@ -73,17 +73,7 @@ $(document).ready(function() {
     // undo additional recipients
     $('a.removerecipient').live('click', function() {
         try {
-            $(this).parent('p').remove();
-            $('#recipients p').each(function(index) {
-                var html = $(this).html();
-                html = html.replace(/(\d+[a-z][a-z])/g, function() {
-                    return nth(index+1);
-                });
-                html = html.replace(/(\[\d+\])/g, function() {
-                    return '['+index.toString()+']';
-                });
-                $(this).html(html)
-            });
+            $(this).parent('li').remove();
             $(document.body).trigger('search-needs-adjusting');
         }
         catch(e) {
@@ -91,22 +81,6 @@ $(document).ready(function() {
         }
         return false;
     });
-
-    // number (1,2,3,4,5) to string (1st,2nd,3rd,4th,5th)
-    function nth(n) {
-        var s = n.toString();        if (n == 11 || n == 12 || n == 13) {            return s+'th';        }
-        var last = s.charAt(s.length-1);
-        if (last == '1') {
-            return s+'st';
-        }
-        else if (last == '2') {
-            return s+'nd';
-        }
-        else if (last == '3') {
-            return s+'rd';
-        }
-        return s+'th';
-    }
 
 }); 
         {/literal}</script>
@@ -173,39 +147,39 @@ $(document).ready(function() {
                         <textarea type="text" name="place[full-note]" id="fullnote" rows="6"></textarea>
                     </p>
                     </td><td class="help">
-                        <p>Include an optional note (leave blank if you want to write it in later)</p>
+                        <p>Include a personal note for your recipients.<br><em>(300 character limit)</em></p>
                     <p class="field full" id="privacy">
                         <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked>This note is <em>private</em>.</label><br>
                         <label for="rdpublic"><input type="radio" id="rdpublic" name="map[privacy]" value="public">Make this note <em>public</em>?</label><br>
 <span id="publictip" class="note"><strong>"Public" definition:</strong> this note can be displayed alongside the place you selected on maps like the one on our homepage. Anybody who visits the site will be able to read it.</span>
 <span id="privatetip" class="note"><strong>"Private" definition:</strong> this note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.</span>
                     </p>
+                    <p class="thoughtful">Remember that the recipient might be reading this at a very difficult moment, so please think carefully about what you want to write here!</p>
                     
                     </td></tr>
 
                     </table>
                     
-                    <h3>Who's this map for?</h3>
+                    <h3>Who's this map for?</h3>                    
+
                     <p>
                         Enter the names and email addresses of people you'd like to share this Safety Map with. Leave blank if this is just for you.
                     </p>
-                    <div id="recipients">
-                        <p class="field full">1st recipient:<br>
-                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15" required> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35" required> <a class="addrecipient" href="">Add another...</a>
-                        </p>
-                    </div>
+                    <ol id="recipients">
+                        <li>
+                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15" required> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35" required> <a class="addrecipient" href="">Add another</a>
+                        </li>
+                    </ol>
                         
-                    <h3>And a little bit about you...</h3>
+                    <h3>You're almost done.</h3>
+
+                    <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
 
                     <p class="field split">
                         <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="" placeholder="e.g. Your Name" required><br>
                         <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="" placeholder="e.g. you@example.com" size="35" required>
                     </p>
-
-                    <h3>That's it! You're done.</h3>                    
-                    
-                    <p>Now that you've chosen a safe place to meet, you're ready to make and print a wallet-sized card to share with your friends and loved ones.</p>
-                    
+ 
                     <p id="done"><button type="submit">Go!</button></p>
 
                 </form>

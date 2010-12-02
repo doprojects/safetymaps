@@ -18,6 +18,9 @@ body {
 #main table {
     border-collapse: collapse;
 }
+#main table p.inputs {
+    font-size: 120%;
+}
 
 #main tr.first td.inputs {
 -webkit-border-top-left-radius: 20px;
@@ -82,10 +85,28 @@ border-bottom-left-radius: 20px;
     font-size: 100%;
     line-height: 1.5;
 }
-#main p.full label {
+#main p.full label, #main li label {
     font-size: 100%;
     /*width: 50%;*/
     text-align: left;
+}
+
+.thoughtful {
+    color: #009900;
+    border: 1px dotted #00CC00;
+    padding: 5px;
+}
+
+a.addrecipient, a.removerecipient {
+  background: #00CC00;
+  color: #FFF !important;
+  font-weight: bold;
+  padding: 5px;
+  text-decoration: none;
+  font-size: 75%;
+}
+a.removerecipient {
+  background: #999;
 }
 
 #main span.note {
@@ -119,12 +140,14 @@ border-bottom-left-radius: 20px;
 #main input[type=text],
 #main input[type=email],
 #main textarea {
-    border: 1px solid #00CC00;
+    border: 0px;
+    border-bottom: 1px solid #00CC00;
     background: #FFFFFF;
     padding: 4px;
     margin: 8px 0px;
 }
 #main textarea {
+    border: 1px solid #00CC00;
     width: 492px;
     font-size: 12pt;
 }
@@ -149,9 +172,9 @@ button[type=submit] {
 #bboxmap {
     display: block;
     position: relative;
-    width: 494px;
+    width: 500px;
     height: 320px;
-    border: 3px dashed #00CC00;
+    border: 1px solid #999;
     background: #DDDDDD;
 }
 
