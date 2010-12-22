@@ -14,7 +14,7 @@ AnyZoomHandler.prototype = {
         this.map = map;
         com.modestmaps.addEvent(map.layerParent, 'dblclick', this.getDoubleClick());
         com.modestmaps.addEvent(map.layerParent, 'mousedown', this.getMouseDown());
-        com.modestmaps.addEvent(map.layerParent, 'mousewheel', this.getMouseWheel());            
+        com.modestmaps.addEvent(map.parent, 'mousewheel', this.getMouseWheel());            
     },
     
     mouseDownHandler: null,

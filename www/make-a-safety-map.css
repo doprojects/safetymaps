@@ -2,7 +2,6 @@ body {
   position: relative;
 }
 
-#main select#emergencyplace,
 #main input#otherinput
 {
     margin: 6px 6px 6px 0px;
@@ -18,8 +17,13 @@ body {
 #main table {
     border-collapse: collapse;
 }
-#main table p.inputs {
-    font-size: 120%;
+td.inputs p, td.inputs input {
+    font-size: 18px;
+}
+td.inputs select {
+    border: 1px solid #00CC00;
+    font-size: 18px;
+    margin: 0px 6px;
 }
 
 #main tr.first td.inputs {
@@ -48,6 +52,7 @@ border-bottom-left-radius: 20px;
 }
 
 #main td.inputs {
+    vertical-align: top;
     width: 500px;
     padding: 0px 40px 0px 40px;
     border-left: 3px solid #ccc;
@@ -102,6 +107,7 @@ a.addrecipient, a.removerecipient {
   color: #FFF !important;
   font-weight: bold;
   padding: 5px;
+  margin-left: 5px;
   text-decoration: none;
   font-size: 75%;
 }

@@ -139,12 +139,13 @@ $(document).ready(function() {
                     <div id="bboxmap"></div>
 
                     </td><td class="help">
-                    <p>Drag the map to change the area that will be printed. Drag the green marker to move it to the precise meeting point. Be sure to zoom close enough to see nearby streets!</p>
+                    <p>Drag and zoom the map to change the area that will be printed.</p><p>You can scroll with your mouse, double-click or use the + and - buttons to zoom.</p><p>Be sure to zoom close enough to see nearby streets!</p>
+                    <p class="thoughtful">If you want an off-center map you can drag the green marker directly to fine tune your precise meeting point.</p>
                     </td></tr>
 
                     <tr class="last"><td class="inputs">
                     <p class="field">
-                        <textarea type="text" name="place[full-note]" id="fullnote" rows="6"></textarea>
+                        <textarea type="text" name="place[full-note]" id="fullnote" rows="8"></textarea>
                     </p>
                     </td><td class="help">
                         <p>Include a personal note for your recipients.<br><em>(300 character limit)</em></p>
