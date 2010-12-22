@@ -2,7 +2,11 @@ var AnyZoomHandler = function(map) {
     if (map !== undefined) {
         this.init(map);
     }
+    this.last = 0;
 };
+
+// https://bugs.webkit.org/show_bug.cgi?id=40441
+var bug40441 = /WebKit\/533/.test(navigator.userAgent) ? -1 : 0;
 
 AnyZoomHandler.prototype = {
 
@@ -82,15 +86,26 @@ AnyZoomHandler.prototype = {
                 var delta = 0;
                 
                 if (e.wheelDelta) {
-                    delta = e.wheelDelta / 60;
+                    delta = e.wheelDelta / 120;
                 }
                 else if (e.detail) {
-                    delta = -e.detail / 2;
+                    delta = -e.detail;
                 }
+
+                delta *= 0.1;
+
+                /* Detect fast & large wheel events on WebKit. */
+                if (bug40441 < 0) {
+                    var now = new Date().getTime(), since = now - this.last;
+                    if ((since > 9) && (Math.abs(e.wheelDelta) / since >= 50)) bug40441 = 1;
+                    this.last = now;
+                }
+                if (bug40441 == 1) delta *= .03;
     
                 var point = theHandler.getMousePoint(e);
                     
-                theHandler.map.zoomByAbout(Math.min(0.5, Math.max(-0.5, delta/10.0)), point);
+                theHandler.map.zoomByAbout(delta, point);
+ //Math.min(0.5, Math.max(-0.5, delta/10.0)), point);
                     
                 return com.modestmaps.cancelEvent(e);
             };
