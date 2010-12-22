@@ -986,6 +986,12 @@ if (!com) {
         }
 
         this.dimensions = dimensions;
+
+        this.layerParent = document.createElement('div');
+        this.layerParent.id = this.parent.id+'-layers';
+        // this text is also used in createOrGetLayer
+        this.layerParent.style.cssText = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; margin: 0; padding: 0; z-index: 0';
+        this.parent.appendChild(this.layerParent);
                                 
         if (eventHandlers === undefined) {
             this.eventHandlers = [];
@@ -1026,13 +1032,6 @@ if (!com) {
     
         this.layers = {};
 
-        this.layerParent = document.createElement('div');
-        this.layerParent.id = this.parent.id+'-layers';
-        // this text is also used in createOrGetLayer
-        this.layerParent.style.cssText = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; margin: 0; padding: 0; z-index: 0';
-        
-        this.parent.appendChild(this.layerParent);
-    
         this.coordinate = new MM.Coordinate(0.5,0.5,0);
         
         this.setProvider(provider);
