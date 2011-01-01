@@ -32,7 +32,6 @@
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
-        <script type="text/javascript" src="markerclip.js"></script>
         <script type="text/javascript" src="anyzoom.js"></script>
         <script type="text/javascript" src="make-a-safety-map.js"></script>
         <!-- script type="text/javascript" src="h5f.js"></script -->
@@ -71,6 +70,7 @@ $(document).ready(function() {
                 $('#pleasechoose').css({ marginTop: -38 });
                 $('#emergencyplace').css({ top: 38, zIndex: 1000 });
                 $('#emergencyplace').animate({ top: 0 });
+                $('#otherinput').focus();
             }
         }
         else {
