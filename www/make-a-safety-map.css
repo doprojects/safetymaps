@@ -2,11 +2,6 @@ body {
   position: relative;
 }
 
-#main input#otherinput
-{
-    margin: 6px 6px 6px 0px;
-}
-
 #main p {
   width: 580px;
 }
@@ -23,7 +18,6 @@ td.inputs p, td.inputs input {
 td.inputs select {
     border: 1px solid #00CC00;
     font-size: 18px;
-    margin: 0px 6px;
 }
 
 #main tr.first td.inputs {

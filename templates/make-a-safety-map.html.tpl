@@ -6,6 +6,29 @@
         <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="style.css" />
         <link rel="stylesheet" type="text/css" href="make-a-safety-map.css" />
+        <style type="text/css">{literal}
+#pleasechoose {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  width: 300px;
+  line-height: 1.0;
+}
+#emergencyplace, #otherinput {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  width: 295px;
+}
+#emergencyplace {
+  margin: 6px 0 !important;
+  padding: 0 !important;
+}
+#otherinput {
+  margin: 8px 0 !important;
+  padding: 0 !important;
+}
+        {/literal}</style>
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
@@ -40,47 +63,67 @@ $(document).ready(function() {
     $('#emergencyplace').bind('change', function() {
         if($('#otherplace').attr('selected')) {
             if ($('#otherinput').length == 0) {
-                $('<input id="otherinput" type="text"></input>')
+                $('<input id="otherinput" type="text" size="32"></input>')
                     .bind('change', function() {
 	                $('#otherplace').attr('value', $(this).attr('value'));
                     })
-                    .insertAfter($('#emergencyplace'));
+                    .insertAfter($('#emergencyplace'))
+                $('#pleasechoose').css({ marginTop: -38 });
+                $('#emergencyplace').css({ top: 38, zIndex: 1000 });
+                $('#emergencyplace').animate({ top: 0 });
             }
         }
         else {
-            $('#otherinput').remove();
+            if ($('#otherinput').length == 1) {
+                $('#emergencyplace').animate({ top: 38 }, { complete: function() { 
+                    $('#otherinput').remove() 
+                    $('#pleasechoose').css({ marginTop: 0 });
+                    $('#emergencyplace').css({ top: 0, zIndex: 1000 });
+                } });
+            }
         }
     });
 
     // deal with additional recipients
     $('a.addrecipient').live('click', function() {
-        // TODO: can we clone a node and find/replace instead?
-        // or use jquery templates?
-        try {
-            var index = $('#recipients li').length;
-            $('#recipients').append($('<li>'
-                + '<label for="recipients['+index+'][name]">name:<\/label><input type="text" name="recipients['+index+'][name]" size="15">'
-                + ' <label for="recipients['+index+'][email]">email:<\/label><input type="email" placeholder="e.g. them@there.com" name="recipients['+index+'][email]" size="35"> <a class="addrecipient" href="">Add another<\/a> <a href="" class="removerecipient">Remove this one?<\/a>'
-                + '<\/li>'));
+        var newLi = $(this).parent('li').clone();
+        newLi.children('input').attr('value','');
+        newLi.hide();
+        // make sure there's a remove button:
+        if (newLi.children('.removerecipient').length == 0) {
+            newLi.append('<a href="" class="removerecipient">Remove this one?<\/a>');
+        }
+        // append it
+        $(this).parent('li').after(newLi);
+        newLi.slideDown(function(){
+            renumberFormElements();
+            // for want of a DOM change event
             $(document.body).trigger('search-needs-adjusting');
-        }
-        catch(e) {
-            console.log(e);
-        }
+        });
         return false;
     });
 
     // undo additional recipients
     $('a.removerecipient').live('click', function() {
-        try {
-            $(this).parent('li').remove();
+        $(this).parent('li').slideUp(function() {
+            $(this).remove();
+            renumberFormElements();
             $(document.body).trigger('search-needs-adjusting');
-        }
-        catch(e) {
-            console.log(e);
-        }
+        });
         return false;
     });
+
+    function renumberFormElements() {
+        // renumber the form elements
+        $('#recipients li').each(function(i) {
+            $(this).children('input').attr('name', function(j, attr) {
+                return attr.replace(/\d+/, i);
+            });
+            $(this).children('label').attr('for', function(j, attr) {
+                return attr.replace(/\d+/, i);
+            });
+        });
+    }
 
 }); 
         {/literal}</script>
@@ -110,16 +153,18 @@ $(document).ready(function() {
                 <table>
                 <tr class="first"><td class="inputs">
 
-                    <p>In case of 
-                        <select id="emergencyplace" name="place[emergency]" required>
-                            <option>an emergency</option>
-                            <option>an earthquake</option>
-                            <option>a blackout</option>
-                            <option>a fire</option>
-                            <option>a flood</option>
-                            <option>a public transportation failure</option>
-                            <option id="otherplace" value="other">Other (please specify)</option>
-                        </select>
+                    <p>In case of
+                        <span id="pleasechoose"> 
+                            <select id="emergencyplace" name="place[emergency]" required>
+                                <option>an emergency</option>
+                                <option>an earthquake</option>
+                                <option>a blackout</option>
+                                <option>a fire</option>
+                                <option>a flood</option>
+                                <option>a public transportation failure</option>
+                                <option id="otherplace" value="other">Other (please specify)</option>
+                            </select>
+                        </span>
                         let's meet at
                         <input type="text" name="place[name]" size="25" value="" required>.
                         I've marked the spot on this map:
