@@ -1,10 +1,12 @@
+var bboxmap;
+
 $(document).ready(function() {
 
     var mm = com.modestmaps;
 
     var provider = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
     // make a map!
-    var bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
+    bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
     bboxmap.setCenterZoom(new mm.Location(0,0), 1);
 
     function onMapChange() {

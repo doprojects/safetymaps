@@ -7,6 +7,7 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
         <link rel="stylesheet" type="text/css" href="make-a-safety-map.css" />
         <style type="text/css">{literal}
+/* TODO: move to make-a-safety-map.css */
 #pleasechoose {
   position: relative;
   display: inline-block;
@@ -28,18 +29,26 @@
   margin: 8px 0 !important;
   padding: 0 !important;
 }
+#charcount {
+  color: #080;
+}
+#charcount.invalid {
+  color: #800;
+}
+#main label[for="personal"] {
+  font-size: 100%;
+}
         {/literal}</style>
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
         <script type="text/javascript" src="cloudmade.js"></script>
         <script type="text/javascript" src="anyzoom.js"></script>
         <script type="text/javascript" src="make-a-safety-map.js"></script>
-        <!-- script type="text/javascript" src="h5f.js"></script -->
         <script type="text/javascript">{literal}
 
-$(document).ready(function() {
+// TODO: move to make-a-safety-map.js
 
-    //H5F.setup(document.getElementById('mapform'));
+$(document).ready(function() {
 
     $('label[for=rdpublic]').mouseover(function(e) {
         $('#publictip').fadeIn().offset({ left: e.pageX+20, top: e.pageY+20 });
@@ -59,11 +68,11 @@ $(document).ready(function() {
     });
 
     // deal with "Other (please specify)"
-    $('#emergencyplace').bind('change', function() {
+    $('#emergencyplace').change(function() {
         if($('#otherplace').attr('selected')) {
             if ($('#otherinput').length == 0) {
                 $('<input id="otherinput" type="text" size="32"></input>')
-                    .bind('change', function() {
+                    .change(function() {
 	                $('#otherplace').attr('value', $(this).attr('value'));
                     })
                     .insertAfter($('#emergencyplace'))
@@ -125,6 +134,90 @@ $(document).ready(function() {
         });
     }
 
+    // twitter style remaining character count 
+    // (allow more chars to be typed but don't allow form submission, below)
+    var prevLength;
+    function onNoteChange() {
+      if (this.value.length == prevLength) return;
+      prevLength = this.value.length; // includes line breaks, OK?
+      $('#charcount').text((300 - this.value.length) + " remaining");
+      if (this.value.length <= 300) {
+          $('#charcount').removeClass('invalid');
+      }
+      else {
+          $('#charcount').addClass('invalid');
+      }
+    }
+    $('#fullnote').change(onNoteChange); // only fires onblur
+    $('#fullnote').keyup(onNoteChange); // fires with key strokes too
+    $('#fullnote').bind('input', onNoteChange); // html5 event, catches paste with mouse too
+
+    // disable recipients if map is personal
+    $('#personal').change(function() {
+        if($(this).attr('checked')) {
+            $('#recipients').slideUp();
+        }
+        else {
+            $('#recipients').slideDown();
+        }
+    });
+
+    // rudimentary form validation, just check for existence/length and display alerts
+    $('#mapform').submit(function() {
+     
+        if($('#otherplace').attr('selected')) {
+            var custom = this['place[emergency]'].value;
+            if(custom.length == 0 || custom == 'other') {
+                alert("Please specify a custom event or select a suggested value.");
+                $('#otherinput').focus();
+                return false;
+            }
+        }
+
+        // make a hash of basic required elements
+        var required = {};
+        required['place[name]'] = 'Meeting place name';
+        required['place[full-note]'] = 'A short personal note'; 
+        // only include recipients if the checkbox isn't selected
+        if (!$('#personal').attr('checked')) {
+            var count = $('#recipients li').length;
+            for(var i = 0; i < count; i++) {
+                required['recipients['+i+'][name]'] = 'Recipient\'s name or nickname';
+                required['recipients['+i+'][email]'] = 'Recipient\'s email address';
+            }
+        }
+        required['sender[name]'] = 'Your name or nickname';
+        required['sender[email]'] = 'Your email address';
+        for (var name in required) { 
+            if(this[name].value.length == 0) {
+               alert(required[name] + ' is required.');
+               $(this[name]).focus();
+               return false; 
+            }
+        }
+ 
+        // reject 'far out' maps
+        if (bboxmap.getZoom() < 10) {
+            alert('The chosen map view is quite big - please zoom in and  choose a smaller area.');
+            window.scrollTo(window.scrollX, -20 + $(bboxmap.parent).offset().top);
+            $('#bboxmap').focus();
+            return false;
+        }
+
+        // reject windbaggery
+        if (this['place[full-note]'].value.length > 300) {
+            alert('Note should be less than 300 characters.');
+            $(this['place[full-note]']).focus();
+            return false;
+        }
+
+        // TODO perhaps check for NaNs and valid angles in:
+        // map[bounds][0] map[bounds][1] map[bounds][2] map[bounds][3]
+        // place[location][0] place[location][1] should exist as numbers (validate degrees)
+ 
+        return true;
+    });
+
 }); 
         {/literal}</script>
     </head>
@@ -136,7 +229,6 @@ $(document).ready(function() {
         
             <h2>Make a Safety Map.</h2>
                 
-            <!-- TODO: demand javascript, the map selection is impossible without it -->
             <p class="intro">By answering these few simple questions, you can make a 
                custom map of a place you think it will be safe for your
                friends, family or loved ones to meet in the event of an
@@ -181,7 +273,7 @@ $(document).ready(function() {
                     <input type="hidden" id="bbox2" name="map[bounds][2]">
                     <input type="hidden" id="bbox3" name="map[bounds][3]">
 
-                    <div id="bboxmap"></div>
+                    <div id="bboxmap"><noscript>Please enable javascript and refresh this page to choose your location using our interactive map. Sorry for the inconvenience!</noscript></div>
 
                     </td><td class="help">
                     <p>Drag and zoom the map to change the area that will be printed.</p><p>You can scroll with your mouse, double-click or use the + and - buttons to zoom.</p><p>Be sure to zoom close enough to see nearby streets!</p>
@@ -191,6 +283,8 @@ $(document).ready(function() {
                     <tr class="last"><td class="inputs">
                     <p class="field">
                         <textarea type="text" name="place[full-note]" id="fullnote" rows="8"></textarea>
+                        <br>
+                        <span id="charcount">300 remaining</span>
                     </p>
                     </td><td class="help">
                         <p>Include a personal note for your recipients.<br><em>(300 character limit)</em></p>
@@ -209,13 +303,16 @@ $(document).ready(function() {
                     <h3>Who's this map for?</h3>                    
 
                     <p>
-                        Enter the names and email addresses of people you'd like to share this Safety Map with. Leave blank if this is just for you.
+                        Enter the names and email addresses of people you'd like to share this Safety Map with.
                     </p>
                     <ol id="recipients">
                         <li>
                             <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15" required> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35" required> <a class="addrecipient" href="">Add another</a>
                         </li>
                     </ol>
+                    <p>
+                        Alternatively, <input type="checkbox" name="personal" id="personal"> <label for="personal">check this box if this map is just for you</label>.
+                    </p>
                         
                     <h3>You're almost done.</h3>
 
