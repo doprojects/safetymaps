@@ -311,7 +311,7 @@ $(document).ready(function() {
                         </li>
                     </ol>
                     <p>
-                        Alternatively, <input type="checkbox" name="personal" id="personal"> <label for="personal">check this box if this map is just for you</label>.
+                        Alternatively, <input type="checkbox" name="personal" id="personal"> <label for="personal">check this box if this map is just for you.</label>
                     </p>
                         
                     <h3>You're almost done.</h3>
