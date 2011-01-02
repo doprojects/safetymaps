@@ -247,7 +247,7 @@ $(document).ready(function() {
 
                     <p>In case of
                         <span id="pleasechoose"> 
-                            <select id="emergencyplace" name="place[emergency]" required>
+                            <select id="emergencyplace" name="place[emergency]">
                                 <option>an emergency</option>
                                 <option>an earthquake</option>
                                 <option>a blackout</option>
@@ -258,7 +258,7 @@ $(document).ready(function() {
                             </select>
                         </span>
                         let's meet at
-                        <input type="text" name="place[name]" size="25" value="" required>.
+                        <input type="text" name="place[name]" size="25" value="">.
                         I've marked the spot on this map:
                     </p>           
 
@@ -307,7 +307,7 @@ $(document).ready(function() {
                     </p>
                     <ol id="recipients">
                         <li>
-                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15" required> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35" required> <a class="addrecipient" href="">Add another</a>
+                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15"> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35"> <a class="addrecipient" href="">Add another</a>
                         </li>
                     </ol>
                     <p>
@@ -319,8 +319,8 @@ $(document).ready(function() {
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
 
                     <p class="field split">
-                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="" placeholder="e.g. Your Name" required><br>
-                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="" placeholder="e.g. you@example.com" size="35" required>
+                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="" placeholder="e.g. Your Name"><br>
+                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="" placeholder="e.g. you@example.com" size="35">
                     </p>
  
                     <p id="done"><button type="submit">Go!</button></p>
