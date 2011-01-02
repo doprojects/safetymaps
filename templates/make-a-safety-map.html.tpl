@@ -38,6 +38,17 @@
 #main label[for="personal"] {
   font-size: 100%;
 }
+
+#pleasechoose.other
+{
+    margin-top: -38px;
+}
+
+#pleasechoose.normal #otherinput
+{
+    display: none;
+}
+
         {/literal}</style>
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
@@ -66,32 +77,41 @@ $(document).ready(function() {
         $('#privatetip').offset({ left: e.pageX+20, top: e.pageY+20 });
         $('#publictip').offset({ left: e.pageX+20, top: e.pageY+20 });
     });
+    
+    function activateOther()
+    {
+        $('#pleasechoose').removeClass('normal');
+        $('#pleasechoose').addClass('other');
 
+        $('#emergencyplace').attr('name', '');
+        $('#otherinput').attr('name', 'place[emergency]');
+        $('#otherinput').focus();
+
+        return;
+    }
+    
+    function deactivateOther()
+    {
+        $('#pleasechoose').removeClass('other');
+        $('#pleasechoose').addClass('normal');
+
+        $('#emergencyplace').attr('name', 'place[emergency]');
+        $('#otherinput').attr('name', '');
+
+        return;
+    }
+    
     // deal with "Other (please specify)"
-    $('#emergencyplace').change(function() {
-        if($('#otherplace').attr('selected')) {
-            if ($('#otherinput').length == 0) {
-                $('<input id="otherinput" type="text" size="32"></input>')
-                    .change(function() {
-	                $('#otherplace').attr('value', $(this).attr('value'));
-                    })
-                    .insertAfter($('#emergencyplace'))
-                $('#pleasechoose').css({ marginTop: -38 });
-                $('#emergencyplace').css({ top: 38, zIndex: 1000 });
-                $('#emergencyplace').animate({ top: 0 });
-                $('#otherinput').focus();
-            }
+    $('#emergencyplace').change(function()
+      {
+        if($('#emergencyplace option#otherplace').attr('selected')) {
+            return activateOther();
+
+        } else {
+            return deactivateOther();
         }
-        else {
-            if ($('#otherinput').length == 1) {
-                $('#emergencyplace').animate({ top: 38 }, { complete: function() { 
-                    $('#otherinput').remove() 
-                    $('#pleasechoose').css({ marginTop: 0 });
-                    $('#emergencyplace').css({ top: 0, zIndex: 1000 });
-                } });
-            }
-        }
-    });
+      }
+    );
 
     // deal with additional recipients
     $('a.addrecipient').live('click', function() {
@@ -240,25 +260,64 @@ $(document).ready(function() {
         
             <div id="make">
 
-                <form id="mapform" method="POST" action="maps.php">
+                <form id="mapform" method="POST" action="make-a-safety-map.php">
                 
                 <table>
                 <tr class="first"><td class="inputs">
+                
+                    {* Assume no pre-chosen emergency, the first one in the list will be the default *}
+                    {assign var="chosen" value="normal"}
 
-                    <p>In case of
-                        <span id="pleasechoose"> 
-                            <select id="emergencyplace" name="place[emergency]">
-                                <option>an emergency</option>
-                                <option>an earthquake</option>
-                                <option>a blackout</option>
-                                <option>a fire</option>
-                                <option>a flood</option>
-                                <option>a public transportation failure</option>
-                                <option id="otherplace" value="other">Other (please specify)</option>
-                            </select>
+                    {if $request.post.place.emergency}
+                        {* Some emergency has been chosen, we don't yet know which *}
+                        {assign var="chosen" value="other"}
+                    {/if}
+
+                    {* Prepare the list of <option> elements in a captured block *}
+                    {capture name="emergency_options"}
+                        {* Build an array of possible emergencies from a comma-delimited list *}
+                        {assign var="choices" value=","|explode:"an emergency,an earthquake,a blackout,a fire,a flood,a public transportation failure"}
+
+                        {foreach from=$choices item="choice"}
+                            {if $request.post.place.emergency == $choice}
+                                {assign var="chosen" value="normal"}
+                                <option selected>{$choice|escape}</option>
+
+                            {else}
+                                <option>{$choice|escape}</option>
+                            {/if}
+                        {/foreach}
+
+                        {if $chosen == "normal"}
+                            {* We found an existing emergency in the list of choices above *}
+                            <option id="otherplace" value="other">Other (please specify)</option>
+
+                        {elseif $chosen == "other"}
+                            {* We got this far without hitting an existing emergency, must be "other" *}
+                            <option id="otherplace" value="other" selected>Other (please specify)</option>
+                        {/if}
+                    {/capture}
+
+                    <p>
+                        In case of
+                        <span id="pleasechoose" class="{$chosen}">
+                          {strip}
+                            {if $chosen == "normal"}
+                                <select id="emergencyplace" name="place[emergency]">
+                                    {$smarty.capture.emergency_options}
+                                </select>
+                                <input id="otherinput" name="" value="" type="text" size="32">
+
+                            {elseif $chosen == "other"}
+                                <select id="emergencyplace" name="">
+                                    {$smarty.capture.emergency_options}
+                                </select>
+                                <input id="otherinput" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
+                            {/if}
+                          {/strip}
                         </span>
                         let's meet at
-                        <input type="text" name="place[name]" size="25" value="">.
+                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}">.
                         I've marked the spot on this map:
                     </p>           
 
@@ -282,7 +341,7 @@ $(document).ready(function() {
 
                     <tr class="last"><td class="inputs">
                     <p class="field">
-                        <textarea type="text" name="place[full-note]" id="fullnote" rows="8"></textarea>
+                        <textarea type="text" name="place[full-note]" id="fullnote" rows="8">{$request.post.place.full-note|escape}</textarea>
                         <br>
                         <span id="charcount">300 remaining</span>
                     </p>
@@ -307,8 +366,16 @@ $(document).ready(function() {
                     </p>
                     <ol id="recipients">
                         <li>
-                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" size="15"> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="" size="35"> <a class="addrecipient" href="">Add another</a>
+                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15"> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35"> <a class="addrecipient" href="">Add another</a>
                         </li>
+                        
+                        {foreach from=$request.post.recipients key="index" item="recipient"}
+                            {if $index >= 1}
+                                <li>
+                                    <label for="recipients[{$index}][name]">name:</label><input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15"> <label for="recipients[{$index}][email]">email:</label><input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35"> <a class="addrecipient" href="">Add another</a>
+                                </li>
+                            {/if}
+                        {/foreach}
                     </ol>
                     <p>
                         Alternatively, <input type="checkbox" name="personal" id="personal"> <label for="personal">check this box if this map is just for you.</label>
@@ -319,8 +386,8 @@ $(document).ready(function() {
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
 
                     <p class="field split">
-                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="" placeholder="e.g. Your Name"><br>
-                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="" placeholder="e.g. you@example.com" size="35">
+                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name"><br>
+                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
                     </p>
  
                     <p id="done"><button type="submit">Go!</button></p>

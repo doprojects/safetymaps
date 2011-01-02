@@ -71,7 +71,7 @@
         $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
-        $sm->assign('request', array('get' => $_GET, 'uri' => $_SERVER['REQUEST_URI']));
+        $sm->assign('request', array('get' => $_GET, 'post' => $_POST, 'uri' => $_SERVER['REQUEST_URI']));
         
         $ctx = new Context($db, $sm);
         
