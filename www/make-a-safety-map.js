@@ -11,6 +11,7 @@ function prepareEmergencyChoiceInput()
         $('#emergency-chooser').css({ marginTop: -38 });
         $('#emergency-select').css({ top: 38, zIndex: 1000 });
         $('#emergency-select').animate({ top: 0 }, { duration: 'fast' });
+        $('#emergency-select').addClass('other');
 
         $('#emergency-select').attr('name', '');
         $('#emergency-other').attr('name', 'place[emergency]');
@@ -26,6 +27,7 @@ function prepareEmergencyChoiceInput()
         {
             $('#emergency-chooser').css({ marginTop: 0 });
             $('#emergency-select').css({ top: 0, zIndex: 1000 });
+            $('#emergency-select').removeClass('other');
             $('#emergency-other').hide();
     
             $('#emergency-select').attr('name', 'place[emergency]');
@@ -110,7 +112,7 @@ function prepareBBoxMapInput()
     var point = bboxmap.locationPoint(initialLocation),
         left = point.x.toFixed(0) + 'px',
         top = point.y.toFixed(0) + 'px',
-        $mark = $('<img id="mark" style="left: '+left+'; top: '+top+'; margin-left: -25px; margin-top: -25px; cursor: move; position: absolute; z-index: 1000;" src="images/cross_sm.png">');
+        $mark = $('<img id="mark" style="left: '+left+'; top: '+top+'; margin-left: -29px; margin-top: -29px; cursor: move; position: absolute; z-index: 1000;" src="images/cross_round_lg.png">');
 
     $mark.bind('mousedown', function(mde) {
       var mousePosition = $mark.offset();

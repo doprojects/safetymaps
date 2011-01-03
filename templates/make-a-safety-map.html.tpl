@@ -187,7 +187,7 @@ $(document).ready(function() {
                                 <input id="emergency-other" style="display: none;" name="" value="" type="text" size="32">
 
                             {elseif $chosen == "other"}
-                                <select id="emergency-select" name=""
+                                <select id="emergency-select" name="" class="other">
                                     {$smarty.capture.emergency_options}
                                 </select>
                                 <input id="emergency-other" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
@@ -266,17 +266,17 @@ $(document).ready(function() {
 
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
                     
-                    <ul>
-                        <li>
-                            <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name">
-                        </li>
-                        <li>
-                            <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
-                        </li>
-                        <li>
-                            <label for="map[privacy]">Who can see your map?</label><input type="radio" name="map[privacy]" value="public">Everyone <input type="radio" name="map[privacy]" value="unlisted" checked>Just you and your recipients.
-                        </li>
-                    <ul>
+                    <p>
+                        <label>What's your name or nickname? <input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name"></label>
+                    </p>
+                    <p>
+                        <label>What's your email address? <input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35"></label>
+                    </p>
+                    <p>
+                        <label>Who can see your map?</label>
+                        <input type="radio" name="map[privacy]" value="public">Everyone
+                        <input type="radio" name="map[privacy]" value="unlisted" checked>Just you and your recipients.
+                    </p>
 
                     <p id="done"><button type="submit">Go!</button></p>
 

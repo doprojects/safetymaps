@@ -49,26 +49,14 @@ td.inputs select {
     background: #fff;
 }
 
-#main a {
-    color: #000000;
+#main ol li
+{
+    margin-top: .5em;
+    margin-bottom: .5em;
 }
 
-#main label {
-    color: #444444;
-}
-#main p.split label {
-    display: inline-block;
-    /*width: 50%;*/
-    text-align: right;
-}
-#main form p.full {
-    font-size: 100%;
-    line-height: 1.5;
-}
-#main p.full label, #main li label {
-    font-size: 100%;
-    /*width: 50%;*/
-    text-align: left;
+#main a {
+    color: #000000;
 }
 
 .thoughtful {
@@ -90,22 +78,6 @@ a.remove-recipient
 
 a.remove-recipient { background: #999; }
 
-#main span.note {
-    background: #ffe;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;    
-    font-size: 66%;
-    padding: 8px;
-    width: 140px;
-    display: none;
-    position: absolute;
-    z-index: 100;
-     -moz-box-shadow: 2px 2px 4px #000; /* FF3.5+ */
-  -webkit-box-shadow: 2px 2px 4px #000; /* Saf3.0+, Chrome */
-          box-shadow: 2px 2px 4px #000; /* Opera 10.5, IE 9 */
-}
-
 #main p,
 #main h1,
 #main h2,
@@ -120,16 +92,23 @@ a.remove-recipient { background: #999; }
 
 #main input[type=text],
 #main input[type=email],
-#main textarea {
+#main textarea
+{
     border: 0px;
     border-bottom: 1px solid #00CC00;
     background: #FFFFFF;
-    padding: 4px;
 }
+
+#main input[type=radio]
+{
+    margin: 0 .5em;
+}
+
 #main textarea {
     border: 1px solid #00CC00;
     width: 492px;
     font-size: 12pt;
+    padding: 4px;
 }
 
 button {
@@ -192,6 +171,12 @@ p#done button {
 {
 	margin: 6px 0 !important;
 	padding: 0 !important;
+}
+
+#emergency-select.other
+{
+    color: #999;
+    border-color: #ccc;
 }
 
 #emergency-other
