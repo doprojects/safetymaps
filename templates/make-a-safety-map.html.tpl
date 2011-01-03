@@ -30,64 +30,6 @@
 
 $(document).ready(function() {
 
-    $('label[for=rdpublic]').mouseover(function(e) {
-        $('#publictip').fadeIn().offset({ left: e.pageX+20, top: e.pageY+20 });
-    });
-    $('label[for=rdpublic]').mouseout(function() {
-        $('#publictip').hide();
-    });
-    $('label[for=rdprivate]').mouseover(function(e) {
-        $('#privatetip').fadeIn().offset({ left: e.pageX+20, top: e.pageY+20 });
-    });
-    $('label[for=rdprivate]').mouseout(function() {
-        $('#privatetip').hide();
-    });
-    $('#privacy').mousemove(function(e) {
-        $('#privatetip').offset({ left: e.pageX+20, top: e.pageY+20 });
-        $('#publictip').offset({ left: e.pageX+20, top: e.pageY+20 });
-    });
-    
-    // deal with additional recipients
-    $('a.addrecipient').live('click', function() {
-        var newLi = $(this).parent('li').clone();
-        newLi.children('input').attr('value','');
-        newLi.hide();
-        // make sure there's a remove button:
-        if (newLi.children('.removerecipient').length == 0) {
-            newLi.append('<a href="" class="removerecipient">Remove this one?<\/a>');
-        }
-        // append it
-        $(this).parent('li').after(newLi);
-        newLi.slideDown(function(){
-            renumberFormElements();
-            // for want of a DOM change event
-            $(document.body).trigger('search-needs-adjusting');
-        });
-        return false;
-    });
-
-    // undo additional recipients
-    $('a.removerecipient').live('click', function() {
-        $(this).parent('li').slideUp(function() {
-            $(this).remove();
-            renumberFormElements();
-            $(document.body).trigger('search-needs-adjusting');
-        });
-        return false;
-    });
-
-    function renumberFormElements() {
-        // renumber the form elements
-        $('#recipients li').each(function(i) {
-            $(this).children('input').attr('name', function(j, attr) {
-                return attr.replace(/\d+/, i);
-            });
-            $(this).children('label').attr('for', function(j, attr) {
-                return attr.replace(/\d+/, i);
-            });
-        });
-    }
-
     // twitter style remaining character count 
     // (allow more chars to be typed but don't allow form submission, below)
     var prevLength;
@@ -283,12 +225,6 @@ $(document).ready(function() {
                     </p>
                     </td><td class="help">
                         <p>Include a personal note for your recipients.<br><em>(300 character limit)</em></p>
-                    <p class="field full" id="privacy">
-                        <label for="rdprivate"><input type="radio" id="rdprivate" name="map[privacy]" value="unlisted" checked>This note is <em>private</em>.</label><br>
-                        <label for="rdpublic"><input type="radio" id="rdpublic" name="map[privacy]" value="public">Make this note <em>public</em>?</label><br>
-<span id="publictip" class="note"><strong>"Public" definition:</strong> this note can be displayed alongside the place you selected on maps like the one on our homepage. Anybody who visits the site will be able to read it.</span>
-<span id="privatetip" class="note"><strong>"Private" definition:</strong> this note will be printed on whatever cards you make and share, but nobody other than the recipients you choose will be able to read it.</span>
-                    </p>
                     <p class="thoughtful">Remember that the recipient might be reading this at a very difficult moment, so please think carefully about what you want to write here!</p>
                     
                     </td></tr>
@@ -301,31 +237,47 @@ $(document).ready(function() {
                         Enter the names and email addresses of people you'd like to share this Safety Map with.
                     </p>
                     <ol id="recipients">
+
+                        {* There will always be at least one recipient in the list *}
                         <li>
-                            <label for="recipients[0][name]">name:</label><input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15"> <label for="recipients[0][email]">email:</label><input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35"> <a class="addrecipient" href="">Add another</a>
+                            <label>name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15"></label>
+                            <label>email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35"></label>
+                            <a class="remove-recipient" href="#">Remove recipient</a>
                         </li>
                         
+                        {* Now do the rest, if there are any *}
                         {foreach from=$request.post.recipients key="index" item="recipient"}
                             {if $index >= 1}
                                 <li>
-                                    <label for="recipients[{$index}][name]">name:</label><input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15"> <label for="recipients[{$index}][email]">email:</label><input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35"> <a class="addrecipient" href="">Add another</a>
+                                    <label>name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15"></label>
+                                    <label>email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35"></label>
+                                    <a class="remove-recipient" href="#">Remove recipient</a>
                                 </li>
                             {/if}
                         {/foreach}
                     </ol>
+
+                    {* Finally a row for the button that adds recipients *}
                     <p>
-                        Alternatively, <input type="checkbox" name="personal" id="personal"> <label for="personal">check this box if this map is just for you.</label>
+                        <a id="add-recipient" href="">Add another</a>
                     </p>
                         
                     <h3>You're almost done.</h3>
 
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
+                    
+                    <ul>
+                        <li>
+                            <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name">
+                        </li>
+                        <li>
+                            <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
+                        </li>
+                        <li>
+                            <label for="map[privacy]">Who can see your map?</label><input type="radio" name="map[privacy]" value="public">Everyone <input type="radio" name="map[privacy]" value="unlisted" checked>Just you and your recipients.
+                        </li>
+                    <ul>
 
-                    <p class="field split">
-                        <label for="sender[name]">What's your name or nickname?</label><input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name"><br>
-                        <label for="sender[email]">What's your email address?</label><input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
-                    </p>
- 
                     <p id="done"><button type="submit">Go!</button></p>
 
                 </form>

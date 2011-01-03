@@ -21,24 +21,12 @@ td.inputs select {
 }
 
 #main tr.first td.inputs {
--webkit-border-top-left-radius: 20px;
--webkit-border-top-right-radius: 20px;
--moz-border-radius-topleft: 20px;
--moz-border-radius-topright: 20px;
-border-top-left-radius: 20px;
-border-top-right-radius: 20px;
     border-left: 3px solid #ccc;
     border-right: 3px solid #ccc;
     border-top: 3px solid #ccc;
     padding-top: 40px;
 }
 #main tr.last td.inputs {
--webkit-border-bottom-right-radius: 20px;
--webkit-border-bottom-left-radius: 20px;
--moz-border-radius-bottomright: 20px;
--moz-border-radius-bottomleft: 20px;
-border-bottom-right-radius: 20px;
-border-bottom-left-radius: 20px;
     border-left: 3px solid #ccc;
     border-right: 3px solid #ccc;
     border-bottom: 3px solid #ccc;
@@ -61,19 +49,12 @@ border-bottom-left-radius: 20px;
     background: #fff;
 }
 
-#main form p.field {
-    color: #444444;
-    font-size: 80%;
-}
-
 #main a {
     color: #000000;
 }
 
 #main label {
     color: #444444;
-    margin-right: 8px;
-    font-size: 125%;
 }
 #main p.split label {
     display: inline-block;
@@ -96,18 +77,18 @@ border-bottom-left-radius: 20px;
     padding: 5px;
 }
 
-a.addrecipient, a.removerecipient {
-  background: #00CC00;
-  color: #FFF !important;
-  font-weight: bold;
-  padding: 5px;
-  margin-left: 5px;
-  text-decoration: none;
-  font-size: 75%;
+a#add-recipient,
+a.remove-recipient
+{
+	background: #00CC00;
+	color: #FFF !important;
+	font-weight: bold;
+	padding: 5px;
+	text-decoration: none;
+	font-size: 75%;
 }
-a.removerecipient {
-  background: #999;
-}
+
+a.remove-recipient { background: #999; }
 
 #main span.note {
     background: #ffe;
@@ -144,7 +125,6 @@ a.removerecipient {
     border-bottom: 1px solid #00CC00;
     background: #FFFFFF;
     padding: 4px;
-    margin: 8px 0px;
 }
 #main textarea {
     border: 1px solid #00CC00;

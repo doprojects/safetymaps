@@ -192,9 +192,63 @@ function prepareBBoxMapInput()
 
 }
 
+function prepareRecipientsListInput()
+{
+    function addRecipient()
+    {
+        var html = ['<li>',
+                    '<label>name: <input type="text" name="recipients[99][name]" size="15"><','/label>',
+                    ' ',
+                    '<label>email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35"><','/label>',
+                    ' ',
+                    '<a class="remove-recipient" href="#">Remove recipient<','/a>',
+                    '<','/li>'];
+
+        function onAdded()
+        {
+            $(this).find('input').first().focus();
+            $(this).children('a.remove-recipient').live('click', removeRecipient);
+        }
+        
+        var newLI = $(html.join(''));
+        $('#recipients').children().last().after(newLI);
+        newLI.slideDown(onAdded);
+        
+        renumberFormElements();
+        return false;
+    }
+    
+    function removeRecipient()
+    {
+        function onRemoved()
+        {
+            $(this).remove();
+            renumberFormElements();
+        }
+        
+        $(this).parent('li').slideUp(onRemoved);
+
+        return false;
+    }
+    
+    function renumberFormElements()
+    {
+        // renumber the form elements
+        $('#recipients li').each(function(i) {
+            $(this).find('input').attr('name', function(j, attr) {
+                return attr.replace(/\d+/, i);
+            });
+        });
+    }
+
+    $('#recipients a.remove-recipient').live('click', removeRecipient);
+    $('#add-recipient').live('click', addRecipient);
+}
+
 $(document).ready(function() {
 
     prepareEmergencyChoiceInput();
     prepareBBoxMapInput();
+    prepareRecipientsListInput();
 
 });
