@@ -39,16 +39,6 @@
   font-size: 100%;
 }
 
-#pleasechoose.other
-{
-    margin-top: -38px;
-}
-
-#pleasechoose.normal #otherinput
-{
-    display: none;
-}
-
         {/literal}</style>
         <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="modestmaps.js"></script>
@@ -78,37 +68,48 @@ $(document).ready(function() {
         $('#publictip').offset({ left: e.pageX+20, top: e.pageY+20 });
     });
     
-    function activateOther()
+   /**
+    * Change to #pleasechoose margin-top: -38px
+    */
+    function chooseOther()
     {
-        $('#pleasechoose').removeClass('normal');
-        $('#pleasechoose').addClass('other');
+        $('#otherinput').show();
+        $('#pleasechoose').css({ marginTop: -38 });
+        $('#emergencyplace').css({ top: 38, zIndex: 1000 });
+        $('#emergencyplace').animate({ top: 0 }, { duration: 'fast' });
 
         $('#emergencyplace').attr('name', '');
         $('#otherinput').attr('name', 'place[emergency]');
         $('#otherinput').focus();
-
-        return;
     }
     
-    function deactivateOther()
+   /**
+    * Change to #pleasechoose margin-top: 0
+    */
+    function chooseNormal()
     {
-        $('#pleasechoose').removeClass('other');
-        $('#pleasechoose').addClass('normal');
-
-        $('#emergencyplace').attr('name', 'place[emergency]');
-        $('#otherinput').attr('name', '');
-
-        return;
+        function onMoved()
+        {
+            $('#pleasechoose').css({ marginTop: 0 });
+            $('#emergencyplace').css({ top: 0, zIndex: 1000 });
+            $('#otherinput').hide();
+    
+            $('#emergencyplace').attr('name', 'place[emergency]');
+            $('#otherinput').attr('name', '');
+        }
+        
+        $('#emergencyplace').css({ top: 0, zIndex: 1000 });
+        $('#emergencyplace').animate({ top: 38 }, { duration: 'fast', complete: onMoved });
     }
     
     // deal with "Other (please specify)"
     $('#emergencyplace').change(function()
       {
         if($('#emergencyplace option#otherplace').attr('selected')) {
-            return activateOther();
+            return chooseOther();
 
-        } else {
-            return deactivateOther();
+        } else if($('#otherinput').attr('name') == 'place[emergency]') {
+            return chooseNormal();
         }
       }
     );
@@ -262,6 +263,8 @@ $(document).ready(function() {
 
                 <form id="mapform" method="POST" action="make-a-safety-map.php">
                 
+                <pre>{$request.post|@print_r:1}</pre>
+                
                 <table>
                 <tr class="first"><td class="inputs">
                 
@@ -300,19 +303,19 @@ $(document).ready(function() {
 
                     <p>
                         In case of
-                        <span id="pleasechoose" class="{$chosen}">
+                        <span id="pleasechoose" style="{if $chosen == "other"}margin-top: -38px;{/if}">
                           {strip}
                             {if $chosen == "normal"}
                                 <select id="emergencyplace" name="place[emergency]">
                                     {$smarty.capture.emergency_options}
                                 </select>
-                                <input id="otherinput" name="" value="" type="text" size="32">
+                                <input id="otherinput" style="display: none;" name="" value="" type="text" size="32">
 
                             {elseif $chosen == "other"}
-                                <select id="emergencyplace" name="">
+                                <select id="emergencyplace" name=""
                                     {$smarty.capture.emergency_options}
                                 </select>
-                                <input id="otherinput" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
+                                <input id="otherinput" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
                             {/if}
                           {/strip}
                         </span>
