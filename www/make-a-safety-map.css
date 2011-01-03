@@ -190,3 +190,32 @@ p#done button {
     border-radius: 3px;
 }
 
+#emergency-chooser
+{
+	position: relative;
+	display: inline-block;
+	vertical-align: baseline;
+	width: 300px;
+	line-height: 1.0;
+}
+
+#emergency-select,
+#emergency-other
+{
+	position: relative;
+	display: inline-block;
+	vertical-align: baseline;
+	width: 295px;
+}
+
+#emergency-select
+{
+	margin: 6px 0 !important;
+	padding: 0 !important;
+}
+
+#emergency-other
+{
+	margin: 8px 0 !important;
+	padding: 0 !important;
+}

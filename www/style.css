@@ -6,9 +6,16 @@ html, body {
     color: #000;
 }
 
-body {
-    font: 14px/18px Helvetica, Arial, sans-serif;            
-    min-width: 960px;
+body
+{
+	font-size: 14px;
+	line-height: 18px;
+	min-width: 960px;
+}
+
+body, body *
+{
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 /* header! */

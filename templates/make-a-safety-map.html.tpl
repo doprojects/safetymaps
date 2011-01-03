@@ -8,27 +8,6 @@
         <link rel="stylesheet" type="text/css" href="make-a-safety-map.css" />
         <style type="text/css">{literal}
 /* TODO: move to make-a-safety-map.css */
-#pleasechoose {
-  position: relative;
-  display: inline-block;
-  vertical-align: baseline;
-  width: 300px;
-  line-height: 1.0;
-}
-#emergencyplace, #otherinput {
-  position: relative;
-  display: inline-block;
-  vertical-align: baseline;
-  width: 295px;
-}
-#emergencyplace {
-  margin: 6px 0 !important;
-  padding: 0 !important;
-}
-#otherinput {
-  margin: 8px 0 !important;
-  padding: 0 !important;
-}
 #charcount {
   color: #080;
 }
@@ -68,52 +47,6 @@ $(document).ready(function() {
         $('#publictip').offset({ left: e.pageX+20, top: e.pageY+20 });
     });
     
-   /**
-    * Change to #pleasechoose margin-top: -38px
-    */
-    function chooseOther()
-    {
-        $('#otherinput').show();
-        $('#pleasechoose').css({ marginTop: -38 });
-        $('#emergencyplace').css({ top: 38, zIndex: 1000 });
-        $('#emergencyplace').animate({ top: 0 }, { duration: 'fast' });
-
-        $('#emergencyplace').attr('name', '');
-        $('#otherinput').attr('name', 'place[emergency]');
-        $('#otherinput').focus();
-    }
-    
-   /**
-    * Change to #pleasechoose margin-top: 0
-    */
-    function chooseNormal()
-    {
-        function onMoved()
-        {
-            $('#pleasechoose').css({ marginTop: 0 });
-            $('#emergencyplace').css({ top: 0, zIndex: 1000 });
-            $('#otherinput').hide();
-    
-            $('#emergencyplace').attr('name', 'place[emergency]');
-            $('#otherinput').attr('name', '');
-        }
-        
-        $('#emergencyplace').css({ top: 0, zIndex: 1000 });
-        $('#emergencyplace').animate({ top: 38 }, { duration: 'fast', complete: onMoved });
-    }
-    
-    // deal with "Other (please specify)"
-    $('#emergencyplace').change(function()
-      {
-        if($('#emergencyplace option#otherplace').attr('selected')) {
-            return chooseOther();
-
-        } else if($('#otherinput').attr('name') == 'place[emergency]') {
-            return chooseNormal();
-        }
-      }
-    );
-
     // deal with additional recipients
     $('a.addrecipient').live('click', function() {
         var newLi = $(this).parent('li').clone();
@@ -190,7 +123,7 @@ $(document).ready(function() {
             var custom = this['place[emergency]'].value;
             if(custom.length == 0 || custom == 'other') {
                 alert("Please specify a custom event or select a suggested value.");
-                $('#otherinput').focus();
+                $('#emergency-other').focus();
                 return false;
             }
         }
@@ -263,7 +196,7 @@ $(document).ready(function() {
 
                 <form id="mapform" method="POST" action="make-a-safety-map.php">
                 
-                <pre>{$request.post|@print_r:1}</pre>
+                <pre>{$request.post|@print_r:1|escape}</pre>
                 
                 <table>
                 <tr class="first"><td class="inputs">
@@ -303,19 +236,19 @@ $(document).ready(function() {
 
                     <p>
                         In case of
-                        <span id="pleasechoose" style="{if $chosen == "other"}margin-top: -38px;{/if}">
+                        <span id="emergency-chooser" style="{if $chosen == "other"}margin-top: -38px;{/if}">
                           {strip}
                             {if $chosen == "normal"}
-                                <select id="emergencyplace" name="place[emergency]">
+                                <select id="emergency-select" name="place[emergency]">
                                     {$smarty.capture.emergency_options}
                                 </select>
-                                <input id="otherinput" style="display: none;" name="" value="" type="text" size="32">
+                                <input id="emergency-other" style="display: none;" name="" value="" type="text" size="32">
 
                             {elseif $chosen == "other"}
-                                <select id="emergencyplace" name=""
+                                <select id="emergency-select" name=""
                                     {$smarty.capture.emergency_options}
                                 </select>
-                                <input id="otherinput" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
+                                <input id="emergency-other" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
                             {/if}
                           {/strip}
                         </span>
@@ -328,12 +261,12 @@ $(document).ready(function() {
 
                    <tr><td class="inputs">          
 
-                    <input type="hidden" id="loc0" name="place[location][0]">
-                    <input type="hidden" id="loc1" name="place[location][1]">
-                    <input type="hidden" id="bbox0" name="map[bounds][0]">
-                    <input type="hidden" id="bbox1" name="map[bounds][1]">
-                    <input type="hidden" id="bbox2" name="map[bounds][2]">
-                    <input type="hidden" id="bbox3" name="map[bounds][3]">
+                    <input type="hidden" id="loc0" name="place[location][0]" value="{$request.post.place.location.0|escape}">
+                    <input type="hidden" id="loc1" name="place[location][1]" value="{$request.post.place.location.1|escape}">
+                    <input type="hidden" id="bbox0" name="map[bounds][0]" value="{$request.post.map.bounds.0|escape}">
+                    <input type="hidden" id="bbox1" name="map[bounds][1]" value="{$request.post.map.bounds.1|escape}">
+                    <input type="hidden" id="bbox2" name="map[bounds][2]" value="{$request.post.map.bounds.2|escape}">
+                    <input type="hidden" id="bbox3" name="map[bounds][3]" value="{$request.post.map.bounds.3|escape}">
 
                     <div id="bboxmap"><noscript>Please enable javascript and refresh this page to choose your location using our interactive map. Sorry for the inconvenience!</noscript></div>
 

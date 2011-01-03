@@ -1,14 +1,94 @@
 var bboxmap;
 
-$(document).ready(function() {
+function prepareEmergencyChoiceInput()
+{
+   /**
+    * Change to #emergency-chooser margin-top: -38px
+    */
+    function chooseOther()
+    {
+        $('#emergency-other').show();
+        $('#emergency-chooser').css({ marginTop: -38 });
+        $('#emergency-select').css({ top: 38, zIndex: 1000 });
+        $('#emergency-select').animate({ top: 0 }, { duration: 'fast' });
 
+        $('#emergency-select').attr('name', '');
+        $('#emergency-other').attr('name', 'place[emergency]');
+        $('#emergency-other').focus();
+    }
+    
+   /**
+    * Change to #emergency-chooser margin-top: 0
+    */
+    function chooseNormal()
+    {
+        function onMoved()
+        {
+            $('#emergency-chooser').css({ marginTop: 0 });
+            $('#emergency-select').css({ top: 0, zIndex: 1000 });
+            $('#emergency-other').hide();
+    
+            $('#emergency-select').attr('name', 'place[emergency]');
+            $('#emergency-other').attr('name', '');
+        }
+        
+        $('#emergency-select').css({ top: 0, zIndex: 1000 });
+        $('#emergency-select').animate({ top: 38 }, { duration: 'fast', complete: onMoved });
+    }
+    
+    // deal with "Other (please specify)"
+    $('#emergency-select').change(function()
+      {
+        if($('#emergency-select option#otherplace').attr('selected')) {
+            return chooseOther();
+
+        } else if($('#emergency-other').attr('name') == 'place[emergency]') {
+            return chooseNormal();
+        }
+      }
+    );
+}
+
+function prepareBBoxMapInput()
+{
     var mm = com.modestmaps;
 
+    // pull an initial location from the DOM.
+    var lat0 = parseFloat($('input#loc0').attr('value')),
+        lon0 = parseFloat($('input#loc1').attr('value')),
+
+        initialLocation = (isNaN(lat0) || isNaN(lon0))
+            ? new mm.Location(0, 0)
+            : new mm.Location(lat0, lon0);
+    
+    // pull an initial extent from the DOM.
+    var lat1 = parseFloat($('input#bbox0').attr('value')),
+        lon1 = parseFloat($('input#bbox1').attr('value')),
+        lat2 = parseFloat($('input#bbox2').attr('value')),
+        lon2 = parseFloat($('input#bbox3').attr('value')),
+
+        initialExtentA = (isNaN(lat1) || isNaN(lon1))
+            ? undefined
+            : new mm.Location(lat1, lon1),
+        initialExtentB = (isNaN(lat2) || isNaN(lon2))
+            ? undefined
+            : new mm.Location(lat2, lon2),
+        
+        initialExtent = (initialExtentA && initialExtentB)
+            ? [initialExtentA, initialExtentB]
+            : undefined;
+    
     var provider = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
     // make a map!
     bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
-    bboxmap.setCenterZoom(new mm.Location(0,0), 1);
-
+    
+    if(initialExtent) {
+        bboxmap.setExtent(initialExtent);
+    
+    } else {
+        bboxmap.setCenterZoom(initialLocation, 1);
+    }
+    
     function onMapChange() {
         var extent = bboxmap.getExtent();
         if (extent[0].lat-extent[1].lat > 0.001 && extent[1].lon-extent[0].lon > 0.001) {
@@ -26,8 +106,12 @@ $(document).ready(function() {
     };
     bboxmap.addCallback('drawn', onMapChange);
     onMapChange();
+    
+    var point = bboxmap.locationPoint(initialLocation),
+        left = point.x.toFixed(0) + 'px',
+        top = point.y.toFixed(0) + 'px',
+        $mark = $('<img id="mark" style="left: '+left+'; top: '+top+'; margin-left: -25px; margin-top: -25px; cursor: move; position: absolute; z-index: 1000;" src="images/cross_sm.png">');
 
-    var $mark = $('<img id="mark" src="images/cross_sm.png" style="margin-left:-25px; margin-top:-25px; cursor: move; position:absolute; left: 50%; top: 50%; z-index:1000;">');
     $mark.bind('mousedown', function(mde) {
       var mousePosition = $mark.offset();
       var mouseOffset = { left: mde.pageX - mousePosition.left, top: mde.pageY - mousePosition.top }
@@ -106,5 +190,11 @@ $(document).ready(function() {
         }
     }
 
-});
+}
 
+$(document).ready(function() {
+
+    prepareEmergencyChoiceInput();
+    prepareBBoxMapInput();
+
+});
