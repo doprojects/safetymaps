@@ -224,7 +224,8 @@ function prepareRecipientsListInput()
                     'email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35">',
                     ' ',
                     '<span class="omission tab">★ Name + E-mail Required<','/span>',
-                    '<a class="remove-recipient tab" href="#">Remove recipient<','/a>',
+                    ' ',
+                    '<a class="remove-recipient tab" href="#">━ Remove recipient<','/a>',
                     '<','/li>'];
 
         function onAdded()

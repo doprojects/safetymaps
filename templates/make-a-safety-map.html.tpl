@@ -214,7 +214,8 @@ $(document).ready(function() {
                     <div id="bboxmap"><noscript>Please enable javascript and refresh this page to choose your location using our interactive map. Sorry for the inconvenience!</noscript></div>
 
                     </td><td class="help">
-                    <p>Drag and zoom the map to change the area that will be printed.</p><p>You can scroll with your mouse, double-click or use the + and - buttons to zoom.</p><p>Be sure to zoom close enough to see nearby streets!</p>
+                    <p>Drag and zoom the map to change the area that will be printed.</p><p>You can scroll with your mouse, double-click or use the ╋ and ━ buttons to zoom.</p>
+                    <p>Be sure to zoom close enough to see nearby streets!</p>
                     <p class="thoughtful">If you want an off-center map you can drag the green marker directly to fine tune your precise meeting point.</p>
                     </td></tr>
 
@@ -244,7 +245,7 @@ $(document).ready(function() {
                             name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15" class="required">
                             email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35" class="required">
                             <span class="omission tab">★ Name + E-mail Required</span>
-                            <a class="remove-recipient tab" href="#">Remove recipient</a>
+                            <a class="remove-recipient tab" href="#">━ Remove recipient</a>
                         </li>
                         
                         {* Now do the rest, if there are any *}
@@ -254,7 +255,7 @@ $(document).ready(function() {
                                     name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15" class="required">
                                     email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35" class="required">
                                     <span class="omission tab">★ Name + E-mail Required</span>
-                                    <a class="remove-recipient tab" href="#">Remove recipient</a>
+                                    <a class="remove-recipient tab" href="#">━ Remove recipient</a>
                                 </li>
                             {/if}
                         {/foreach}
@@ -262,7 +263,7 @@ $(document).ready(function() {
 
                     {* Finally a row for the button that adds recipients *}
                     <p>
-                        <a id="add-recipient" class="tab" href="">Add another</a>
+                        <a id="add-recipient" class="tab" href="">╋ Add recipient</a>
                     </p>
                         
                     <h3>You're almost done.</h3>
