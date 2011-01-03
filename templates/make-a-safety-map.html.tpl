@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <title>Safety Maps: Make A Safety Map</title>
-        <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <link rel="stylesheet" type="text/css" href="make-a-safety-map.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
+        <link rel="stylesheet" type="text/css" href="{$base_dir}/make-a-safety-map.css" />
         <style type="text/css">{literal}
 /* TODO: move to make-a-safety-map.css */
 #charcount {
@@ -19,11 +19,12 @@
 }
 
         {/literal}</style>
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="modestmaps.js"></script>
-        <script type="text/javascript" src="cloudmade.js"></script>
-        <script type="text/javascript" src="anyzoom.js"></script>
-        <script type="text/javascript" src="make-a-safety-map.js"></script>
+        <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
+        <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>
+        <script type="text/javascript" src="{$base_dir}/cloudmade.js"></script>
+        <script type="text/javascript" src="{$base_dir}/round-em-up.js"></script>
+        <script type="text/javascript" src="{$base_dir}/anyzoom.js"></script>
+        <script type="text/javascript" src="{$base_dir}/make-a-safety-map.js"></script>
         <script type="text/javascript">{literal}
 
 // TODO: move to make-a-safety-map.js
