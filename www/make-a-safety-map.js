@@ -2,7 +2,7 @@ var bboxmap;
 
 function behaveAsRequired(index, input)
 {
-    function onBlur()
+    function checkValue()
     {
         var omission = $(input).nextAll('.omission').first();
       
@@ -17,7 +17,8 @@ function behaveAsRequired(index, input)
         }
     }
 
-    $(input).blur(onBlur);
+    $(input).blur(checkValue);
+    $(input).change(checkValue);
 }
 
 function prepareEmergencyChoiceInput()
@@ -221,23 +222,25 @@ function prepareRecipientsListInput()
         var html = ['<li>',
                     'name: <input type="text" name="recipients[99][name]" size="15">',
                     ' ',
+                    '<span class="omission tab">★ Required<','/span>',
+                    ' ',
                     'email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35">',
                     ' ',
-                    '<span class="omission tab">★ Name + E-mail Required<','/span>',
+                    '<span class="omission tab">★ Required<','/span>',
                     ' ',
                     '<a class="remove-recipient tab" href="#">━ Remove recipient<','/a>',
                     '<','/li>'];
 
-        function onAdded()
-        {
-            $(this).find('input').first().focus();
-            $(this).find('a.remove-recipient').live('click', removeRecipient);
-            $(this).find('input').each(behaveAsRequired);
-        }
-        
         var newLI = $(html.join(''));
         $('#recipients').append(newLI);
         newLI.show(onAdded);
+        
+        function onAdded()
+        {
+            newLI.find('input').first().focus();
+            newLI.find('a.remove-recipient').live('click', removeRecipient);
+            newLI.find('input').each(behaveAsRequired);
+        }
         
         renumberFormElements();
         return false;
@@ -245,13 +248,15 @@ function prepareRecipientsListInput()
     
     function removeRecipient()
     {
+        var oldLI = $(this).parent('li');
+    
         function onRemoved()
         {
-            $(this).remove();
+            oldLI.remove();
             renumberFormElements();
         }
         
-        $(this).parent('li').slideUp(onRemoved);
+        oldLI.slideUp(onRemoved);
 
         return false;
     }

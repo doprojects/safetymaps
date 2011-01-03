@@ -243,8 +243,9 @@ $(document).ready(function() {
                         {* There will always be at least one recipient in the list *}
                         <li>
                             name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15" class="required">
+                            <span class="omission tab">★ Required</span>
                             email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35" class="required">
-                            <span class="omission tab">★ Name + E-mail Required</span>
+                            <span class="omission tab">★ Required</span>
                             <a class="remove-recipient tab" href="#">━ Remove recipient</a>
                         </li>
                         
@@ -253,8 +254,9 @@ $(document).ready(function() {
                             {if $index >= 1}
                                 <li>
                                     name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15" class="required">
+                                    <span class="omission tab">★ Required</span>
                                     email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35" class="required">
-                                    <span class="omission tab">★ Name + E-mail Required</span>
+                                    <span class="omission tab">★ Required</span>
                                     <a class="remove-recipient tab" href="#">━ Remove recipient</a>
                                 </li>
                             {/if}
