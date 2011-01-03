@@ -9,8 +9,6 @@ function add_roundy_corners(map)
             gutter = .5,
             radius = 4;
         
-        console.log([w, h]);
-        
         canvas.style.position = 'absolute';
         canvas.style.left = 0;
         canvas.style.top = 0;
