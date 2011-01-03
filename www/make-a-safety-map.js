@@ -6,8 +6,10 @@ $(document).ready(function() {
 
     var provider = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
     // make a map!
-    bboxmap = new mm.Map('bboxmap', provider, null, [ new AnyZoomHandler() ]);
+    bboxmap = new mm.Map('bboxmap', provider, {x: 502, y: 320}, [ new AnyZoomHandler() ]);
     bboxmap.setCenterZoom(new mm.Location(0,0), 1);
+    
+    add_roundy_corners(bboxmap);
 
     function onMapChange() {
         var extent = bboxmap.getExtent();

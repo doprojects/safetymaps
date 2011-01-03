@@ -103,6 +103,8 @@ $(document).ready(function()
 
             map.setExtent(extent());
             
+            add_roundy_corners(map, 600, 400);
+            
             for(var i = 0; i < locations.length; i++)
             {
                 add_mapmarker(map, locations[i]);
