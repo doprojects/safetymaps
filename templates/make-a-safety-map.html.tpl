@@ -192,10 +192,11 @@ $(document).ready(function() {
                                 </select>
                                 <input id="emergency-other" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
                             {/if}
+                            <span class="omission tab">★ Required</span>
                           {/strip}
                         </span>
                         let's meet at
-                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}">.
+                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}" class="required"><span class="omission tab">★ Required</span>.
                         I've marked the spot on this map:
                     </p>           
 
@@ -240,18 +241,20 @@ $(document).ready(function() {
 
                         {* There will always be at least one recipient in the list *}
                         <li>
-                            <label>name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15"></label>
-                            <label>email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35"></label>
-                            <a class="remove-recipient" href="#">Remove recipient</a>
+                            name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15" class="required">
+                            email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35" class="required">
+                            <span class="omission tab">★ Name + E-mail Required</span>
+                            <a class="remove-recipient tab" href="#">Remove recipient</a>
                         </li>
                         
                         {* Now do the rest, if there are any *}
                         {foreach from=$request.post.recipients key="index" item="recipient"}
                             {if $index >= 1}
                                 <li>
-                                    <label>name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15"></label>
-                                    <label>email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35"></label>
-                                    <a class="remove-recipient" href="#">Remove recipient</a>
+                                    name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15" class="required">
+                                    email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35" class="required">
+                                    <span class="omission tab">★ Name + E-mail Required</span>
+                                    <a class="remove-recipient tab" href="#">Remove recipient</a>
                                 </li>
                             {/if}
                         {/foreach}
@@ -259,7 +262,7 @@ $(document).ready(function() {
 
                     {* Finally a row for the button that adds recipients *}
                     <p>
-                        <a id="add-recipient" href="">Add another</a>
+                        <a id="add-recipient" class="tab" href="">Add another</a>
                     </p>
                         
                     <h3>You're almost done.</h3>
@@ -267,13 +270,17 @@ $(document).ready(function() {
                     <p>Now that you've chosen a safe place to meet, you're ready to make and print your maps.</p>
                     
                     <p>
-                        <label>What's your name or nickname? <input type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name"></label>
+                        What's your name or nickname?
+                        <input class="required" type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name">
+                        <span class="omission tab">★ Required</span>
                     </p>
                     <p>
-                        <label>What's your email address? <input type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35"></label>
+                        What's your email address?
+                        <input class="required" type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
+                        <span class="omission tab">★ Required</span>
                     </p>
                     <p>
-                        <label>Who can see your map?</label>
+                        Who can see your map?
                         <input type="radio" name="map[privacy]" value="public">Everyone
                         <input type="radio" name="map[privacy]" value="unlisted" checked>Just you and your recipients.
                     </p>

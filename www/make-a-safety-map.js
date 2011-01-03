@@ -1,5 +1,25 @@
 var bboxmap;
 
+function behaveAsRequired(index, input)
+{
+    function onBlur()
+    {
+        var omission = $(input).nextAll('.omission').first();
+      
+        if($(input).attr('value')) {
+            omission.css({ opacity: 1 });
+            omission.animate({ opacity: 0 }, function() { omission.hide(); });
+        
+        } else {
+            omission.show();
+            omission.css({ opacity: 0 });
+            omission.animate({ opacity: 1 });
+        }
+    }
+
+    $(input).blur(onBlur);
+}
+
 function prepareEmergencyChoiceInput()
 {
    /**
@@ -199,22 +219,24 @@ function prepareRecipientsListInput()
     function addRecipient()
     {
         var html = ['<li>',
-                    '<label>name: <input type="text" name="recipients[99][name]" size="15"><','/label>',
+                    'name: <input type="text" name="recipients[99][name]" size="15">',
                     ' ',
-                    '<label>email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35"><','/label>',
+                    'email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35">',
                     ' ',
-                    '<a class="remove-recipient" href="#">Remove recipient<','/a>',
+                    '<span class="omission tab">★ Name + E-mail Required<','/span>',
+                    '<a class="remove-recipient tab" href="#">Remove recipient<','/a>',
                     '<','/li>'];
 
         function onAdded()
         {
             $(this).find('input').first().focus();
-            $(this).children('a.remove-recipient').live('click', removeRecipient);
+            $(this).find('a.remove-recipient').live('click', removeRecipient);
+            $(this).find('input').each(behaveAsRequired);
         }
         
         var newLI = $(html.join(''));
-        $('#recipients').children().last().after(newLI);
-        newLI.slideDown(onAdded);
+        $('#recipients').append(newLI);
+        newLI.show(onAdded);
         
         renumberFormElements();
         return false;
@@ -248,6 +270,8 @@ function prepareRecipientsListInput()
 }
 
 $(document).ready(function() {
+
+    $('input.required').each(behaveAsRequired);
 
     prepareEmergencyChoiceInput();
     prepareBBoxMapInput();

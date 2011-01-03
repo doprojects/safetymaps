@@ -65,15 +65,31 @@ td.inputs select {
     padding: 5px;
 }
 
+.tab
+{
+	font-weight: bold;
+	padding: 5px;
+	margin: 0 4px 0 0;
+	text-decoration: none;
+	font-size: 75%;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.omission.tab
+{
+	display: none;
+	background-color: red;
+	color: white;
+}
+
 a#add-recipient,
 a.remove-recipient
 {
 	background: #00CC00;
 	color: #FFF !important;
-	font-weight: bold;
-	padding: 5px;
-	text-decoration: none;
-	font-size: 75%;
 }
 
 a.remove-recipient { background: #999; }
