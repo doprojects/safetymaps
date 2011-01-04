@@ -274,6 +274,7 @@ function prepareRecipientsListInput()
 $(document).ready(function() {
 
     $('input.required').each(behaveAsRequired);
+    $('#emergency-other').each(behaveAsRequired);
 
     prepareEmergencyChoiceInput();
     prepareBBoxMapInput();

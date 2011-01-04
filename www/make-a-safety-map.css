@@ -67,12 +67,17 @@ td.inputs select {
 
 input.good-to-go
 {
-    
+	background-image: url(images/input-good-to-go.png);
+	background-repeat: no-repeat;
+	background-position: right center;
 }
 
 input.unacceptable
 {
-    background-color: #faa;
+	background-color: #faa;
+	background-image: url(images/input-unacceptable.png);
+	background-repeat: no-repeat;
+	background-position: right center;
 }
 
 a#add-recipient,
