@@ -4,16 +4,13 @@ function behaveAsRequired(index, input)
 {
     function checkValue()
     {
-        var omission = $(input).nextAll('.omission').first();
-      
         if($(input).attr('value')) {
-            omission.css({ opacity: 1 });
-            omission.animate({ opacity: 0 }, function() { omission.hide(); });
+            $(input).removeClass('unacceptable');
+            $(input).addClass('good-to-go');
         
         } else {
-            omission.show();
-            omission.css({ opacity: 0 });
-            omission.animate({ opacity: 1 });
+            $(input).removeClass('good-to-go');
+            $(input).addClass('unacceptable');
         }
     }
 
@@ -225,13 +222,9 @@ function prepareRecipientsListInput()
         var html = ['<li>',
                     'name: <input type="text" name="recipients[99][name]" size="15">',
                     ' ',
-                    '<span class="omission tab">★ Required<','/span>',
-                    ' ',
                     'email: <input type="email" name="recipients[99][email]" placeholder="e.g. them@there.com" size="35">',
                     ' ',
-                    '<span class="omission tab">★ Required<','/span>',
-                    ' ',
-                    '<a class="remove-recipient tab" href="#">━ Remove recipient<','/a>',
+                    '<a class="remove-recipient" href="#">━ Remove recipient<','/a>',
                     '<','/li>'];
 
         var newLI = $(html.join(''));

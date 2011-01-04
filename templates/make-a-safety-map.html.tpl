@@ -193,11 +193,10 @@ $(document).ready(function() {
                                 </select>
                                 <input id="emergency-other" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
                             {/if}
-                            <span class="omission tab">★ Required</span>
                           {/strip}
                         </span>
                         let's meet at
-                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}" class="required"><span class="omission tab">★ Required</span>.
+                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}" class="required">.
                         I've marked the spot on this map:
                     </p>           
 
@@ -244,10 +243,8 @@ $(document).ready(function() {
                         {* There will always be at least one recipient in the list *}
                         <li>
                             name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15" class="required">
-                            <span class="omission tab">★ Required</span>
                             email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35" class="required">
-                            <span class="omission tab">★ Required</span>
-                            <a class="remove-recipient tab" href="#">━ Remove recipient</a>
+                            <a class="remove-recipient" href="#">━ Remove recipient</a>
                         </li>
                         
                         {* Now do the rest, if there are any *}
@@ -255,10 +252,8 @@ $(document).ready(function() {
                             {if $index >= 1}
                                 <li>
                                     name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15" class="required">
-                                    <span class="omission tab">★ Required</span>
                                     email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35" class="required">
-                                    <span class="omission tab">★ Required</span>
-                                    <a class="remove-recipient tab" href="#">━ Remove recipient</a>
+                                    <a class="remove-recipient" href="#">━ Remove recipient</a>
                                 </li>
                             {/if}
                         {/foreach}
@@ -266,7 +261,7 @@ $(document).ready(function() {
 
                     {* Finally a row for the button that adds recipients *}
                     <p>
-                        <a id="add-recipient" class="tab" href="">╋ Add recipient</a>
+                        <a id="add-recipient" href="">╋ Add recipient</a>
                     </p>
                         
                     <h3>You're almost done.</h3>
@@ -276,12 +271,10 @@ $(document).ready(function() {
                     <p>
                         What's your name or nickname?
                         <input class="required" type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name">
-                        <span class="omission tab">★ Required</span>
                     </p>
                     <p>
                         What's your email address?
                         <input class="required" type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
-                        <span class="omission tab">★ Required</span>
                     </p>
                     <p>
                         Who can see your map?

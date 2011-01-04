@@ -65,31 +65,31 @@ td.inputs select {
     padding: 5px;
 }
 
-.tab
+input.good-to-go
 {
-	font-weight: bold;
-	padding: 5px;
-	margin: 0;
-	text-decoration: none;
-	font-size: 75%;
-
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
+    
 }
 
-.omission.tab
+input.unacceptable
 {
-	display: none;
-	background-color: red;
-	color: white;
+    background-color: #faa;
 }
 
 a#add-recipient,
 a.remove-recipient
 {
-	background: #00CC00;
-	color: #FFF !important;
+    background: #0c0;
+    color: #fff !important;
+    
+    font-weight: bold;
+    padding: 5px;
+    margin: 0;
+    text-decoration: none;
+    font-size: 75%;
+    
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 a.remove-recipient { background: #999; }
@@ -112,7 +112,6 @@ a.remove-recipient { background: #999; }
 {
     border: 0px;
     border-bottom: 1px solid #00CC00;
-    background: #FFFFFF;
 }
 
 #main input[type=radio]
