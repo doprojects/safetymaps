@@ -2,8 +2,12 @@ var bboxmap;
 
 function behaveAsRequired(index, input)
 {
+    var timeout = false;
+
     function checkValue()
     {
+        clearTimeout(timeout);
+
         if($(input).attr('value')) {
             $(input).removeClass('unacceptable');
             $(input).addClass('good-to-go');
@@ -13,9 +17,19 @@ function behaveAsRequired(index, input)
             $(input).addClass('unacceptable');
         }
     }
+    
+    function eventuallyCheckValue()
+    {
+        $(input).removeClass('unacceptable');
+        $(input).removeClass('good-to-go');
+
+        clearTimeout(timeout);
+        timeout = setTimeout(checkValue, 1000);
+    }
 
     $(input).blur(checkValue);
     $(input).change(checkValue);
+    $(input).bind('keyup', eventuallyCheckValue);
 }
 
 function prepareEmergencyChoiceInput()
