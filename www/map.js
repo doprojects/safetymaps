@@ -5,7 +5,9 @@ function show_preview_map(element, lat, lon, south, west, north, east, base_dir)
     
     var map = new mm.Map(element, cm, {x: 600, y: 400}, []);
     var ext = [{lat: north, lon: west}, {lat: south, lon: east}];
+
     map.setExtent(ext);
+    add_roundy_corners(map);
     
     var img = new Image();
     

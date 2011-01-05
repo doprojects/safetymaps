@@ -19,6 +19,7 @@
         <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
         <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>
         <script type="text/javascript" src="{$base_dir}/cloudmade.js"></script>
+        <script type="text/javascript" src="{$base_dir}/round-em-up.js"></script>
         <script type="text/javascript" src="{$base_dir}/markerclip.js"></script>
     </head>
     <body>

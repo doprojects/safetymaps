@@ -10,6 +10,8 @@ $(document).ready(function()
     var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
 
     var map = new mm.Map('map', cm);
+    add_roundy_corners(map);
+    
     var firstLocation = null;
     
     var markerClip = new MarkerClip(map);
