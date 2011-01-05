@@ -1,5 +1,16 @@
 var bboxmap;
 
+$(document).ready(function()
+  {
+    $('input.required').each(behaveAsRequired);
+    $('#emergency-other').each(behaveAsRequired);
+
+    prepareEmergencyChoiceInput();
+    prepareBBoxMapInput();
+    prepareNoteTextarea();
+    prepareRecipientsListInput();
+  });
+
 function behaveAsRequired(index, input)
 {
     var timeout = false;
@@ -285,13 +296,23 @@ function prepareRecipientsListInput()
     $('#add-recipient').live('click', addRecipient);
 }
 
-$(document).ready(function() {
-
-    $('input.required').each(behaveAsRequired);
-    $('#emergency-other').each(behaveAsRequired);
-
-    prepareEmergencyChoiceInput();
-    prepareBBoxMapInput();
-    prepareRecipientsListInput();
-
-});
+function prepareNoteTextarea()
+{
+    // twitter style remaining character count 
+    // (allow more chars to be typed but don't allow form submission, below)
+    var prevLength;
+    function onNoteChange() {
+      if (this.value.length == prevLength) return;
+      prevLength = this.value.length; // includes line breaks, OK?
+      $('#charcount').text((300 - this.value.length) + " remaining");
+      if (this.value.length <= 300) {
+          $('#charcount').removeClass('invalid');
+      }
+      else {
+          $('#charcount').addClass('invalid');
+      }
+    }
+    $('#fullnote').change(onNoteChange); // only fires onblur
+    $('#fullnote').keyup(onNoteChange); // fires with key strokes too
+    $('#fullnote').bind('input', onNoteChange); // html5 event, catches paste with mouse too
+}

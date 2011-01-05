@@ -215,3 +215,6 @@ p#done button {
 	margin: 8px 0 !important;
 	padding: 0 !important;
 }
+
+#charcount { color: #080; }
+#charcount.invalid { color: #800; }

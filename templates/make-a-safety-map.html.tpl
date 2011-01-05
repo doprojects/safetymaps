@@ -6,48 +6,12 @@
         <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
         <link rel="stylesheet" type="text/css" href="{$base_dir}/make-a-safety-map.css" />
-        <style type="text/css">{literal}
-/* TODO: move to make-a-safety-map.css */
-#charcount {
-  color: #080;
-}
-#charcount.invalid {
-  color: #800;
-}
-
-        {/literal}</style>
         <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
         <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>
         <script type="text/javascript" src="{$base_dir}/cloudmade.js"></script>
         <script type="text/javascript" src="{$base_dir}/round-em-up.js"></script>
         <script type="text/javascript" src="{$base_dir}/anyzoom.js"></script>
         <script type="text/javascript" src="{$base_dir}/make-a-safety-map.js"></script>
-        <script type="text/javascript">{literal}
-
-// TODO: move to make-a-safety-map.js
-
-$(document).ready(function() {
-
-    // twitter style remaining character count 
-    // (allow more chars to be typed but don't allow form submission, below)
-    var prevLength;
-    function onNoteChange() {
-      if (this.value.length == prevLength) return;
-      prevLength = this.value.length; // includes line breaks, OK?
-      $('#charcount').text((300 - this.value.length) + " remaining");
-      if (this.value.length <= 300) {
-          $('#charcount').removeClass('invalid');
-      }
-      else {
-          $('#charcount').addClass('invalid');
-      }
-    }
-    $('#fullnote').change(onNoteChange); // only fires onblur
-    $('#fullnote').keyup(onNoteChange); // fires with key strokes too
-    $('#fullnote').bind('input', onNoteChange); // html5 event, catches paste with mouse too
-
-}); 
-        {/literal}</script>
     </head>
     <body>
 
