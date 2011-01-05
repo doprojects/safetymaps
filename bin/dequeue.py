@@ -47,7 +47,7 @@ if __name__ == '__main__':
         place = job['place']['name']
         recipient = job['recipient']['name']
         sender = job['sender']['name']
-        text = job['place']['full-note']
+        text = job['place']['note_full']
         sender_is_recipient = job['sender-is-recipient']
         
         pdf_href = job['post-back']['pdf']

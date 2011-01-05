@@ -74,7 +74,7 @@ $(document).ready(function() {
         // make a hash of basic required elements
         var required = {};
         required['place[name]'] = 'Meeting place name';
-        required['place[full-note]'] = 'A short personal note'; 
+        required['place[note_full]'] = 'A short personal note'; 
         // only include recipients if the checkbox isn't selected
         if (!$('#personal').attr('checked')) {
             var count = $('#recipients li').length;
@@ -102,9 +102,9 @@ $(document).ready(function() {
         }
 
         // reject windbaggery
-        if (this['place[full-note]'].value.length > 300) {
+        if (this['place[note_full]'].value.length > 300) {
             alert('Note should be less than 300 characters.');
-            $(this['place[full-note]']).focus();
+            $(this['place[note_full]']).focus();
             return false;
         }
 
@@ -221,7 +221,7 @@ $(document).ready(function() {
 
                     <tr class="last"><td class="inputs">
                     <p class="field">
-                        <textarea type="text" name="place[full-note]" id="fullnote" rows="8">{$request.post.place.full-note|escape}</textarea>
+                        <textarea type="text" name="place[note_full]" id="fullnote" rows="8">{$request.post.place.note_full|escape}</textarea>
                         <br>
                         <span id="charcount">300 remaining</span>
                     </p>

@@ -74,7 +74,7 @@ input.good-to-go
 
 input.unacceptable
 {
-	background-color: #fbb;
+	background-color: #fcc;
 	background-image: url(images/input-unacceptable.png);
 	background-repeat: no-repeat;
 	background-position: right center;

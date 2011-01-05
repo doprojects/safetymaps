@@ -39,7 +39,7 @@
                     'name' => $map['place_name'],
                     'location' => array($map['place_lat'], $map['place_lon']),
                     'emergency' => $map['emergency'],
-                    'full-note' => $map['note_full']
+                    'note_full' => $map['note_full']
                 ),
                 'formats' => $ctx->formats,
                 'papers' => $ctx->papers,

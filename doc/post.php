@@ -30,7 +30,7 @@
     </p>
     <p>
         Full Note
-        <input type="text" name="place[full-note]">
+        <input type="text" name="place[note_full]">
     </p>
     <p>
         Short Note
@@ -94,7 +94,7 @@
         name: ___,
         location: [ ___, ___ ],
         emergency: ___,
-        full-note: ___,
+        note_full: ___,
         short-note: ___
     },
     map:

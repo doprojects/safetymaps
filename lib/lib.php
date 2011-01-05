@@ -484,7 +484,7 @@
     *     name: ___,
     *     location: [ ___, ___ ],
     *     emergency: ___,
-    *     full-note: ___,
+    *     note_full: ___,
     *     short-note: ___
     *   },
     *   map:
@@ -516,7 +516,7 @@
             'place_lon' => $args['place']['location'][1],
 
             'emergency' => $args['place']['emergency'],
-            'note_full' => $args['place']['full-note'],
+            'note_full' => $args['place']['note_full'],
 
             'bbox_north' => $args['map']['bounds'][0],
             'bbox_south' => $args['map']['bounds'][2],
