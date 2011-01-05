@@ -116,3 +116,8 @@ body, body *
 .marker.hover {
     background-image: url(images/cross_big.png);
 }
+
+canvas
+{
+    pointer-events: none;
+}
