@@ -74,10 +74,18 @@ input.good-to-go
 
 input.unacceptable
 {
-	background-color: #faa;
+	background-color: #fbb;
 	background-image: url(images/input-unacceptable.png);
 	background-repeat: no-repeat;
 	background-position: right center;
+	border-bottom-color: #c00;
+    
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -moz-border-top-left-radius: 3px;
+    -moz-border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 
 a#add-recipient,
@@ -112,11 +120,11 @@ a.remove-recipient { background: #999; }
 }
 
 #main input[type=text],
-#main input[type=email],
-#main textarea
+#main input[type=email]
 {
     border: 0px;
     border-bottom: 1px solid #00CC00;
+    font-size: 100%;
 }
 
 #main input[type=radio]
