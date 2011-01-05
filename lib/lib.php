@@ -72,7 +72,7 @@
         $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
-        $sm->assign('request', array('get' => $_GET, 'post' => $_POST, 'uri' => $_SERVER['REQUEST_URI']));
+        $sm->assign('request', array('method' => $_SERVER['REQUEST_METHOD'], 'get' => $_GET, 'post' => $_POST, 'uri' => $_SERVER['REQUEST_URI']));
         
         $ctx = new Context($db, $sm);
         
@@ -131,10 +131,13 @@
         return date('j M Y', $ts);
     }
     
-    function value_or_unacceptable_attr($s)
+    function value_or_unacceptable_attr($value, $method)
     {
-        return $s
-            ? sprintf('value="%s"', htmlspecialchars($s))
+        if($method != 'POST')
+            return 'class="required"';
+
+        return $value
+            ? sprintf('value="%s"', htmlspecialchars($value))
             : 'class="required unacceptable"';
     }
     
