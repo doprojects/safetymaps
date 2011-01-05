@@ -68,6 +68,7 @@
         */
         $sm->assign('base_dir', get_base_dir());
         $sm->assign('domain', get_domain_name());
+        $sm->register_modifier('value_or_unacceptable_attr', 'value_or_unacceptable_attr');
         $sm->register_modifier('nice_date', 'nice_date');
 
         $sm->assign('constants', get_defined_constants());
@@ -128,6 +129,13 @@
     function nice_date($ts)
     {
         return date('j M Y', $ts);
+    }
+    
+    function value_or_unacceptable_attr($s)
+    {
+        return $s
+            ? sprintf('value="%s"', htmlspecialchars($s))
+            : 'class="required unacceptable"';
     }
     
    /**

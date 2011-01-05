@@ -61,6 +61,8 @@ $(document).ready(function() {
 
     // rudimentary form validation, just check for existence/length and display alerts
     $('#mapform').submit(function() {
+    
+        return true;
      
         if($('#otherplace').attr('selected')) {
             var custom = this['place[emergency]'].value;
@@ -147,8 +149,8 @@ $(document).ready(function() {
                     {* Assume no pre-chosen emergency, the first one in the list will be the default *}
                     {assign var="chosen" value="normal"}
 
-                    {if $request.post.place.emergency}
-                        {* Some emergency has been chosen, we don't yet know which *}
+                    {if $request.post}
+                        {* Some emergency might have been chosen, we don't yet know which *}
                         {assign var="chosen" value="other"}
                     {/if}
 
@@ -183,20 +185,20 @@ $(document).ready(function() {
                           {strip}
                             {if $chosen == "normal"}
                                 <select id="emergency-select" name="place[emergency]">
-                                    {$smarty.capture.emergency_options}
+                                    {$smarty.capture.emergency_options|strip}
                                 </select>
                                 <input id="emergency-other" style="display: none;" name="" value="" type="text" size="32">
 
                             {elseif $chosen == "other"}
                                 <select id="emergency-select" name="" class="other">
-                                    {$smarty.capture.emergency_options}
+                                    {$smarty.capture.emergency_options|strip}
                                 </select>
-                                <input id="emergency-other" style="display: inline;" name="place[emergency]" value="{$request.post.place.emergency|escape}" type="text" size="32">
+                                <input id="emergency-other" style="display: inline;" name="place[emergency]" {$request.post.place.emergency|value_or_unacceptable_attr} type="text" size="32">
                             {/if}
                           {/strip}
                         </span>
                         let's meet at
-                        <input type="text" name="place[name]" size="25" value="{$request.post.place.name|escape}" class="required">.
+                        <input type="text" name="place[name]" size="25" {$request.post.place.name|value_or_unacceptable_attr}>.
                         I've marked the spot on this map:
                     </p>           
 
@@ -242,8 +244,8 @@ $(document).ready(function() {
 
                         {* There will always be at least one recipient in the list *}
                         <li>
-                            name: <input type="text" name="recipients[0][name]" value="{$request.post.recipients.0.name|escape}" size="15" class="required">
-                            email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.0.email|escape}" size="35" class="required">
+                            name: <input type="text" name="recipients[0][name]" {$request.post.recipients.0.name|value_or_unacceptable_attr} size="15">
+                            email: <input type="email" name="recipients[0][email]" placeholder="e.g. them@there.com" {$request.post.recipients.0.email|value_or_unacceptable_attr} size="35">
                             <a class="remove-recipient" href="#">━ Remove recipient</a>
                         </li>
                         
@@ -251,8 +253,8 @@ $(document).ready(function() {
                         {foreach from=$request.post.recipients key="index" item="recipient"}
                             {if $index >= 1}
                                 <li>
-                                    name: <input type="text" name="recipients[{$index}][name]" value="{$request.post.recipients.$index.name|escape}" size="15" class="required">
-                                    email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" value="{$request.post.recipients.$index.email|escape}" size="35" class="required">
+                                    name: <input type="text" name="recipients[{$index}][name]" {$request.post.recipients.$index.name|value_or_unacceptable_attr} size="15">
+                                    email: <input type="email" name="recipients[{$index}][email]" placeholder="e.g. them@there.com" {$request.post.recipients.$index.email|value_or_unacceptable_attr} size="35">
                                     <a class="remove-recipient" href="#">━ Remove recipient</a>
                                 </li>
                             {/if}
@@ -270,11 +272,11 @@ $(document).ready(function() {
                     
                     <p>
                         What's your name or nickname?
-                        <input class="required" type="text" name="sender[name]" value="{$request.post.sender.name|escape}" placeholder="e.g. Your Name">
+                        <input type="text" name="sender[name]" {$request.post.sender.name|value_or_unacceptable_attr} placeholder="e.g. Your Name">
                     </p>
                     <p>
                         What's your email address?
-                        <input class="required" type="email" name="sender[email]" value="{$request.post.sender.email|escape}" placeholder="e.g. you@example.com" size="35">
+                        <input type="email" name="sender[email]" {$request.post.sender.email|value_or_unacceptable_attr} placeholder="e.g. you@example.com" size="35">
                     </p>
                     <p>
                         Who can see your map?
