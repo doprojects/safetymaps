@@ -14,9 +14,6 @@
 #charcount.invalid {
   color: #800;
 }
-#main label[for="personal"] {
-  font-size: 100%;
-}
 
         {/literal}</style>
         <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
@@ -49,74 +46,6 @@ $(document).ready(function() {
     $('#fullnote').keyup(onNoteChange); // fires with key strokes too
     $('#fullnote').bind('input', onNoteChange); // html5 event, catches paste with mouse too
 
-    // disable recipients if map is personal
-    $('#personal').change(function() {
-        if($(this).attr('checked')) {
-            $('#recipients').slideUp();
-        }
-        else {
-            $('#recipients').slideDown();
-        }
-    });
-
-    // rudimentary form validation, just check for existence/length and display alerts
-    $('#mapform').submit(function() {
-    
-        return true;
-     
-        if($('#otherplace').attr('selected')) {
-            var custom = this['place[emergency]'].value;
-            if(custom.length == 0 || custom == 'other') {
-                alert("Please specify a custom event or select a suggested value.");
-                $('#emergency-other').focus();
-                return false;
-            }
-        }
-
-        // make a hash of basic required elements
-        var required = {};
-        required['place[name]'] = 'Meeting place name';
-        required['place[note_full]'] = 'A short personal note'; 
-        // only include recipients if the checkbox isn't selected
-        if (!$('#personal').attr('checked')) {
-            var count = $('#recipients li').length;
-            for(var i = 0; i < count; i++) {
-                required['recipients['+i+'][name]'] = 'Recipient\'s name or nickname';
-                required['recipients['+i+'][email]'] = 'Recipient\'s email address';
-            }
-        }
-        required['sender[name]'] = 'Your name or nickname';
-        required['sender[email]'] = 'Your email address';
-        for (var name in required) { 
-            if(this[name].value.length == 0) {
-               alert(required[name] + ' is required.');
-               $(this[name]).focus();
-               return false; 
-            }
-        }
- 
-        // reject 'far out' maps
-        if (bboxmap.getZoom() < 10) {
-            alert('The chosen map view is quite big - please zoom in and  choose a smaller area.');
-            window.scrollTo(window.scrollX, -20 + $(bboxmap.parent).offset().top);
-            $('#bboxmap').focus();
-            return false;
-        }
-
-        // reject windbaggery
-        if (this['place[note_full]'].value.length > 300) {
-            alert('Note should be less than 300 characters.');
-            $(this['place[note_full]']).focus();
-            return false;
-        }
-
-        // TODO perhaps check for NaNs and valid angles in:
-        // map[bounds][0] map[bounds][1] map[bounds][2] map[bounds][3]
-        // place[location][0] place[location][1] should exist as numbers (validate degrees)
- 
-        return true;
-    });
-
 }); 
         {/literal}</script>
     </head>
@@ -140,9 +69,7 @@ $(document).ready(function() {
             <div id="make">
 
                 <form id="mapform" method="POST" action="make-a-safety-map.php">
-                
-                <pre>{$request.post|@print_r:1|escape}</pre>
-                
+
                 <table>
                 <tr class="first"><td class="inputs">
                 
