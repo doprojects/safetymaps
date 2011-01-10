@@ -65,6 +65,24 @@ td.inputs select {
     padding: 5px;
 }
 
+.unacceptable
+{
+	background-color: #FCC;
+	background-image: url(images/input-unacceptable.png);
+	background-repeat: no-repeat;
+	background-position: 4px 4px;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#main p.unacceptable
+{
+	width: 558px;
+	padding: 4px 4px 4px 25px;
+}
+
 input.good-to-go
 {
 	background-image: url(images/input-good-to-go.png);
@@ -74,18 +92,15 @@ input.good-to-go
 
 input.unacceptable
 {
-	background-color: #fcc;
-	background-image: url(images/input-unacceptable.png);
-	background-repeat: no-repeat;
 	background-position: right center;
 	border-bottom-color: #c00;
     
-    -webkit-border-top-left-radius: 3px;
-    -webkit-border-top-right-radius: 3px;
-    -moz-border-top-left-radius: 3px;
-    -moz-border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+    -moz-border-bottom-left-radius: 0;
+    -moz-border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 a#add-recipient,

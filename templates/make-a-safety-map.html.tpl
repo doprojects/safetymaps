@@ -33,6 +33,13 @@
             <div id="make">
 
                 <form id="mapform" method="POST" action="make-a-safety-map.php">
+                
+                {if $request.post}
+                    {* If the form was posted but we're still looking at this page, something is missing *}
+                    <p class="unacceptable">
+                        It looks like you may have missed a form element below.
+                    </p>
+                {/if}
 
                 <table>
                 <tr class="first"><td class="inputs">
