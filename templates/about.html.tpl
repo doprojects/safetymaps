@@ -4,7 +4,11 @@
         <meta charset="utf-8" />
         <title>Safety Maps: About</title>
         {include file="head-links.htmlf.tpl"}
-        <link rel="stylesheet" type="text/css" href="about.css" />
+        <style type="text/css" title="text/css">
+        <!--{literal}
+            #main p { width: 40em; }
+        {/literal}-->
+        </style>
     </head>
     <body>
 
