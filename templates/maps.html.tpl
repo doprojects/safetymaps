@@ -7,8 +7,7 @@
             {if $map and $recipient and $recipient.email != $map.user.email} for {$recipient.name|escape}{/if}
             {if $map} by {$map.user.name|escape}{/if}
         {/strip}</title>
-        <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
+        {include file="head-links.htmlf.tpl"}
         {if $map}
             <link rel="stylesheet" type="text/css" href="{$base_dir}/map.css" />
             <script type="text/javascript" src="{$base_dir}/map.js"></script>

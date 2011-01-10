@@ -3,8 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Safety Maps: Make A Safety Map</title>
-        <link rel="stylesheet" type="text/css" href="{$base_dir}/fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="{$base_dir}/style.css" />
+        {include file="head-links.htmlf.tpl"}
         <link rel="stylesheet" type="text/css" href="{$base_dir}/make-a-safety-map.css" />
         <script type="text/javascript" src="{$base_dir}/jquery.min.js"></script>
         <script type="text/javascript" src="{$base_dir}/modestmaps.js"></script>

@@ -3,8 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Safety Maps: About</title>
-        <link rel="stylesheet" type="text/css" href="fonts/stylesheet.css" />
-        <link rel="stylesheet" type="text/css" href="style.css" />
+        {include file="head-links.htmlf.tpl"}
         <link rel="stylesheet" type="text/css" href="about.css" />
     </head>
     <body>
