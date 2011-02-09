@@ -19,6 +19,10 @@
         <div id="main">
         
             <div id="about">
+                <p>
+                    <img src="{$base_dir}/images/sample-example.png" width="480" height="371">
+                </p>
+                
                 <h2>What is a Safety Map?</h2>
                 
                 <p>

@@ -99,7 +99,8 @@ $(document).ready(function()
         {
             var mm = com.modestmaps;
             var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
-            var map = new mm.Map(element, cm, {x: 600, y: 400}, []);
+            var dim = {x: $(element).width(), y: $(element).height()};
+            var map = new mm.Map(element, cm, dim, []);
 
             map.setExtent(extent());
             
