@@ -225,7 +225,7 @@
         $_privacy = mysql_real_escape_string($args['privacy'], $ctx->db);
         
         // try a bunch of possible ids varying in length from 3 to 8 chars
-        foreach(range(3*4, 9*4-1) as $len)
+        foreach(range(5*4, 9*4-1) as $len)
         {
             $map_id = generate_id(floor($len / 4));
             $_map_id = mysql_real_escape_string($map_id, $ctx->db);
@@ -289,7 +289,7 @@
         $_waiting = mysql_real_escape_string(join(' ', $waiting), $ctx->db);
         
         // try a bunch of possible ids varying in length from 3 to 8 chars
-        foreach(range(3*4, 9*4-1) as $len)
+        foreach(range(5*4, 9*4-1) as $len)
         {
             $recipient_id = generate_id(floor($len / 4));
             $_recipient_id = mysql_real_escape_string($recipient_id, $ctx->db);
