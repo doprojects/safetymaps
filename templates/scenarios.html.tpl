@@ -15,8 +15,6 @@
         {include file="header.htmlf.tpl" current="scenarios"}
 
         <div id="main">
-            <h2>Scenarios</h2>
-            
             <p>
                 We’re grateful for your interest in Safety Maps, but also want
                 you to make sure you know about the many excellent initiatives
