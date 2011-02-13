@@ -20,7 +20,7 @@
         
             <div id="about">
                 <p>
-                    <img src="{$base_dir}/images/sample-example.png" width="480" height="371">
+                    <img src="{$base_dir}/images/example.gif" width="480" height="371">
                 </p>
                 
                 <h2>What is a Safety Map?</h2>
