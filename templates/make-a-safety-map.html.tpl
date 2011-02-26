@@ -120,12 +120,12 @@
 
                     <tr class="last"><td class="inputs">
                     <p class="field">
-                        <textarea type="text" name="place[note_full]" id="fullnote" rows="8">{$request.post.place.note_full|escape}</textarea>
+                        <textarea name="place[note_full]" id="fullnote" rows="8">{$request.post.place.note_full|escape}</textarea>
                         <br>
-                        <span id="charcount">300 remaining</span>
+                        <span id="charcount"></span>
                     </p>
                     </td><td class="help">
-                        <p>Include a personal note for your recipients.<br><em>(300 character limit)</em></p>
+                        <p>Include a personal note for your recipients.<br><em>(50-60 words, we'll measure the height for you)</em></p>
                     <p class="thoughtful">Remember that the recipient might be reading this at a very difficult moment, so please think carefully about what you want to write here!</p>
                     
                     </td></tr>

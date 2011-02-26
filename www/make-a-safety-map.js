@@ -296,6 +296,14 @@ function prepareRecipientsListInput()
     $('#add-recipient').live('click', addRecipient);
 }
 
+function measureNoteSize(text) 
+{
+    $('#dummynote').remove();
+    $('<p id="dummynote">'+text.replace(/\n/g,'<br>')+'</p>').appendTo(document.body);
+    // should ignore padding and margin and border according to http://api.jquery.com/height/
+    return $('#dummynote').height() / 200; // 200px is a little bit too long, but would print OK
+}
+
 function prepareNoteTextarea()
 {
     // twitter style remaining character count 
@@ -303,16 +311,19 @@ function prepareNoteTextarea()
     var prevLength;
     function onNoteChange() {
       if (this.value.length == prevLength) return;
-      prevLength = this.value.length; // includes line breaks, OK?
-      $('#charcount').text((300 - this.value.length) + " remaining");
-      if (this.value.length <= 300) {
+      prevLength = this.value.length;
+      var measurement = measureNoteSize(this.value);
+      if (measurement < 1.0) {
+          $('#charcount').text("This note length looks OK! (" + (measurement*100).toFixed() + "% of limit)");
           $('#charcount').removeClass('invalid');
       }
       else {
+          $('#charcount').text("Sorry, this note would be too long (" + (measurement*100).toFixed() + "% of limit)");
           $('#charcount').addClass('invalid');
       }
     }
     $('#fullnote').change(onNoteChange); // only fires onblur
     $('#fullnote').keyup(onNoteChange); // fires with key strokes too
     $('#fullnote').bind('input', onNoteChange); // html5 event, catches paste with mouse too
+
 }
