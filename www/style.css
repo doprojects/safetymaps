@@ -120,21 +120,3 @@ canvas
 {
     pointer-events: none;
 }
-
-/* for measuring the note, see validNoteSize() in make-a-safety-map.js */
-#dummynote {
-    position: absolute;
-    left: -400px !important;
-    top: 0px !important;
-    display: block !important;
-    visibility: hidden !important;
-    font-family: Helvetica, sans-serif !important;
-    font-size: 16px !important;
-    padding: 10px 16px !important;
-    margin: 0px !important;
-    border: 2px solid #ccc !important;
-    width: 336px !important; 
-    line-height: 1.175 !important;
-    letter-spacing: 0 !important;
-}
-

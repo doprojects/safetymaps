@@ -233,3 +233,28 @@ p#done button {
 
 #charcount { color: #080; }
 #charcount.invalid { color: #800; }
+
+/* for measuring the note, see validNoteSize() in make-a-safety-map.js */
+#dummynote {
+    position: absolute;
+    left: -400px !important;
+    top: 0px !important;
+    display: block !important;
+    visibility: hidden !important;
+    font-family: Helvetica, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    text-decoration: none !important;
+    padding: 10px 16px !important;
+    margin: 0px !important;
+    border: 2px solid #ccc !important;
+    width: 336px !important; 
+    line-height: 18px !important;
+    word-spacing: normal !important;
+    text-indent: 0 !important;
+    outline: 0 !important;
+    letter-spacing: 0 !important;
+    text-rendering: optimizeLegibility !important;
+}
+

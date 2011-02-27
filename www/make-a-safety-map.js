@@ -301,7 +301,8 @@ function measureNoteSize(text)
     $('#dummynote').remove();
     $('<p id="dummynote">'+text.replace(/\n/g,'<br>')+'</p>').appendTo(document.body);
     // should ignore padding and margin and border according to http://api.jquery.com/height/
-    return $('#dummynote').height() / 200; // 200px is a little bit too long, but would print OK
+    var height = $('#dummynote').height();
+    return height / 200; // 200px is a little bit too long, but would print OK
 }
 
 function prepareNoteTextarea()
