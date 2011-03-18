@@ -10,7 +10,7 @@
 
 <h1><img src="http://{$domain|escape}{$base_dir|escape}/images/mail-header.png" alt="Safety Maps" width="600" height="86" border="0"></h1>
 
-<p class="illustration"><img src="http://{$domain|escape}{$base_dir|escape}/images/sender-mail-illustration.png" width="83" height="81" border="0"></p>
+<p class="illustration"><img src="http://{$domain|escape}{$base_dir|escape}/images/sender-mail-illustration.gif" width="83" height="81" border="0"></p>
 
 <p>Dear <var>{$recipient.name|escape}</var>:</p>
 
