@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<h1><img src="http://{$domain|escape}{$base_dir|escape}/images/mail-header.png" alt="Safety Maps" width="600" height="86" border="0"></h1>
+<h1><img src="http://{$domain|escape}{$base_dir|escape}/images/recipient-mail-header.png" alt="Safety Maps" width="600" height="86" border="0"></h1>
 
 <p class="illustration"><img src="http://{$domain|escape}{$base_dir|escape}/images/recipient-mail-illustration.gif" width="151" height="85" border="0"></p>
 
