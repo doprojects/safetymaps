@@ -5,7 +5,7 @@ from urlparse import urlparse, urlunparse, urljoin
 from itertools import product
 from httplib import HTTPConnection
 from json import loads
-from time import time
+from time import time, sleep
 
 from compose import main as compose
 
@@ -35,9 +35,14 @@ if __name__ == '__main__':
         conn.request('GET', path(url))
         resp = conn.getresponse()
         
-        if resp.status != 200:
-            print >> stderr, resp.status
-            break
+        if resp.status == 200:
+            pass
+        elif resp.status == 404:
+            sleep(5)
+            continue
+        else:
+            print >> stderr, 'Unexpected status:', resp.status
+            exit(1)
 
         job = loads(resp.read())
     
