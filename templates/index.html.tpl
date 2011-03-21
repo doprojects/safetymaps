@@ -24,19 +24,23 @@
                     <img src="{$base_dir}/images/introduction-animation.gif" width="480" height="371">
                 </p>
                 
-<h2>What’s a Safety Map?</h2>
-<p>Have you ever thought about how you’d stay in touch with your loved ones if your city experienced a natural disaster or other emergency?</p>
-<p>Safety Maps is a free online tool that helps you plan for this situation. You can use it to choose a safe meeting place, print a customized map that specifies where it is, and share this map with your loved ones.</p>
-<p>You can choose to print Safety Maps in wallet, desk or refrigerator sizes. The above graphic explains how to make a Safety Map, but really, the best way to understand how it works is simply to <a href="{$base_dir}/make-a-safety-map.php">get started making one of your own</a>.</p>
-<p>Other things you can do here:</p>
-<ul>
-<li>See <a href="{$base_dir}/maps.php">Safety Maps other people have made</a>.</li>
-{* <li>See a collective map of everyone’s safe places.</li> *}
-<li><a href="{$base_dir}/about.php">Learn more</a> about the thinking behind Safety Maps.</li>
-<li><a href="{$base_dir}/links.php">Suggest a link</a> you think we ought to have.</li>
-<li><a href="http://doprojects.org/">Get in touch!</a></li>
-</ul>
+                <h2>What’s a Safety Map?</h2>
+                <p>Have you ever thought about how you’d stay in touch with your loved ones if your city experienced a natural disaster or other emergency?</p>
+                <p>Safety Maps is a free online tool that helps you plan for this situation. You can use it to choose a safe meeting place, print a customized map that specifies where it is, and share this map with your loved ones.</p>
+                <p>You can choose to print Safety Maps in wallet, desk or refrigerator sizes. The above graphic explains how to make a Safety Map, but really, the best way to understand how it works is simply to <a href="{$base_dir}/make-a-safety-map.php">get started making one of your own</a>.</p>
+                <p>Other things you can do here:</p>
+                <ul>
+                    <li>See <a href="{$base_dir}/maps.php">Safety Maps other people have made</a>.</li>
+                    {* <li>See a collective map of everyone’s safe places.</li> *}
+                    <li><a href="{$base_dir}/about.php">Learn more</a> about the thinking behind Safety Maps.</li>
+                    <li><a href="{$base_dir}/links.php">Suggest a link</a> you think we ought to have.</li>
+                    <li><a href="http://doprojects.org/">Get in touch!</a></li>
+                </ul>
             </div>
+            
+            <h2>
+                Latest Safety Maps
+            </h2>
             
             <ul id="maps">
                 {foreach item="map" from=$maps}
