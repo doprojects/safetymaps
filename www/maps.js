@@ -19,11 +19,10 @@ $(document).ready(function()
 
             anc.appendChild(img);
             map.parent.appendChild(anc);
-            
-            console.log(location);
         }
         
-        img.src = 'images/cross_round_sm.png';
+        var loc = location.href;
+        img.src = loc.replace(/\/maps.php(\/.*)?$/, '/images/cross_round_sm.png');
     }
 
     function make_map(element, location)

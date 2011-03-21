@@ -139,6 +139,9 @@
                             {if $more_newer_maps}
                                 <span class="newer">← <a href="{$base_dir}/maps.php?count={$count|escape}&amp;offset={$newer_maps_offset|escape}">Newer</a></span>
                             {/if}
+                            {if $more_newer_maps && $more_older_maps}
+                                /
+                            {/if}
                             {if $more_older_maps}
                                 <span class="older"><a href="{$base_dir}/maps.php?count={$count|escape}&amp;offset={$older_maps_offset|escape}">Older</a> →</span>
                             {/if}
