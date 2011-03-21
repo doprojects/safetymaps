@@ -29,7 +29,7 @@ if __name__ == '__main__':
     url = urlparse(args[0])
     due = time() + opts.time_limit
 
-    while True:
+    while time() < due:
     
         conn = HTTPConnection(url.netloc)
         conn.request('GET', path(url))
@@ -92,6 +92,3 @@ if __name__ == '__main__':
                 resp = conn.getresponse()
                 
                 print resp.status, resp.read().strip()
-        
-        if time() > due:
-            break
