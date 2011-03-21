@@ -7,7 +7,15 @@
 
     $ctx = default_context();
 
-    $maps = get_maps($ctx, array('count' => 10));
+    $count = 12;
+    $maps = get_maps($ctx, array('count' => $count+1));
+
+    $ctx->sm->assign('more_older_maps', count($maps) > $count);
+    $ctx->sm->assign('older_maps_offset', $count);
+
+    $maps = array_slice($maps, 0, $count);
+    $ctx->sm->assign('maps_count', count($maps));
+    $ctx->sm->assign('count', $count);
     $ctx->sm->assign('maps', $maps);
 
     $ctx->close();

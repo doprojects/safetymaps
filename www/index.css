@@ -1,37 +1,20 @@
-.cluster-map
-{
-	position: relative;
-	background-color: #ccc;
-	border: 1px solid #bbb;
-	margin: 0 0 20px 0;
-	width: 480px;
-	height: 400px;
-}
-
-.cluster-map a.map-link
-{
-    display: block;
-    position: absolute;
-    margin: 0;
-    padding: 0;
-}
-
-.cluster-map a.map-link,
-.cluster-map a.map-link img
-{
-    border: none;
-}
-
 #about
 {
-    position: absolute;
-    left: 540px;
+    position: relative;
+    left: 500px;
+    width: 480px;
     margin: 0;
-    padding: 0;
+    padding: 0 0 20px 0;
 }
 
 #about h2,
 #about p
 {
     margin: 0 40px 20px 0;
+}
+
+#introduction-animation
+{
+    position: absolute;
+    left: -500px;
 }
