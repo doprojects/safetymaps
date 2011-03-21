@@ -1,43 +1,64 @@
-#main
+ul#maps,
+.pagination
 {
-    padding: 0;
+    margin: 0 0 1em 0;
 }
 
-div#map
+var, blockquote
 {
-    position: relative;
-    width: 700px;
-    height: 600px;
+	color: #090;
+	font-style: normal;
 }
 
 ul#maps
 {
-    position: absolute;
-    top: 0;
-    left: 700px;
-    width: 260px;
-
+    display: block;
     list-style-type: none;
-    margin: 30px 20px;
+    padding: 0;
+    margin: 0;
+}
+
+ul#maps li.map-info
+{
+    float: left;
+    display: block;
+    width: 320px;
+    height: 290px;
+    margin: 0 20px 20px 0;
+    list-style-type: none;
+}
+
+ul#maps li.map-info .map-area
+{
+    width: 320px;
+    height: 200px;
+    background-color: #ccc;
+    border: 1px solid #bbb;
+    position: relative;
+}
+
+.map-area a.map-link
+{
+    display: block;
+    position: absolute;
+    margin: 0;
     padding: 0;
 }
 
-ul#maps li.map
+.map-area a.map-link,
+.map-area a.map-link img
 {
-    margin: 0 0 15px 0;
-    padding: 0;
+    border: none;
 }
 
-ul#maps li.map a
+ul#maps li.map-info h3,
+ul#maps li.map-info .map-area,
+ul#maps li.map-info p
 {
-    text-decoration: none;
-    color: #888888;
-    padding: 5px;
+    margin: 0 0 10px 0;
 }
 
-ul#maps li.map a:hover,
-ul#maps li.map a.hover
+.pagination
 {
-    background: #CCCCCC;
-    color: #333333;
+    clear: left;
 }

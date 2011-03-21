@@ -10,7 +10,7 @@
     $ctx = default_context();
 
     $format = empty($_GET['format']) ? 'html' : $_GET['format'];
-    $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 10;
+    $count = is_numeric($_GET['count']) ? intval($_GET['count']) : 12;
     $offset = is_numeric($_GET['offset']) ? intval($_GET['offset']) : 0;
 
     $where = preg_match('/^bbox:-?\d+(\.\d+)?(,-?\d+(\.\d+)?){3}$/', $_GET['where'])
@@ -74,7 +74,18 @@
     }
     
     if($map_id === false) {
+        $count++;
         $maps = get_maps($ctx, compact('count', 'offset', 'where'));
+        $count--;
+
+        $ctx->sm->assign('more_newer_maps', $offset > 0);
+        $ctx->sm->assign('more_older_maps', count($maps) > $count);
+        $ctx->sm->assign('newer_maps_offset', max(0, $count - $offset));
+        $ctx->sm->assign('older_maps_offset', $count + $offset);
+
+        $maps = array_slice($maps, 0, $count);
+        $ctx->sm->assign('maps_count', count($maps));
+        $ctx->sm->assign('count', $count);
         
     } else {
         $map = get_map($ctx, $map_id);

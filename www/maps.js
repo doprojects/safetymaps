@@ -1,50 +1,59 @@
 $(document).ready(function()
 {
-    return;
+    function add_mapmarker(map, location)
+    {
+        var img = new Image();
+        
+        img.onload = function()
+        {
+            var pos = map.locationPoint(location);
+            var anc = document.createElement('a');
 
-    // make a map!
-    var mm = com.modestmaps;
-    //var template = 'http://{S}tile.openstreetmap.org/{Z}/{X}/{Y}.png';
-    //var domains = [ '', 'a.', 'b.', 'c.' ];
-    //var osm = new mm.TemplatedMapProvider(template, domains);
-    var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7','22677');
+            anc.className = 'map-link';
+            anc.style.width = this.width.toFixed(0) + 'px';
+            anc.style.height = this.height.toFixed(0) + 'px';
+            anc.style.left = (pos.x - this.width/2).toFixed(0) + 'px';
+            anc.style.top = (pos.y - this.height/2).toFixed(0) + 'px';
+            anc.title = location.name;
+            anc.href = location.href;
 
-    var map = new mm.Map('map', cm);
-    add_roundy_corners(map);
-    
-    var firstLocation = null;
-    
-    var markerClip = new MarkerClip(map);
-    $('.geo').each(function() {
-        var $geo = $(this);
-        var lat = $geo.find('.latitude').text();
-        var lon = $geo.find('.longitude').text();
-        var marker = markerClip.createDefaultMarker(63,63);
-        marker.className = 'marker';
-        var $geolink = $geo.parent().find('a');
-        $(marker).mouseover(function() {
-            $(this).addClass('hover');
-            $geolink.addClass('hover');
-        });
-        $(marker).mouseout(function() {
-            $(this).removeClass('hover');
-            $geolink.removeClass('hover');
-        });
-        $geolink.mouseover(function() {
-            $(marker).trigger('mouseover');
-        });
-        $geolink.mouseout(function() {
-            $(marker).trigger('mouseout');
-        });
-        var location = new mm.Location(lat, lon);
-        var offset = new mm.Point(-63/2,-63/2);
-        marker.title = $geolink.text();
-        markerClip.addMarker(marker, location, offset);
-        if (!firstLocation) firstLocation = location;
-    });
-
-    if (firstLocation) {
-      // TODO: use extent of all current markers
-      map.setCenterZoom(firstLocation, 13);
+            anc.appendChild(img);
+            map.parent.appendChild(anc);
+            
+            console.log(location);
+        }
+        
+        img.src = 'images/cross_round_sm.png';
     }
+
+    function make_map(element, location)
+    {
+        var mm = com.modestmaps;
+        var cm = new mm.CloudMadeProvider('1a914755a77758e49e19a26e799268b7', '22677');
+        var dim = {x: $(element).width(), y: $(element).height()};
+        var map = new mm.Map(element, cm, dim, []);
+        
+        map.setExtent(location.extent);
+        add_roundy_corners(map);
+        
+        add_mapmarker(map, location);
+    }
+
+    $('#maps .map-info').each(function()
+    {
+        var lat = parseFloat($(this).find('.geo .latitude').text());
+        var lon = parseFloat($(this).find('.geo .longitude').text());
+        var west = parseFloat($(this).find('.geo .bbox-west').text());
+        var east = parseFloat($(this).find('.geo .bbox-east').text());
+        var south = parseFloat($(this).find('.geo .bbox-south').text());
+        var north = parseFloat($(this).find('.geo .bbox-north').text());
+        var href = $(this).find('a.link').attr('href');
+        var name = $(this).find('.place-name').text();
+        
+        var extent = [{lat: north, lon: west}, {lat: south, lon: east}];
+        var location = {lat: lat, lon: lon, href: href, name: name, extent: extent};
+        var element = $(this).find('.map-area')[0];
+        
+        make_map(element, location);
+    });
 });

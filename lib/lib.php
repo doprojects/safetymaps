@@ -697,6 +697,7 @@
                      place_lat, place_lon,
                      emergency, place_name,
                      note_full,
+                     bbox_west, bbox_south, bbox_east, bbox_north,
                      UNIX_TIMESTAMP(created) AS created_unixtime,
                      created, privacy, waiting
               FROM maps
