@@ -27,7 +27,7 @@
                 <h2>What’s a Safety Map?</h2>
                 <p>Have you ever thought about how you’d stay in touch with your loved ones if your city experienced a natural disaster or other emergency?</p>
                 <p>Safety Maps is a free online tool that helps you plan for this situation. You can use it to choose a safe meeting place, print a customized map that specifies where it is, and share this map with your loved ones.</p>
-                <p>You can choose to print Safety Maps in wallet, desk or refrigerator sizes. The above graphic explains how to make a Safety Map, but really, the best way to understand how it works is simply to <a href="{$base_dir}/make-a-safety-map.php">get started making one of your own</a>.</p>
+                <p>You can choose to print Safety Maps in wallet, desk or refrigerator sizes. The graphic at left explains how to make a Safety Map, but really, the best way to understand how it works is simply to <a href="{$base_dir}/make-a-safety-map.php">get started making one of your own</a>.</p>
                 <p>Other things you can do here:</p>
                 <ul>
                     <li>See <a href="{$base_dir}/maps.php">Safety Maps other people have made</a>.</li>
