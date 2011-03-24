@@ -1,5 +1,5 @@
 <div id="header">
-    <a href="{$base_dir}"><img src="{$base_dir}/images/header.png" width="860" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency"></a>
+    <a href="{$base_dir}/"><img src="{$base_dir}/images/header.png" width="860" height="137" alt="Safety Maps: Make and share maps of safe places to meet in the event of an emergency"></a>
     <div id="nav">
         <ul>
             <li><a class="{if $current == 'home'}current{/if}" href="{$base_dir}/">Home</a></li>
