@@ -34,7 +34,7 @@
                     {* <li>See a collective map of everyone’s safe places.</li> *}
                     <li><a href="{$base_dir}/about.php">Learn more</a> about the thinking behind Safety Maps.</li>
                     <li><a href="{$base_dir}/links.php">Suggest a link</a> you think we ought to have.</li>
-                    <li><a href="http://doprojects.org/">Get in touch!</a></li>
+                    <li><a href="mailto:info@safety-maps.org">Get in touch!</a></li>
                 </ul>
             </div>
             
