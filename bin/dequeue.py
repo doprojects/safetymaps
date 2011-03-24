@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
         job = loads(resp.read())
     
+        map_href = job['map-href']
         marker = job['place']['location']
         bbox = job['map']['bounds']
         emergency = job['place']['emergency']
@@ -58,16 +59,19 @@ if __name__ == '__main__':
         pdf_href = job['post-back']['pdf']
         error_href = job['post-back']['error']
         
+        base_href = urlunparse(url)
+
         print 'Maps for', recipient, '...'
         
         for (paper, format) in product(job['papers'], job['formats']):
             try:
-                filename = compose(marker, paper, format, bbox, emergency, place, recipient, sender, text, sender_is_recipient)
+                filename = compose(marker, paper, format, bbox, emergency, place,
+                                   recipient, sender, text, sender_is_recipient,
+                                   urljoin(base_href, map_href))
     
                 print filename,
         
-                base_url = urlunparse(url)
-                post_url = urljoin(base_url, pdf_href)
+                post_url = urljoin(base_href, pdf_href)
                 post_url = urlparse(post_url)
                 
                 conn = HTTPConnection(post_url.netloc)
@@ -80,8 +84,7 @@ if __name__ == '__main__':
                 unlink(filename)
 
             except ValueError, error:
-                base_url = urlunparse(url)
-                error_url = urljoin(base_url, error_href)
+                error_url = urljoin(base_href, error_href)
                 error_url = urlparse(error_url)
         
                 print 'Uh-oh:', error

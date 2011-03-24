@@ -613,7 +613,7 @@ def draw_large_poster(ctx, img, point, emergency, place, recipient, sender, text
 
     ctx.restore()
 
-def draw_a4_master(ctx, format):
+def draw_a4_master(ctx, format, map_href):
     """
     """
     ctx.save()
@@ -631,7 +631,7 @@ def draw_a4_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(21, 22)
-    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: ' + map_href)
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 192, 11, format)
@@ -656,7 +656,7 @@ def draw_a4_master(ctx, format):
     
     ctx.restore()
 
-def draw_letter_master(ctx, format):
+def draw_letter_master(ctx, format, map_href):
     """
     """
     ctx.save()
@@ -674,7 +674,7 @@ def draw_letter_master(ctx, format):
     ctx.set_font_size(8 * mmppt)
 
     ctx.move_to(22, 16)
-    ctx.show_text('Unique URL for this map: www.safety-maps.org/maps/URLtokenwithmanycharacters')
+    ctx.show_text('Unique URL for this map: ' + map_href)
     
     # top-right of page, draw the hands icon
     place_hands(ctx, 193, 6, format)
@@ -707,6 +707,7 @@ parser.set_defaults(recipient='Fred', sender='Wilma', sender_is_recipient=False,
                     + 'aperiam eaque ipsa, quae ab illo invent ore veritatis et ' \
                     + 'quasi architecto beatae vitae dicta sunt, explicabo.\n\n' \
                     + 'My love always, G.',
+                    url='http://example.com/safety-map',
                     paper='letter', format='4up')
 
 papers = 'a4 letter'.split()
@@ -743,10 +744,13 @@ parser.add_option('-n', '--place-name', dest='place',
 parser.add_option('-t', '--text', dest='text',
                   help='Message text, "-" to use stdin.')
 
+parser.add_option('--href', dest='href',
+                  help='Map URL.')
+
 parser.add_option('--sender-is-recipient', dest='sender_is_recipient',
                   action='store_true', help='Flag if the sender and recipient are the same.')
 
-def main(marker, paper, format, bbox, emergency, place, recipient, sender, text, sender_is_recipient):
+def main(marker, paper, format, bbox, emergency, place, recipient, sender, text, sender_is_recipient, map_href):
     """
     """
     mark = Location(*marker)
@@ -767,11 +771,11 @@ def main(marker, paper, format, bbox, emergency, place, recipient, sender, text,
     set_font_face_from_file(ctx, 'assets/HelveticaNeue.ttc')
     
     if paper == 'a4':
-        draw_a4_master(ctx, format)
+        draw_a4_master(ctx, format, map_href)
         ctx.translate(19, 24)
     
     elif paper == 'letter':
-        draw_letter_master(ctx, format)
+        draw_letter_master(ctx, format, map_href)
         ctx.translate(21, 18)
 
     ctx.set_line_width(.25 * mmppt)
@@ -835,4 +839,5 @@ if __name__ == '__main__':
     text = (opts.text == '-') and stdin.read().strip() or opts.text
 
     print main(opts.point, opts.paper, opts.format, opts.bbox, opts.emergency,
-               opts.place, opts.recipient, opts.sender, text, opts.sender_is_recipient)
+               opts.place, opts.recipient, opts.sender, text, opts.sender_is_recipient,
+               opts.href)

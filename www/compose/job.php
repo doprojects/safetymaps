@@ -34,6 +34,7 @@
             $sender = $map['user'];
             
             $job = array(
+                'map-href' => sprintf('%s/maps.php/%s/%s', get_base_dir(), urlencode($map['id']), urlencode($recipient['id'])),
                 'sender' => array('name' => $sender['name']),
                 'place' => array(
                     'name' => $map['place_name'],
