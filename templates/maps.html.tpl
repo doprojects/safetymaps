@@ -27,6 +27,7 @@
 
         <div id="main">
             {if $map}
+                {assign var="eventname" value="view map page"}
             
                 <h2>
                     Safety Map
@@ -132,6 +133,7 @@
                 </div>
 
             {elseif $maps}
+                {assign var="eventname" value="view maps page"}
             
                 {capture name="pagination"}
                     <p class="pagination">
@@ -189,10 +191,12 @@
                 
                 {$smarty.capture.pagination}
             
+            {else}
+                {assign var="eventname" value="view maps page unsuccessfully"}
             {/if}
         </div>
 
-        {include file="footer.htmlf.tpl"}
+        {include file="footer.htmlf.tpl" eventname=$eventname}
 
     </body>
 </html>

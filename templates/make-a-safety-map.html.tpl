@@ -189,7 +189,7 @@
         
         </div>
 
-        {include file="footer.htmlf.tpl"}
+        {include file="footer.htmlf.tpl" eventname="view make-a-map form"}
 
     </body>
 </html>

@@ -124,7 +124,7 @@
             
         </div>
 
-        {include file="footer.htmlf.tpl"}
+        {include file="footer.htmlf.tpl" eventname="view about page"}
 
     </body>
 </html>
