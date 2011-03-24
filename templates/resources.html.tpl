@@ -12,7 +12,7 @@
     </head>
     <body>
 
-        {include file="header.htmlf.tpl" current="scenarios"}
+        {include file="header.htmlf.tpl" current="resources"}
 
         <div id="main">
             <p>

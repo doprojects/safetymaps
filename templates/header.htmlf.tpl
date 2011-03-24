@@ -8,7 +8,7 @@
             {*
             <li><a class="{if $current == 'maps'}current{/if}" href="{$base_dir}/maps.php">See meeting points other people have chosen</a></li>
             *}
-            <li><a class="{if $current == 'scenarios'}current{/if}" href="{$base_dir}/links.php">Links</a></li>
+            <li><a class="{if $current == 'resources'}current{/if}" href="{$base_dir}/resources.php">Resources</a></li>
         </ul>
     </div>
 </div>

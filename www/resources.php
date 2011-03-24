@@ -10,6 +10,6 @@
     $ctx->close();
     
     header("Content-Type: text/html; charset=UTF-8");
-    print $ctx->sm->fetch('scenarios.html.tpl');
+    print $ctx->sm->fetch('resources.html.tpl');
 
 ?>
