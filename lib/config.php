@@ -10,4 +10,6 @@
     define('SMTP_USER', 'safetymaps');
     define('SMTP_PASS', 's4f3tym4ps');
 
+    define('ADMIN_SECRET', 'example');
+
 ?>
