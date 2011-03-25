@@ -73,6 +73,7 @@
         $sm->assign('domain', get_domain_name());
         $sm->register_modifier('value_or_unacceptable_attr', 'value_or_unacceptable_attr');
         $sm->register_modifier('nice_date', 'nice_date');
+        $sm->register_modifier('nice_relativetime', 'nice_relativetime');
 
         $sm->assign('constants', get_defined_constants());
         $sm->assign('request', array('method' => $_SERVER['REQUEST_METHOD'], 'get' => $_GET, 'post' => $_POST, 'uri' => $_SERVER['REQUEST_URI']));
@@ -167,6 +168,24 @@
     function nice_date($ts)
     {
         return date('j M Y', $ts);
+    }
+    
+    function nice_relativetime($seconds)
+    {
+        switch(true)
+        {
+            case abs($seconds) <= 90:
+                return 'moments ago';
+
+            case abs($seconds) <= 90 * 60:
+                return round(abs($seconds) / 60).' minutes ago';
+
+            case abs($seconds) <= 36 * 60 * 60:
+                return round(abs($seconds) / (60 * 60)).' hours ago';
+
+            default:
+                return round(abs($seconds) / (24 * 60 * 60)).' days ago';
+        }
     }
     
     function value_or_unacceptable_attr($value, $method)

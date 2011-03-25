@@ -30,7 +30,7 @@ ul#maps li.map-info
 
 ul#maps li.admin.map-info
 {
-    height: 320px;
+    height: 330px;
 }
 
 ul#maps li.map-info .map-area
@@ -58,6 +58,7 @@ ul#maps li.map-info .map-area
 
 ul#maps li.map-info h3,
 ul#maps li.map-info .map-area,
+ul#maps li.map-info form,
 ul#maps li.map-info p
 {
     margin: 0 0 10px 0;

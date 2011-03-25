@@ -40,6 +40,15 @@
                 
                 {if $is_admin}
                     <form action="{$request.uri|escape}" method="post">
+                        {if $map.waiting}
+                            {$map.waiting} waiting recipients,
+                        {/if}
+                        {assign var="created_ts" value=$map.created|@strtotime}
+                        {assign var="now_ts" value="now"|@time}
+                        {$now_ts-$created_ts|nice_relativetime},
+                        map
+                        <a class="link" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.id|escape}</a>.
+
                         <select name="privacy">
                             <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
                             <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
@@ -180,6 +189,15 @@
                             
                             {if $is_admin}
                                 <form action="{$request.uri|escape}" method="post">
+                                    {if $map.waiting}
+                                        {$map.waiting} waiting recipients,
+                                    {/if}
+                                    {assign var="created_ts" value=$map.created|@strtotime}
+                                    {assign var="now_ts" value="now"|@time}
+                                    {$now_ts-$created_ts|nice_relativetime},
+                                    map
+                                    <a class="link" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.id|escape}</a>.
+                                    <br>
                                     <select name="privacy">
                                         <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
                                         <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
