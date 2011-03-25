@@ -22,10 +22,11 @@
         // List of available paper sizes
         var $papers = array('a4', 'letter');
         
-        function Context(&$db_link, &$smarty)
+        function Context(&$db_link, &$smarty, $is_admin)
         {
             $this->db =& $db_link;
             $this->sm =& $smarty;
+            $this->admin = $is_admin;
 
             $this->sm->assign('paper_formats', $this->paper_formats());
             $this->sm->assign('formats', $this->formats);
@@ -54,6 +55,8 @@
         $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
         mysql_select_db(MYSQL_DATABASE, $db);
         
+        list($is_admin) = read_userdata($_COOKIE['userdata']);
+        
         $sm = new Smarty();
 
         $sm->compile_dir = join(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', 'templates', 'cache'));
@@ -73,8 +76,9 @@
 
         $sm->assign('constants', get_defined_constants());
         $sm->assign('request', array('method' => $_SERVER['REQUEST_METHOD'], 'get' => $_GET, 'post' => $_POST, 'uri' => $_SERVER['REQUEST_URI']));
+        $sm->assign('is_admin', $is_admin);
         
-        $ctx = new Context($db, $sm);
+        $ctx = new Context($db, $sm, $is_admin);
         
         return $ctx;
     }
@@ -126,6 +130,40 @@
         return $abs_root_url;
     }
     
+    function write_userdata($is_admin)
+    {
+        $userdata = array('is_admin' => (bool) $is_admin);
+        $encoded_value = json_encode($userdata);
+        $signed_string = $encoded_value.' '.md5($encoded_value.ADMIN_SECRET);
+        
+        return $signed_string;
+    }
+    
+   /**
+    * Return userdata (is_admin) based on a signed string.
+    * @param    string  $signed_string  JSON string, generally from a cookie, signed with an MD5 hash
+    * @return   string  Array with is_admin.
+    */
+    function read_userdata($signed_string)
+    {
+        if(preg_match('/^(.+) (\w{32})$/', $signed_string, $m))
+        {
+            list($encoded_value, $found_signature) = array($m[1], $m[2]);
+            $expected_signature = md5($encoded_value.ADMIN_SECRET);
+            
+            if($expected_signature == $found_signature)
+            {
+                // signature checks out
+                $userdata = json_decode($encoded_value, true);
+                $is_admin = empty($userdata['is_admin']) ? false : $userdata['is_admin'];
+                return array($is_admin);
+            }
+        }
+
+        //error_log("found no userdata in: {$signed_string}\n", 3, dirname(__FILE__).'/../tmp/log.txt');
+        return array(false);
+    }
+
     function nice_date($ts)
     {
         return date('j M Y', $ts);
@@ -676,7 +714,18 @@
         $_count = sprintf('%d', $args['count']);
         $_offset = sprintf('%d', $args['offset']);
         
-        $where_clauses = array("privacy = 'public'");
+        $where_clauses = array('1');
+        
+        if($args['privacy'] == 'any') {
+            // do nothing
+        
+        } elseif($args['privacy']) {
+            $_privacy = mysql_real_escape_string($args[']privacy'], $ctx->db);
+            $where_clauses[] = "privacy = '{$_privacy}'";
+        
+        } else {
+            $where_clauses[] = "privacy = 'public'";
+        }
         
         if(is_array($args['where']))
         {
