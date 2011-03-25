@@ -87,3 +87,13 @@ ul.formats li.format a img
 {
     border: none;
 }
+
+form.admin
+{
+    padding: 4px 8px;
+    background-color: #fcc;
+    border: 1px solid #f99;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}

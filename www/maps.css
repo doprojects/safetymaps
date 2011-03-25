@@ -33,6 +33,16 @@ ul#maps li.admin.map-info
     height: 330px;
 }
 
+ul#maps li.admin.map-info form
+{
+    padding: 4px 8px;
+    background-color: #fcc;
+    border: 1px solid #f99;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
 ul#maps li.map-info .map-area
 {
     width: 320px;
