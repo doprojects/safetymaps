@@ -22,11 +22,11 @@
         if($row = mysql_fetch_assoc($res))
         {
             $recipient = get_recipient($ctx, $row['id']);
-            $_recipient_id = sprintf('%d', $recipient['id']);
+            $_recipient_id = mysql_real_escape_string($recipient['id'], $ctx->db);
         
             $q = "UPDATE recipients
                   SET queued = NOW() + INTERVAL 20 SECOND
-                  WHERE id = {$_recipient_id}";
+                  WHERE id = '{$_recipient_id}'";
 
             $res = mysql_query($q, $ctx->db);
             
