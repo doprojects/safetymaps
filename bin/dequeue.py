@@ -4,8 +4,9 @@ from optparse import OptionParser
 from urlparse import urlparse, urlunparse, urljoin
 from itertools import product
 from httplib import HTTPConnection
-from json import loads
+from json import loads, dumps
 from time import time, sleep
+from hashlib import md5
 
 from compose import main as compose
 
@@ -16,20 +17,27 @@ def path(url):
 
 parser = OptionParser(usage="%prog [options] <API URL>")
 
-parser.set_defaults(time_limit=0)
+parser.set_defaults(time_limit=0, admin_secret='example')
 
 parser.add_option('-t', '--time-limit', dest='time_limit',
                   help='Time limit in seconds',
                   type=int)
 
+parser.add_option('-s', '--admin-secret', dest='admin_secret',
+                  help='Admin secret for writing data back')
+
 if __name__ == '__main__':
-    
+
     opts, args = parser.parse_args()
     
     url = urlparse(args[0])
     due = time() + opts.time_limit
+    
+    # signed cookie must match site/lib/lib.php:write_userdata()
+    userdata = dumps({'is_admin': True}, separators=(',', ':'))
+    cookie = userdata + ' ' + md5(userdata + opts.admin_secret).hexdigest()
 
-    while time() < due:
+    while time() <= due:
     
         conn = HTTPConnection(url.netloc)
         conn.request('GET', path(url))
@@ -75,7 +83,7 @@ if __name__ == '__main__':
                 post_url = urlparse(post_url)
                 
                 conn = HTTPConnection(post_url.netloc)
-                head = {'X-Print-Paper': paper, 'X-Print-Format': format}
+                head = {'X-Print-Paper': paper, 'X-Print-Format': format, 'Cookie': cookie}
                 conn.request('POST', path(post_url), open(filename, 'r'), head)
                 resp = conn.getresponse()
                 
@@ -90,7 +98,7 @@ if __name__ == '__main__':
                 print 'Uh-oh:', error
                 
                 conn = HTTPConnection(error_url.netloc)
-                head = {'X-Print-Paper': paper, 'X-Print-Format': format, 'Referer': path(url)}
+                head = {'X-Print-Paper': paper, 'X-Print-Format': format, 'Cookie': cookie, 'Referer': path(url)}
                 conn.request('POST', path(error_url), str(error), head)
                 resp = conn.getresponse()
                 
