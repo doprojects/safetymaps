@@ -69,7 +69,7 @@ if __name__ == '__main__':
         
         base_href = urlunparse(url)
 
-        print 'Maps for', recipient, '...'
+        print 'Maps for', recipient.encode('ascii', 'replace'), '...'
         
         for (paper, format) in product(job['papers'], job['formats']):
             try:
