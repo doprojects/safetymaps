@@ -13,12 +13,12 @@
         {
             case 'Admin On':
                 $is_admin = true;
-                setcookie('userdata', write_userdata(true), time()+600, get_base_dir());
+                setcookie('userdata', write_userdata(true), time()+600, get_base_dir().'/');
                 break;
 
             case 'Admin Off':
                 $is_admin = false;
-                setcookie('userdata', write_userdata(false), time()+600, get_base_dir());
+                setcookie('userdata', write_userdata(false), time()+600, get_base_dir().'/');
                 break;
         }
     }
@@ -31,6 +31,8 @@
 	<title>Master Control Switch</title>
 </head>
 <body>
+
+    <p><tt>base_dir</tt>: <?= get_base_dir() ?></p>
 
     <form action="index.php" method="post">
         <? if($is_admin) { ?>
