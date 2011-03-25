@@ -50,6 +50,8 @@ UPDATE maps SET id = _id;
 ALTER TABLE maps DROP COLUMN _id;
 ALTER TABLE maps ADD PRIMARY KEY (id);
 
+ALTER TABLE maps CHANGE COLUMN privacy privacy ENUM('public', 'unlisted', 'delisted') DEFAULT 'public';
+
 
 
 DROP TABLE IF EXISTS recipients;

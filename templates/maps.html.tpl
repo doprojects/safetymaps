@@ -39,7 +39,7 @@
                 </h2>
                 
                 {if $is_admin}
-                    <form action="{$request.uri|escape}" method="post">
+                    <form class="admin" action="{$request.uri|escape}" method="post">
                         {if $map.waiting}
                             {$map.waiting} waiting recipients,
                         {/if}
@@ -49,12 +49,16 @@
                         map
                         <a class="link" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.id|escape}</a>.
 
-                        <select name="privacy">
-                            <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
-                            <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
-                        </select>
-                        <input name="id" type="hidden" value="{$map.id|escape}">
-                        <button type="submit" name="action" value="Change Map">Change Map</button>
+                        {if $map.privacy == 'unlisted'}
+                            Unlisted.
+                        {else}
+                            <select name="privacy">
+                                <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
+                                <option label="Delisted" value="delisted" {if $map.privacy == 'delisted'}selected{/if}>Delisted</option>
+                            </select>
+                            <input name="id" type="hidden" value="{$map.id|escape}">
+                            <button type="submit" name="action" value="Change Map">Change Map</button>
+                        {/if}
                     </form>
                 {/if}
 
@@ -198,12 +202,16 @@
                                     map
                                     <a class="link" href="{$base_dir}/maps.php/{$map.id|escape}">{$map.id|escape}</a>.
                                     <br>
-                                    <select name="privacy">
-                                        <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
-                                        <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
-                                    </select>
-                                    <input name="id" type="hidden" value="{$map.id|escape}">
-                                    <button type="submit" name="action" value="Change Map">Change Map</button>
+                                    {if $map.privacy == 'unlisted'}
+                                        Unlisted.
+                                    {else}
+                                        <select name="privacy">
+                                            <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
+                                            <option label="Delisted" value="delisted" {if $map.privacy == 'delisted'}selected{/if}>Delisted</option>
+                                        </select>
+                                        <input name="id" type="hidden" value="{$map.id|escape}">
+                                        <button type="submit" name="action" value="Change Map">Change Map</button>
+                                    {/if}
                                 </form>
                             {/if}
 
