@@ -38,6 +38,17 @@
                     {/if}
                 </h2>
                 
+                {if $is_admin}
+                    <form action="{$request.uri|escape}" method="post">
+                        <select name="privacy">
+                            <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
+                            <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
+                        </select>
+                        <input name="id" type="hidden" value="{$map.id|escape}">
+                        <button type="submit" name="action" value="Change Map">Change Map</button>
+                    </form>
+                {/if}
+
                 <p>
                     In case of <var>{$map.emergency|escape}</var>,
                     let’s meet at <var>{$map.place_name|escape}</var>.
@@ -157,7 +168,7 @@
             
                 <ul id="maps">
                     {foreach item="map" from=$maps}
-                        <li class="map-info">
+                        <li class="map-info {if $is_admin}admin{/if}">
                             <h3>
                                 Safety Map
                                 {if $recipient and $recipient.email != $map.user.email}
@@ -166,6 +177,17 @@
                                     by <var>{$map.user.name|escape}</var>
                                 {/if}
                             </h3>
+                            
+                            {if $is_admin}
+                                <form action="{$request.uri|escape}" method="post">
+                                    <select name="privacy">
+                                        <option label="Public" value="public" {if $map.privacy == 'public'}selected{/if}>Public</option>
+                                        <option label="Unlisted" value="unlisted" {if $map.privacy == 'unlisted'}selected{/if}>Unlisted</option>
+                                    </select>
+                                    <input name="id" type="hidden" value="{$map.id|escape}">
+                                    <button type="submit" name="action" value="Change Map">Change Map</button>
+                                </form>
+                            {/if}
 
                             <span class="geo">
                                 <span class="latitude">{$map.place_lat}</span>

@@ -28,6 +28,11 @@ ul#maps li.map-info
     list-style-type: none;
 }
 
+ul#maps li.admin.map-info
+{
+    height: 320px;
+}
+
 ul#maps li.map-info .map-area
 {
     width: 320px;
