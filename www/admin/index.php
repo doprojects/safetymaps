@@ -13,15 +13,39 @@
         {
             case 'Admin On':
                 $is_admin = true;
-                setcookie('userdata', write_userdata(true), time()+600, get_base_dir().'/');
+                setcookie('userdata', write_userdata(true), time()+3600, get_base_dir().'/');
                 break;
 
             case 'Admin Off':
                 $is_admin = false;
-                setcookie('userdata', write_userdata(false), time()+600, get_base_dir().'/');
+                setcookie('userdata', write_userdata(false), time()+3600, get_base_dir().'/');
                 break;
         }
     }
+    
+    $ctx = default_context();
+
+    $q = "SELECT privacy, COUNT(id) AS count
+          FROM maps
+          WHERE created > NOW() - INTERVAL 1 WEEK
+          GROUP BY privacy
+          ORDER BY privacy ASC";
+    
+    if($res = mysql_query($q, $ctx->db))
+    {
+        $values = array();
+        $labels = array();
+        
+        while($row = mysql_fetch_assoc($res))
+        {
+            $values[] = $row['count'];
+            $labels[] = urlencode($row['count'].' '.ucwords($row['privacy']));
+        }
+        
+        $privacy_chart = sprintf('http://chart.apis.google.com/chart?cht=p&chd=t:%s&chs=408x120&chl=%s', join(',', $values), join('|', $labels));
+    }
+    
+    $ctx->close();
     
 ?>
 <!DOCTYPE html>
@@ -32,7 +56,14 @@
 </head>
 <body>
 
-    <p><tt>base_dir</tt>: <?= get_base_dir() ?></p>
+    <p>
+        In the past week:<br>
+        <img src="<?=htmlspecialchars($privacy_chart)?>">
+    </p>
+
+    <p>
+        <a href="<?=get_base_dir()?>/maps.php">Latest maps</a>.
+    </p>
 
     <form action="index.php" method="post">
         <? if($is_admin) { ?>
