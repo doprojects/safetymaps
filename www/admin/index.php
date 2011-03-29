@@ -45,6 +45,18 @@
         $privacy_chart = sprintf('http://chart.apis.google.com/chart?cht=p&chd=t:%s&chs=408x120&chl=%s', join(',', $values), join('|', $labels));
     }
     
+    $q = "SELECT id, emergency, privacy
+          FROM maps
+          WHERE privacy != 'unlisted'
+            AND emergency LIKE '%zomb%'
+          ORDER BY privacy DESC, created DESC";
+    
+    $zombie_maps = array();
+    
+    if($res = mysql_query($q, $ctx->db))
+        while($row = mysql_fetch_assoc($res))
+            $zombie_maps[] = $row;
+    
     $ctx->close();
     
 ?>
@@ -56,15 +68,6 @@
 </head>
 <body>
 
-    <p>
-        In the past week:<br>
-        <img src="<?=htmlspecialchars($privacy_chart)?>">
-    </p>
-
-    <p>
-        <a href="<?=get_base_dir()?>/maps.php">Latest maps</a>.
-    </p>
-
     <form action="index.php" method="post">
         <? if($is_admin) { ?>
             You are currently in admin mode.
@@ -75,6 +78,32 @@
             <button type="submit" name="action" value="Admin On">Admin On!</button>
         <? } ?>
     </form>
+    
+    <hr>
+    
+    <p>
+        In the past week:<br>
+        <img src="<?=htmlspecialchars($privacy_chart)?>">
+    </p>
+
+    <p>
+        <a href="<?=get_base_dir()?>/maps.php">Latest maps</a>.
+    </p>
+
+    <? if($zombie_maps) { ?>
+        <p>
+            Zombie Maps:
+        </p>
+        
+        <ul>
+            <? foreach($zombie_maps as $map) { ?>
+                <li>
+                    <?=htmlspecialchars($map['privacy'])?>
+                    <a href="<?=get_base_dir()?>/maps.php/<?=htmlspecialchars($map['id'])?>"><?=htmlspecialchars($map['emergency'])?></a>
+                </li>
+            <? } ?>
+        </ul>
+    <? } ?>
 
 </body>
 </html>
