@@ -100,8 +100,8 @@
             
             <p>
             Do projects is an undisciplinary design collective based in New
-            York City. For the purposes of this project, Do consisted of Nurri
-            Kim, Tom Carden and Michal Migurski with Adam Greenfield.
+            York City. For the purposes of this project, Do consisted of <a href="http://nurri.com">Nurri
+            Kim</a>, <a href="http://www.tom-carden.co.uk">Tom Carden</a> and <a href="http://mike.teczno.com">Michal Migurski</a> with <a href="http://speedbird.wordpress.com">Adam Greenfield</a>.
             </p>
             
             <p>
