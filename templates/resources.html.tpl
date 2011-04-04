@@ -50,7 +50,7 @@
              <ul>
                    <li><a href="http://www.tornadohistoryproject.com/">US tornadoes,1950-2009</a>. Over 53,000 tornado maps.</li>
                    <li><a href="http://www.britannica.com/EBchecked/media/19250/Map-of-worldwide-tornado-intensity-and-occurrence-As-can-be#">Tornado: Worldwide Tornado Intensity Map</a>.</li>
-             <ul>
+             </ul>
 
              <h3>Volcanoes</h3>
              <ul>
