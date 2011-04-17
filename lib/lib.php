@@ -7,6 +7,7 @@
     require_once 'Net/SMTP.php';
     
     define('MYSQL_ER_DUP_ENTRY', 1062);
+    define('SMTP_BAD_REPLY', 500);
 
     class Context
     {
@@ -461,6 +462,9 @@
                 return false;
         
             $sentmail = send_mail($ctx, $recipient_id);
+            
+            if($sentmail === SMTP_BAD_REPLY)
+                error_recipient($ctx, $recipient_id, $paper, $format);
             
             if(PEAR::isError($sentmail))
                 return false;
@@ -974,6 +978,17 @@
 
             list($code, $explanation) = $smtp->getResponse();
             error_log("Mail map {$map['id']}/{$recipient['id']}, {$method}: {$code}, {$explanation}");
+            
+           /*
+            * 500 errors seem to mean that no good will come of repeating
+            * this action, so return a bad-reply code that will cause
+            * advance_recipient() to call error_recipient().
+            */
+            if(500 <= $code && $code <= 599)
+            {
+                error_log("SMTP error code {$code}");
+                return SMTP_BAD_REPLY;
+            }
             
             if(PEAR::isError($result))
                 break;
