@@ -56,7 +56,7 @@
         $db = mysql_connect(MYSQL_HOSTNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
         mysql_select_db(MYSQL_DATABASE, $db);
         
-        list($is_admin) = read_userdata($_COOKIE['userdata']);
+        list($is_admin) = isset($_COOKIE['userdata']) ? read_userdata($_COOKIE['userdata']) : false;
         
         $sm = new Smarty();
 
