@@ -39,7 +39,7 @@
             </div>
             
             <h2>
-                Latest Safety Maps
+                A Selection of Recent Safety Maps
             </h2>
             
             <ul id="maps">
